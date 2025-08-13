@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "csa_petio_v1")(type "KiCad")(uri "$(KIPRJMOD)/csa_petio_v1.pretty")(options "")(descr ""))
+)
