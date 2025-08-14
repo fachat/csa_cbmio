@@ -3101,7 +3101,7 @@
 		)
 		(uuid "3bd9c3a7-96d4-460c-aaa6-cca5ab45c177")
 	)
-	(text "CSA-PETIO-V1.3B"
+	(text "CSA-CBMIO-V1.0A"
 		(exclude_from_sim no)
 		(at 186.69 173.99 0)
 		(effects
@@ -3139,6 +3139,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "0fd0a885-fcac-4356-8b1a-fe2c4ee49c24")
+	)
+	(junction
+		(at 86.36 40.64)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "1540d711-4538-48fd-965b-d0978af38339")
 	)
 	(junction
 		(at 30.48 123.19)
@@ -3235,6 +3241,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e90181c6-bbef-4362-990e-bc7aa428d0e7")
+	)
+	(junction
+		(at 90.17 30.48)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f2a809df-1f4d-4d6c-9a70-4bf5900b576d")
 	)
 	(wire
 		(pts
@@ -4008,6 +4020,16 @@
 	)
 	(wire
 		(pts
+			(xy 93.98 19.05) (xy 86.36 19.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "73df5c09-331d-4aaf-af28-7481e9b39580")
+	)
+	(wire
+		(pts
 			(xy 30.48 77.47) (xy 30.48 92.71)
 		)
 		(stroke
@@ -4178,6 +4200,16 @@
 	)
 	(wire
 		(pts
+			(xy 93.98 21.59) (xy 90.17 21.59)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8d2feb40-7793-4c42-a41d-ba109dbab661")
+	)
+	(wire
+		(pts
 			(xy 106.68 39.37) (xy 106.68 116.84)
 		)
 		(stroke
@@ -4255,6 +4287,16 @@
 			(type default)
 		)
 		(uuid "954165a9-bd7f-4334-aef9-9d25e72c1a41")
+	)
+	(wire
+		(pts
+			(xy 90.17 21.59) (xy 90.17 30.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "955996c1-6670-4575-b324-5613ba1d6e76")
 	)
 	(wire
 		(pts
@@ -4575,6 +4617,16 @@
 			(type default)
 		)
 		(uuid "c9fe8564-930d-4f33-bcd0-5cefe8c31099")
+	)
+	(wire
+		(pts
+			(xy 86.36 19.05) (xy 86.36 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "caa2333e-b9a9-4813-bf69-f930722942ee")
 	)
 	(wire
 		(pts
@@ -5184,6 +5236,28 @@
 			)
 		)
 	)
+	(global_label "{slash}BRES"
+		(shape output)
+		(at 93.98 19.05 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "a44dfa97-163d-4a41-9b74-337d75ef5ea5")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 103.1942 19.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "V33"
 		(shape input)
 		(at 126.365 145.415 180)
@@ -5307,6 +5381,28 @@
 		(uuid "c07fd0b1-de7c-4307-acd2-6e29c51454ab")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 181.8133 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "{slash}BIRQ"
+		(shape output)
+		(at 93.98 21.59 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "c09a07e9-f7be-4867-a1ab-e4e2eccdf59a")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 102.771 21.59 0)
 			(effects
 				(font
 					(size 1.27 1.27)

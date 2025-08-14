@@ -4550,7 +4550,7 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "CSA-PETIO-V1.3B"
+	(text "CSA-CBMIO-V1.0A"
 		(exclude_from_sim no)
 		(at 206.756 172.72 0)
 		(effects

@@ -136,7 +136,7 @@
       "otherItems": false,
       "pins": false,
       "symbols": true,
-      "text": true,
+      "text": false,
       "wires": true
     }
   }
