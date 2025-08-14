@@ -3090,7 +3090,7 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "Notes:\n- /IOSEL is completely captured by connecting it to /OE of the 74LVC8T245.\n  Note that the /OE (and DIR) outputs reference VCCA, and are CMOS, so \n  driving from 3.3V does not reach 3.5 Vi_hi_min"
+	(text "Notes:\n- Note that the /OE (and DIR) outputs reference VCCA, and are CMOS, so \n  driving from 3.3V does not reach 3.5 Vi_hi_min"
 		(exclude_from_sim no)
 		(at 191.008 30.734 0)
 		(effects
@@ -3123,7 +3123,7 @@
 		)
 		(uuid "86e94b53-9db6-4f1b-b3b2-0a13c00a513b")
 	)
-	(text "CSA-PETIO-V1.3B-20240214"
+	(text "CSA-CBMIO-V1.0A-20250815"
 		(exclude_from_sim no)
 		(at 209.042 185.674 0)
 		(effects
@@ -3151,12 +3151,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "1adf5670-ba26-486a-94e5-2a23c191adc7")
-	)
-	(junction
-		(at 166.37 119.38)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "202e7af8-5f35-4a94-82be-faf396f3bfb5")
 	)
 	(junction
 		(at 30.48 77.47)
@@ -3830,16 +3824,6 @@
 	)
 	(wire
 		(pts
-			(xy 166.37 119.38) (xy 176.53 119.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5708dcad-d1bc-43f3-a4f8-0fd29df73f54")
-	)
-	(wire
-		(pts
 			(xy 96.52 105.41) (xy 96.52 160.02)
 		)
 		(stroke
@@ -3900,7 +3884,7 @@
 	)
 	(wire
 		(pts
-			(xy 153.67 119.38) (xy 166.37 119.38)
+			(xy 153.67 119.38) (xy 176.53 119.38)
 		)
 		(stroke
 			(width 0)
@@ -3977,6 +3961,16 @@
 			(type default)
 		)
 		(uuid "6d9f4643-80d6-4422-9882-e2c19acd88f5")
+	)
+	(wire
+		(pts
+			(xy 158.75 58.42) (xy 161.29 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6de18621-094b-4d37-a982-6bc33eb2fac6")
 	)
 	(wire
 		(pts
@@ -4137,16 +4131,6 @@
 			(type default)
 		)
 		(uuid "80ae9205-7d8b-4406-99ff-639ca5cff773")
-	)
-	(wire
-		(pts
-			(xy 172.72 102.87) (xy 166.37 102.87)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "81ad5514-e159-4f25-ac0a-08d1df460a42")
 	)
 	(wire
 		(pts
@@ -4550,16 +4534,6 @@
 	)
 	(wire
 		(pts
-			(xy 166.37 102.87) (xy 166.37 119.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "bde81809-ecdf-498a-b382-b3e6666cba90")
-	)
-	(wire
-		(pts
 			(xy 109.22 119.38) (xy 128.27 119.38)
 		)
 		(stroke
@@ -4687,16 +4661,6 @@
 			(type default)
 		)
 		(uuid "d1a22541-1853-41c1-9ea2-0003775142c4")
-	)
-	(wire
-		(pts
-			(xy 158.75 58.42) (xy 172.72 58.42)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d454e5af-0dab-4619-b02a-c611f8044c01")
 	)
 	(wire
 		(pts
@@ -4890,16 +4854,6 @@
 	)
 	(wire
 		(pts
-			(xy 172.72 58.42) (xy 172.72 102.87)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f3cc7dc5-b4fb-49bf-b0cf-2b53e912e2f2")
-	)
-	(wire
-		(pts
 			(xy 153.67 114.3) (xy 176.53 114.3)
 		)
 		(stroke
@@ -5007,6 +4961,28 @@
 		(uuid "2db48cd1-9794-448e-b6ba-68e1fa437ca1")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 170.406 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "{slash}BE"
+		(shape input)
+		(at 161.29 58.42 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "2ff15b2f-3d56-4a06-a544-69edef787508")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 168.0247 58.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
