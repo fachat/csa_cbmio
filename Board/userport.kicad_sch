@@ -6186,6 +6186,72 @@
 		)
 	)
 	(symbol
+		(lib_id "csa_petio_v1-eagle-import:VCC")
+		(at 125.73 186.69 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "60940a54-002c-4413-a788-1c1d51f275aa")
+		(property "Reference" "#V021"
+			(at 125.73 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "VCC"
+			(at 127.635 189.865 0)
+			(effects
+				(font
+					(size 1.778 1.5113)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Footprint" ""
+			(at 125.73 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 125.73 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 125.73 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a1e3e6d1-9d18-4ceb-9919-0cdc1ff03c49")
+		)
+		(instances
+			(project "csa_petio_v1"
+				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/7c8914b4-a2ef-4231-b3f7-1105ec77241e"
+					(reference "#V021")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "csa_petio_v1-eagle-import:LSF0204Q")
 		(at 58.42 100.33 0)
 		(unit 1)
@@ -6864,7 +6930,7 @@
 				(justify left bottom)
 			)
 		)
-		(property "Footprint" "csa_petio_v1:FLAT24"
+		(property "Footprint" "csa_petio_v1:FLAT24_IDC"
 			(at 176.53 60.96 0)
 			(effects
 				(font
