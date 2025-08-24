@@ -4819,6 +4819,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C882412"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "282cfd7e-68e0-45ee-9e6a-0d3763d11836")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "SOIC*7.5x12.8mm*P1.27mm*")
 		(path "/70ccb61c-5015-4d74-a36e-b1514308c68b/8661eb0d-7240-48e3-836c-6ed00b96874d")
 		(sheetname "/IO2/")
@@ -5362,6 +5374,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28323"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "9ac07bb8-8073-4792-a6ef-f9ada9784f07")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "CP_*")
 		(path "/5a5ee5d6-5c57-47d8-89f1-607b8332e7b6/8459ffed-121d-4c36-b277-9bc338c7f71b")
 		(sheetname "/IO1/")
@@ -5861,6 +5885,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "c493fece-2692-4b58-a28a-112591eb2c57")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/3f2dc3af-bf5f-4009-9eab-64cac7d2d404")
 		(sheetname "/FPGA/")
@@ -6305,6 +6341,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "7ac52e8c-49ce-430e-a624-82ff69fb8a7c")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "b97c1adf-5b47-4b24-bf52-d64bb501b5cf")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6988,6 +7036,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "9c6b2452-06ff-4329-82c4-8f58dd0dfb8b")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "7a1a5625-622f-49a1-b933-7e0862eca5fa")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7706,6 +7766,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "8d927338-331e-4e5a-b066-19ee5dc792a1")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/6e8be99e-3b1d-4a48-a7f0-2c3c7b04ae5c")
 		(sheetname "/FPGA/")
@@ -8225,6 +8297,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "6cf51c80-9246-4433-9aee-e268b68ba26e")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/2c4ff718-da47-43da-a61f-78a2ca022899")
 		(sheetname "/FPGA/")
@@ -8417,6 +8501,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "49aa9106-3bfb-4dca-a848-6beaead208c6")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "7a891ba5-d960-427e-8958-dc516083628e")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8946,6 +9042,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "a3bb2c40-4305-4e8c-918c-f36e22d1c35a")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "ce74b1d5-f495-482f-b8aa-6326042554ed")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9605,6 +9713,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "45ecb433-3bae-4961-b4e3-0120b51ddc43")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C18202145"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "e46fb284-824b-4a26-be42-996e859c810c")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10872,6 +10992,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28323"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "73568490-7f5d-4909-ba70-0cdacecccecc")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "CP_*")
 		(path "/5a5ee5d6-5c57-47d8-89f1-607b8332e7b6/b597d90c-cd48-4bb5-be0a-cf3174688296")
 		(sheetname "/IO1/")
@@ -11544,6 +11676,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "9e1f5911-1a62-43d1-a0a2-adf69fdad6c6")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/e9d98f09-0883-4e28-8d5b-ad715ba7a5e8")
 		(sheetname "/FPGA/")
@@ -11736,6 +11880,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "aba90430-db53-462e-b243-ba076628246a")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C2671348"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "54192c8a-7fc1-4b3f-83f8-b436c4aa9618")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12285,6 +12441,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "7cdacff4-f6d5-494c-aa74-10c22efd94f2")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/e5c1f90c-f5dd-450c-8ed9-a1cd5457bbad")
 		(sheetname "/FPGA/")
@@ -12477,6 +12645,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "bec916f0-175c-403e-af5a-835526e7330a")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C2677502"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "60c938d2-e566-42fb-88cc-082f58507bcc")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12913,6 +13093,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "31b3fe8d-bc0e-458f-975c-699aa8f83338")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "da0fe2dd-c2ff-48e2-81c0-91de19da22c3")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13622,6 +13814,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "6b1e7af2-1895-47fc-b77b-656c46fa5c9e")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/cdb6c605-e11c-4c55-8fe8-f9f77aaf886a")
 		(sheetname "/FPGA/")
@@ -13814,6 +14018,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "9aeafd37-a76c-495f-a57e-c1efbc598e96")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C16780"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "74482f76-bd5d-42d5-888d-68efff179bab")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14020,6 +14236,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C45783"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "75c5d3c1-e175-410e-835d-603b3ed6bd55")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "CP_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/bd862a0b-6b11-451c-ae8d-a3e35d9adb4a")
 		(sheetname "/FPGA/")
@@ -14212,6 +14440,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "77bb0cdb-ace6-4f85-856e-072a89ae1373")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C2677502"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "220d25ea-2b75-4694-8bfb-bcdbd8eff0a2")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14648,6 +14888,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "b5bef0cf-3f15-4208-9358-d0a53ec7e05f")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C2677502"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "481bde88-7542-4414-a844-539bd500b331")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15522,6 +15774,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C45783"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "47f5a1f1-27b3-448d-af11-60b3f30e5dba")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "CP_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/8cab2fe9-d098-4db5-9508-4cc0ada650c9")
 		(sheetname "/FPGA/")
@@ -15714,6 +15978,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "fc36ee9d-a632-49f6-97ed-a43eb8b62cc4")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "74ce3b82-590f-40eb-b41c-356031281a88")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18034,6 +18310,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "6e215ff4-7e31-40ad-85b4-e09c84dc0a62")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/e244b8d1-8839-40a8-94dd-0697918557a6")
 		(sheetname "/FPGA/")
@@ -19386,6 +19674,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "14884c8c-25c7-4478-94ac-fcc2c6ec3c11")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/5d743899-039c-4fbf-9d25-c43ccbe6212d")
 		(sheetname "/FPGA/")
@@ -19578,6 +19878,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "a7c00353-27ee-47a7-a85f-b443ca929f2c")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "bc74d21d-765b-4dba-a37f-c8742a03e22e")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20228,6 +20540,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "bb4cf1eb-c58b-4a39-ab4c-15ebe0f56907")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C2677502"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "3f32afa6-e6e5-4712-b343-249433392695")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20991,6 +21315,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "dbb51877-8315-468e-831f-af1d39ef3d04")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/75cfb1c1-54d1-46bf-8fdb-b7d89b740639")
 		(sheetname "/FPGA/")
@@ -21183,6 +21519,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "299b1d85-9075-4ff0-b09d-e474a6fe59ad")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C28323"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "b06cfd78-8916-439f-8382-efc9b40af7a4")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21693,6 +22041,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "f221e86f-ce0d-46ff-bd4f-9da42d555b02")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/22909d50-2b26-41ce-b57b-7aca237a74a7")
 		(sheetname "/FPGA/")
@@ -21885,6 +22245,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "c6c1c934-5c80-40f4-87b5-c7abb6fa7546")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "3afa5a51-7430-4597-a324-0ae8939427c0")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -22091,6 +22463,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "a56da6d0-38f5-4289-97ca-f4efa142c38d")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/f6f586a8-10b8-44b9-a1a3-c4b26a184e8a")
 		(sheetname "/FPGA/")
@@ -22283,6 +22667,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "1723308a-83e2-4b5f-8087-cd086ca764a2")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "369f52a9-ce18-41a8-ad59-0c5c9ba79283")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -22977,6 +23373,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "177fde19-e394-4470-be9f-60f5e45ee445")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/aeec4f35-ddb1-4334-a6ce-873b00f4ceed")
 		(sheetname "/FPGA/")
@@ -23426,6 +23834,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "3a403272-a378-4420-98d2-9a7eebee82a5")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/3b07ed47-f22b-493b-af31-037144feab18")
 		(sheetname "/FPGA/")
@@ -23625,6 +24045,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "2bd96e5c-739d-450e-87c4-67b8fa1da4c8")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/0cb2edfa-8799-4a4f-bf24-52dcb9efe750")
 		(sheetname "/FPGA/")
@@ -23817,6 +24249,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "80819628-8b2c-427c-a241-62267dc6f609")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "02e2850e-2666-405c-911b-60e0f4c55a4c")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -24519,6 +24963,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C45783"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "9d26f0d9-0d1c-4d53-9470-e69eee3a77d6")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "CP_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/6c80a180-bcb0-43ad-aa6d-3f06ffe84bba")
 		(sheetname "/FPGA/")
@@ -24970,6 +25426,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C2677502"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "201b7f46-4a62-47ff-b08c-5d57ce85b3a4")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/7c8914b4-a2ef-4231-b3f7-1105ec77241e/593a412f-b8d7-4db1-aa55-7ce979e3f9a4")
 		(sheetname "/Userport/")
 		(sheetfile "userport.kicad_sch")
@@ -25399,6 +25867,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "a3a87287-4c71-440b-b161-f67192f4fc88")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "ab6ebc93-3e16-4a86-84d9-cd657af226e6")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -25935,6 +26415,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "325a5529-591f-4bf6-a08b-bcdca731bc2c")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/00c94789-db4e-4f70-80a9-d0cf5ec70d16")
 		(sheetname "/FPGA/")
@@ -26326,6 +26818,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "f2471b9a-5ddc-4e7a-befc-1ceb9b121d38")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C45783"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "ed128541-f1dd-4c3b-bd6e-f8ff56a807cd")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -26731,6 +27235,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "e31010e6-269d-444a-8fde-61e3fdfcde15")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/e9e43bbe-d0ab-4423-858e-8447c845c5c1")
 		(sheetname "/FPGA/")
@@ -26923,6 +27439,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "df8a49b4-23de-4420-9d39-5ab9329f6ff2")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C507163"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "c54cb950-d134-4a93-8042-e6545dac0785")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -28758,6 +29286,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "95546ef0-073b-4804-89e3-c6d9ca914e81")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/c7c483d3-aed9-428f-89be-57ce79eb9dc5")
 		(sheetname "/FPGA/")
@@ -29300,6 +29840,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "a4401532-a9e0-47c2-99ad-68fd47bcdedb")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C5157635"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "cc0101d7-12b1-4bc6-b495-0691e61c939d")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -31243,6 +31795,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C507163"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "adb989c0-ddcb-400a-b888-088afa10e525")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "DIP?16*")
 		(path "/70ccb61c-5015-4d74-a36e-b1514308c68b/118f60ea-cb95-4fa0-9343-822a4021709a")
 		(sheetname "/IO2/")
@@ -32026,6 +32590,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "b69d25bd-5dd1-4a32-b177-2a385e198e22")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/c6b9ec31-6ddd-44f2-980b-1ae3663275d2")
 		(sheetname "/FPGA/")
@@ -32218,6 +32794,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "63c8725e-7808-4c93-853d-5cd4290a8ed6")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C2677502"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "d80d2526-1864-424f-bf1d-b3a63f4581e3")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -32855,6 +33443,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "f4879467-9dfc-46e4-99ad-ae150168597a")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C5157635"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "a7dfba4f-7762-4895-ad3b-e110ac89c673")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -34798,6 +35398,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "681d3aba-3b42-435c-831b-0b324d77a5e7")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/2d098c79-f0b1-455e-8692-d5ea05c635dd")
 		(sheetname "/FPGA/")
@@ -34990,6 +35602,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "ad61ad2d-531a-4bbe-a5cf-dbc7d2297793")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C2677502"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "979b759b-f67a-49e3-bece-504a2f4d02af")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -37154,6 +37778,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28233"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "55d76685-9e5e-4683-a347-47d76eead240")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/68abe788-b880-40e7-9e78-97f20b071325/38fd2b85-44f1-4abb-a66a-a5fbbf12f097")
 		(sheetname "/FPGA/")
@@ -38365,6 +39001,18 @@
 				)
 			)
 		)
+		(property "LCSC" "C28323"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "389d0c88-74cf-47c2-a952-6d3e0a26c214")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "CP_*")
 		(path "/5a5ee5d6-5c57-47d8-89f1-607b8332e7b6/7de6a5b1-7bd2-468b-9c48-e268a47177e7")
 		(sheetname "/IO1/")
@@ -38809,6 +39457,18 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "66057cb4-78fa-4869-acc1-0e8e2812bb44")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "LCSC" "C2677502"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "531d7a9f-2892-49fa-9964-eed1492f6817")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -39330,7 +39990,7 @@
 		(layer "Edge.Cuts")
 		(uuid "ab47dba2-ddcf-46cf-9a10-dc3dc8954ffe")
 	)
-	(gr_text "CSA-PETIO-V1.3B"
+	(gr_text "CSA-CBMIO-V1.0A"
 		(at 76.7511 58.0136 0)
 		(layer "F.Cu")
 		(uuid "a9dfcfae-cc6f-4a63-b0cd-9d330705c47c")
@@ -39354,7 +40014,7 @@
 			(justify left bottom)
 		)
 	)
-	(gr_text "CSA-PETIO-V1.3B"
+	(gr_text "CSA-CBMIO-V1.0A"
 		(at 76.7511 58.0136 0)
 		(layer "F.SilkS")
 		(uuid "f233441d-617d-4c24-b7fb-c4cb05c511ea")
