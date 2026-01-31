@@ -107,7 +107,6 @@ end Shell;
 
 architecture Behavioral of Shell is
 
-	signal sel_pia1: std_logic;
 	signal sel_pia2: std_logic;
 	signal sel_via1: std_logic;
 	signal sel_via2: std_logic;
@@ -127,16 +126,54 @@ architecture Behavioral of Shell is
            uart2 : out  STD_LOGIC);	
 	end component;
 
+	signal pia1_sel: std_logic;
+	signal pia1_irq: std_logic;
+	signal pia1_din: std_logic_vector(7 downto 0);
+	signal pia1_dout: std_logic_vector(7 downto 0);
+	signal pia1_pa_in: std_logic_vector(7 downto 0);
+	signal pia1_pa_out: std_logic_vector(7 downto 0);
+	signal pia1_ca1_in: std_logic;
+	signal pia1_ca2_in: std_logic;
+	signal pia1_ca2_out: std_logic;
+	signal pia1_pb_in: std_logic_vector(7 downto 0);
+	signal pia1_pb_out: std_logic_vector(7 downto 0);
+	signal pia1_cb1_in: std_logic;
+	signal pia1_cb2_in: std_logic;
+	signal pia1_cb2_out: std_logic;
+	
+	component pia6520 is
+    Port ( nres : in  STD_LOGIC;
+           phi2 : in  STD_LOGIC;
+           rwb : in  STD_LOGIC;
+           sel : in  STD_LOGIC;
+           irq : out  STD_LOGIC;
+			  addr : in STD_LOGIC_VECTOR(1 downto 0);
+           data_in : in  STD_LOGIC_VECTOR (7 downto 0);
+           data_out : out  STD_LOGIC_VECTOR (7 downto 0);
+
+           porta_in : in  STD_LOGIC_VECTOR (7 downto 0);
+           porta_out : out  STD_LOGIC_VECTOR (7 downto 0);
+           ca1_in : in  STD_LOGIC;
+           ca2_in : in  STD_LOGIC;
+           ca2_out : out  STD_LOGIC;
+			  
+           portb_in : in  STD_LOGIC_VECTOR (7 downto 0);
+           portb_out : out  STD_LOGIC_VECTOR (7 downto 0);
+           cb1_in : in  STD_LOGIC;
+           cb2_in : in  STD_LOGIC;
+           cb2_out : out  STD_LOGIC);
+	end component;
+		
 begin
 
 	-- for now decouple bus
-	irq <= '0';
-	D(7 downto 0) <= (others => 'X');
+	irq <= pia1_irq;
+	
+	D(7 downto 0) <= (others => 'X') when rwb = '0'
+			else pia1_dout when pia1_sel = '1'
+			else "10101010";	-- test pattern, will be open
 
 	-- I/O
-	
-	-- keyboard
-	ksel(3 downto 0) <= (others => 'X');
 	
 	-- userport
 	up(13 downto 0) <= (others => 'X');
@@ -169,6 +206,39 @@ begin
 	dc <= '1';
 	te <= '1';
 	dio(7 downto 0) <= (others => 'X');
+
+	----------------------------------------------------
+	
+	pia1_c: pia6520
+	   Port map (
+			nres,
+         phi2,
+         rwb,
+         pia1_sel,
+         pia1_irq,
+			A(1 downto 0),
+         pia1_din,
+			pia1_dout,
+
+			pia1_pa_in,
+			pia1_pa_out,			
+         pia1_ca1_in,
+         pia1_ca2_in,
+         pia1_ca2_out,
+
+			pia1_pb_in,
+			pia1_pb_out,			
+         pia1_cb1_in,
+         pia1_cb2_in,
+         pia1_cb2_out
+		);
+
+	pia1_din <= D;
+	
+	ksel <= pia1_pa_out(3 downto 0);
+	pia1_pb_in <= kin;
+	
+	----------------------------------------------------
 	
 	-- IO select
 	select_c: ioselect
@@ -177,7 +247,7 @@ begin
 		niosel,
 		nres,
 		nbe,
-		sel_pia1,
+		pia1_sel,
 		sel_pia2,
 		sel_via1,
 		sel_via2,
