@@ -107,28 +107,56 @@ end Shell;
 
 architecture Behavioral of Shell is
 
+	signal sel_pia1: std_logic;
+	signal sel_pia2: std_logic;
+	signal sel_via1: std_logic;
+	signal sel_via2: std_logic;
+	signal sel_uart1: std_logic;
+	signal sel_uart2: std_logic;
+	
+	component ioselect is
+    Port ( A : in  STD_LOGIC_VECTOR (11 downto 0);
+           niosel : in  STD_LOGIC;
+			  nres : in STD_LOGIC;
+			  nbe : out std_logic;
+           pia1 : out  STD_LOGIC;
+           pia2 : out  STD_LOGIC;
+           via1 : out  STD_LOGIC;
+           via2 : out  STD_LOGIC;
+           uart1 : out  STD_LOGIC;
+           uart2 : out  STD_LOGIC);	
+	end component;
+
 begin
 
 	-- for now decouple bus
-	nbe <= '1';
 	irq <= '0';
 	D(7 downto 0) <= (others => 'X');
 
-	ksel(3 downto 0) <= (others => 'X');
-	up(13 downto 0) <= (others => 'X');
+	-- I/O
 	
+	-- keyboard
+	ksel(3 downto 0) <= (others => 'X');
+	
+	-- userport
+	up(13 downto 0) <= (others => 'X');
+
+	-- SPI (5V)
 	spimosi <= '1';
 	spiclk <= '1';
 	spiiosel <= '1';
 	
+	-- cassette
 	cwr <= 'X';
 	c1mtr <= 'X';
-	
+
+	-- serial IEC
 	dataout <= 'X';
 	clkout <= 'X';
 	atnout <= 'X';
 	srqout <= 'X';
 	
+	-- rs232
 	ltx <= 'X';
 	lrts <= 'X';
 	ldtr <= 'X';
@@ -136,10 +164,26 @@ begin
 	rtx <= 'X';
 	rrts <= 'X';
 	rdtr <= 'X';
-	
+
+	-- IEEE488
 	dc <= '1';
 	te <= '1';
 	dio(7 downto 0) <= (others => 'X');
+	
+	-- IO select
+	select_c: ioselect
+	port map(
+		A,
+		niosel,
+		nres,
+		nbe,
+		sel_pia1,
+		sel_pia2,
+		sel_via1,
+		sel_via2,
+		sel_uart1,
+		sel_uart2
+	);
 	
 end Behavioral;
 
