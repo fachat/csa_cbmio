@@ -107,7 +107,9 @@ end Shell;
 
 architecture Behavioral of Shell is
 
-	signal sel_pia2: std_logic;
+	signal D_in: std_logic_vector(7 downto 0);
+	signal D_out: std_logic_vector(7 downto 0);
+	
 	signal sel_via1: std_logic;
 	signal sel_via2: std_logic;
 	signal sel_uart1: std_logic;
@@ -140,6 +142,21 @@ architecture Behavioral of Shell is
 	signal pia1_cb1_in: std_logic;
 	signal pia1_cb2_in: std_logic;
 	signal pia1_cb2_out: std_logic;
+
+	signal pia2_sel: std_logic;
+	signal pia2_irq: std_logic;
+	signal pia2_din: std_logic_vector(7 downto 0);
+	signal pia2_dout: std_logic_vector(7 downto 0);
+	signal pia2_pa_in: std_logic_vector(7 downto 0);
+	signal pia2_pa_out: std_logic_vector(7 downto 0);
+	signal pia2_ca1_in: std_logic;
+	signal pia2_ca2_in: std_logic;
+	signal pia2_ca2_out: std_logic;
+	signal pia2_pb_in: std_logic_vector(7 downto 0);
+	signal pia2_pb_out: std_logic_vector(7 downto 0);
+	signal pia2_cb1_in: std_logic;
+	signal pia2_cb2_in: std_logic;
+	signal pia2_cb2_out: std_logic;
 	
 	component pia6520 is
     Port ( nres : in  STD_LOGIC;
@@ -163,14 +180,62 @@ architecture Behavioral of Shell is
            cb2_in : in  STD_LOGIC;
            cb2_out : out  STD_LOGIC);
 	end component;
-		
+
+	component via6522 is
+		port (
+			clock       : in  std_logic;
+			rising      : in  std_logic;
+			falling     : in  std_logic;
+			reset       : in  std_logic;
+    
+			addr        : in  std_logic_vector(3 downto 0);
+			wen         : in  std_logic;
+			ren         : in  std_logic;
+			data_in     : in  std_logic_vector(7 downto 0);
+			data_out    : out std_logic_vector(7 downto 0);
+
+			phi2_ref    : out std_logic;
+
+			-- pio --
+			port_a_o    : out std_logic_vector(7 downto 0);
+			port_a_t    : out std_logic_vector(7 downto 0);
+			port_a_i    : in  std_logic_vector(7 downto 0);
+    
+			port_b_o    : out std_logic_vector(7 downto 0);
+			port_b_t    : out std_logic_vector(7 downto 0);
+			port_b_i    : in  std_logic_vector(7 downto 0);
+
+			-- handshake pins
+			ca1_i       : in  std_logic;
+
+			ca2_o       : out std_logic;
+			ca2_i       : in  std_logic;
+			ca2_t       : out std_logic;
+    
+			cb1_o       : out std_logic;
+			cb1_i       : in  std_logic;
+			cb1_t       : out std_logic;
+    
+			cb2_o       : out std_logic;
+			cb2_i       : in  std_logic;
+			cb2_t       : out std_logic;
+
+			irq         : out std_logic );
+	end component;
+	
 begin
 
 	-- for now decouple bus
 	irq <= pia1_irq;
 	
-	D(7 downto 0) <= (others => 'X') when rwb = '0'
-			else pia1_dout when pia1_sel = '1'
+	D_in <= D;
+	D <= (others => 'X') when rwb = '0'
+			else D_out;
+	
+	D_out(7 downto 0) <= 
+				pia1_dout when pia1_sel = '1'
+			else pia2_dout when pia2_sel = '1'
+	--		else via1_dout when via1_sel = '1'
 			else "10101010";	-- test pattern, will be open
 
 	-- I/O
@@ -198,7 +263,7 @@ begin
 	lrts <= 'X';
 	ldtr <= 'X';
 
-	rtx <= 'X';
+	rtx <= '1'; --pia2_sel; --'X';
 	rrts <= 'X';
 	rdtr <= 'X';
 
@@ -233,12 +298,68 @@ begin
          pia1_cb2_out
 		);
 
-	pia1_din <= D;
+	pia1_din <= D_in;
 	
 	ksel <= pia1_pa_out(3 downto 0);
 	pia1_pb_in <= kin;
 	
 	----------------------------------------------------
+
+	pia2_c: pia6520
+	   Port map (
+			nres,
+         phi2,
+         rwb,
+         pia2_sel,
+         pia2_irq,
+			A(1 downto 0),
+         pia2_din,
+			pia2_dout,
+
+			pia2_pa_in,
+			pia2_pa_out,			
+         pia2_ca1_in,
+         pia2_ca2_in,
+         pia2_ca2_out,
+
+			pia2_pb_in,
+			pia2_pb_out,			
+         pia2_cb1_in,
+         pia2_cb2_in,
+         pia2_cb2_out
+		);
+
+	pia2_din <= D_in;
+	
+	----------------------------------------------------
+
+--	via1_c: pia6520
+--	   Port map (
+--			nres,
+--         phi2,
+--         rwb,
+--         pia2_sel,
+--         pia2_irq,
+--			A(1 downto 0),
+--         pia2_din,
+--			pia2_dout,
+--
+--			pia2_pa_in,
+--			pia2_pa_out,			
+--         pia2_ca1_in,
+--         pia2_ca2_in,
+--         pia2_ca2_out,
+--
+--			pia2_pb_in,
+--			pia2_pb_out,			
+--         pia2_cb1_in,
+--         pia2_cb2_in,
+--         pia2_cb2_out
+--		);
+--
+--	pia2_din <= D;
+	----------------------------------------------------
+
 	
 	-- IO select
 	select_c: ioselect
@@ -248,7 +369,7 @@ begin
 		nres,
 		nbe,
 		pia1_sel,
-		sel_pia2,
+		pia2_sel,
 		sel_via1,
 		sel_via2,
 		sel_uart1,

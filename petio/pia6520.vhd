@@ -98,7 +98,7 @@ begin
 	crb_a <= '1' when sel = '1' and addr = REG_CRB;
 	
 	-- write CRA
-	cra_p: process(nres, phi2, sel)
+	cra_p: process(nres, phi2, sel, rwb, cra_a)
 	begin	
 		if (nres = '0') then
 			cra <= "000000";
@@ -108,7 +108,7 @@ begin
 	end process;
 	
 	-- write Port A
-	pa_p: process(nres, phi2, sel)
+	pa_p: process(nres, phi2, sel, rwb, porta_a)
 	begin
 		if (nres = '0') then
 			porta <= "00000000";
@@ -116,9 +116,10 @@ begin
 			porta <= data_in;
 		end if;
 	end process;
-
+	porta_out <= porta;
+	
 	-- write DDRA
-	ddra_p: process(nres, phi2, sel)
+	ddra_p: process(nres, phi2, sel, rwb, ddra_a)
 	begin
 		if (nres = '0') then
 			ddra <= "00000000";
@@ -128,7 +129,7 @@ begin
 	end process;
 
 	-- write CRB
-	crb_p: process(nres, phi2, sel)
+	crb_p: process(nres, phi2, sel, rwb, crb_a)
 	begin
 		if (nres = '0') then
 			crb <= "000000";
@@ -138,7 +139,7 @@ begin
 	end process;
 
 	-- write Port B
-	pb_p: process(nres, phi2, sel)
+	pb_p: process(nres, phi2, sel, rwb, portb_a)
 	begin
 	
 		if (nres = '0') then
@@ -147,9 +148,10 @@ begin
 			portb <= data_in;
 		end if;
 	end process;
+	portb_out <= portb;
 
 	-- write DDRB
-	ddrb_p: process(nres, phi2, sel)
+	ddrb_p: process(nres, phi2, sel, rwb, ddrb_a)
 	begin
 		if (nres = '0') then
 			ddrb <= "00000000";
@@ -293,7 +295,7 @@ begin
 	-----------------------------------------------------
 	-- ca2/cb2 output
 	
-	ca2_p: process(phi2, cra, ca1_act_trans)
+	ca2_p: process(phi2, cra, ca1_act_trans, ca2_pulse)
 	begin
 		if (falling_edge(phi2)) then
 			-- ca2 pulse/handshake mode
@@ -326,7 +328,7 @@ begin
 		end case;
 	end process;
 
-	cb2_p: process(phi2, crb, cb1_act_trans)
+	cb2_p: process(phi2, crb, cb1_act_trans, cb2_pulse)
 	begin
 		if (falling_edge(phi2)) then
 			-- cb2 pulse/handshake mode
@@ -361,7 +363,7 @@ begin
 
 	-----------------------------------------------------
 
-	dout_p: process(addr)
+	dout_p: process(addr, cra, porta, porta_in, ddra, irqa2, irqa1, crb, portb, portb_in, ddrb, crb, irqb1, irqb2)
 	begin
 		case (addr) is
 		when REG_PORTA =>
