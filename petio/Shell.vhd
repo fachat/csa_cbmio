@@ -112,10 +112,22 @@ architecture Behavioral of Shell is
 	signal D_in: std_logic_vector(7 downto 0);
 	signal D_out: std_logic_vector(7 downto 0);
 	
+	-- select signals (temporary until all units are implemented)
 	signal sel_via1: std_logic;
 	signal sel_via2: std_logic;
 	signal sel_uart1: std_logic;
 	signal sel_uart2: std_logic;
+	
+	-- IEEE488 signals output from PET (depends on direction)
+	signal ndac_out: std_logic;
+	signal nrfd_out: std_logic;
+	signal dav_out: std_logic;
+	signal atn_out: std_logic;
+	signal srq_out: std_logic;
+	signal eoi_out: std_logic;
+	signal dio_out: std_logic_vector(7 downto 0);
+	
+	-- components and related signals
 	
 	component ioselect is
     Port ( A : in  STD_LOGIC_VECTOR (11 downto 0);
@@ -230,21 +242,14 @@ architecture Behavioral of Shell is
 	
 begin
 
-	test_p: process(phi2, test_counter) 
-	begin
-		if (falling_edge(phi2)) then
-			test_counter <= test_counter + 1;
-		end if;
-	end process;
-	rtx <= test_counter(11);
+	rtx <= pia1_sel;
+	rrts <= D_in(2);
 	
-	-- for now decouple bus
-	irq <= '0'; --pia1_irq;
+	irq <= pia1_irq or pia2_irq;
 	
 	D_in <= D;
-	D <= (others => 'X') when rwb = '0'
-			else D_out;
-	
+	D <= (others => 'Z') when rwb = '0'
+			else D_out;	
 	D_out(7 downto 0) <= 
 				pia1_dout when pia1_sel = '1'
 			else pia2_dout when pia2_sel = '1'
@@ -276,8 +281,8 @@ begin
 	lrts <= 'X';
 	ldtr <= 'X';
 
-	--rtx <= '1'; --pia2_sel; --'X';
-	rrts <= 'X';
+	--rtx <= 'X';
+	--rrts <= 'X';
 	rdtr <= 'X';
 
 	-- IEEE488
@@ -333,7 +338,8 @@ begin
 	
 	pia1_ca1_in <= c1rd;		-- cass#1 read
 	pia1_ca2_in <= 'X';		-- eoi out
-
+	eoi_out <= pia1_ca2_out;
+	
 	pia1_cb1_in <= up(13);	-- vdrive
 	pia1_cb2_in <= 'X';		-- cwr out
 	
@@ -370,9 +376,12 @@ begin
 
 	pia2_ca1_in <= atn;
 	pia2_ca2_in <= 'X';		-- ndac out
+	ndac_out <= pia2_ca2_out;
 	
 	pia2_cb1_in <= srq;
+	
 	pia2_cb2_in <= 'X';		-- dav out
+	dav_out <= pia2_cb2_out;
 	
 	----------------------------------------------------
 

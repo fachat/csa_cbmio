@@ -90,12 +90,12 @@ architecture Behavioral of pia6520 is
 	
 begin
 
-	porta_a <= '1' when sel = '1' and addr = REG_PORTA and cra(2) = '1';
-	portb_a <= '1' when sel = '1' and addr = REG_PORTB and crb(2) = '1';
-	ddra_a <= '1' when sel = '1' and addr = REG_PORTA and cra(2) = '0';
-	ddrb_a <= '1' when sel = '1' and addr = REG_PORTB and crb(2) = '0';
-	cra_a <= '1' when sel = '1' and addr = REG_CRA;
-	crb_a <= '1' when sel = '1' and addr = REG_CRB;
+	porta_a <= '1' when sel = '1' and addr = REG_PORTA and cra(2) = '1' else '0';
+	portb_a <= '1' when sel = '1' and addr = REG_PORTB and crb(2) = '1' else '0';
+	ddra_a <= '1' when sel = '1' and addr = REG_PORTA and cra(2) = '0' else '0';
+	ddrb_a <= '1' when sel = '1' and addr = REG_PORTB and crb(2) = '0' else '0';
+	cra_a <= '1' when sel = '1' and addr = REG_CRA else '0';
+	crb_a <= '1' when sel = '1' and addr = REG_CRB else '0';
 	
 	-- write CRA
 	cra_p: process(nres, phi2, sel, rwb, cra_a)
