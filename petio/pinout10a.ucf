@@ -3,12 +3,17 @@
 # bus
 
 # needs to be fixed - phi2 needs to be at a GCLK pin!
-net phi2 			loc=p1 | iostandard=lvttl | CLOCK_DEDICATED_ROUTE;
-net rwb				loc=p2 | iostandard=lvttl;
-net niosel			loc=p5 | iostandard=lvttl;
-net nres				loc=p6 | iostandard=lvttl;
-net irq				loc=p23 | iostandard=lvttl;
-net nbe				loc=p35 | iostandard=lvttl;
+net phi2 			loc=p23 | iostandard=lvttl;
+#net phi2 			loc=p1 | iostandard=lvttl | CLOCK_DEDICATED_ROUTE = FALSE;
+
+inst "phi2" bufg=clk;
+
+net rwb				loc=p2 | iostandard=lvcmos33;
+net niosel			loc=p5 | iostandard=lvcmos33;
+net nres				loc=p6 | iostandard=lvcmos33;
+net irq				loc=p1 | iostandard=lvcmos33;
+#net irq				loc=p23 | iostandard=lvcmos33;
+net nbe				loc=p35 | iostandard=lvcmos33;
 
 net a<0>				loc=p7 | iostandard=lvttl;
 net a<1>				loc=p8 | iostandard=lvttl;

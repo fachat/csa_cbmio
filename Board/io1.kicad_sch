@@ -5146,7 +5146,17 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "CSA-CBMIO-V1.0A-20250815"
+	(text "1.0B: swap /IRQ and PHI2, so PHI2 gets a GCLK pin"
+		(exclude_from_sim no)
+		(at 344.17 244.094 0)
+		(effects
+			(font
+				(size 2.54 2.54)
+			)
+		)
+		(uuid "429e35b4-08c8-43f1-add2-c5bc555192a8")
+	)
+	(text "CSA-CBMIO-V1.0B-20260321"
 		(exclude_from_sim no)
 		(at 332.232 273.304 0)
 		(effects
@@ -5190,7 +5200,7 @@
 		)
 		(uuid "bb0fcee2-8a25-46a8-967e-78aaeb62b037")
 	)
-	(text "CSA-CBMIO-V1.0A"
+	(text "CSA-CBMIO-V1.0B"
 		(exclude_from_sim no)
 		(at 331.47 261.112 0)
 		(effects
@@ -6315,16 +6325,6 @@
 	)
 	(wire
 		(pts
-			(xy 86.36 160.02) (xy 91.44 160.02)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5f9b6154-8e0e-4f7b-8e70-8554859b65d2")
-	)
-	(wire
-		(pts
 			(xy 213.36 129.54) (xy 213.36 132.08)
 		)
 		(stroke
@@ -6795,6 +6795,16 @@
 	)
 	(wire
 		(pts
+			(xy 86.36 160.02) (xy 91.44 160.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "89f4d6dd-4021-489c-9ba9-9096a55c469a")
+	)
+	(wire
+		(pts
 			(xy 158.75 228.6) (xy 180.34 228.6)
 		)
 		(stroke
@@ -7232,6 +7242,16 @@
 			(type default)
 		)
 		(uuid "b2b07289-445d-40ec-8ec8-15558219f2b8")
+	)
+	(wire
+		(pts
+			(xy 85.725 119.38) (xy 91.44 119.38)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b445d382-deaf-45f8-bd70-c4bce7d3c283")
 	)
 	(wire
 		(pts
@@ -7802,16 +7822,6 @@
 			(type default)
 		)
 		(uuid "f3434eb7-7247-4a8e-b31d-2c602e7fb12d")
-	)
-	(wire
-		(pts
-			(xy 86.36 119.38) (xy 91.44 119.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f385bc51-88e9-4223-bb39-1fe9797dda74")
 	)
 	(wire
 		(pts
@@ -9041,7 +9051,7 @@
 	)
 	(global_label "{slash}IRQ"
 		(shape output)
-		(at 86.36 160.02 180)
+		(at 85.725 119.38 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -9051,7 +9061,7 @@
 		)
 		(uuid "ad46e3dc-ad90-4248-9753-5372f094fbda")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 78.839 160.02 0)
+			(at 78.204 119.38 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9107,7 +9117,7 @@
 	)
 	(global_label "PHI2"
 		(shape input)
-		(at 86.36 119.38 180)
+		(at 86.36 160.02 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -9117,7 +9127,7 @@
 		)
 		(uuid "bbe1706e-317a-44ef-909d-20c9b37164bb")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 78.96 119.38 0)
+			(at 78.96 160.02 0)
 			(effects
 				(font
 					(size 1.27 1.27)

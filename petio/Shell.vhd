@@ -19,6 +19,8 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_unsigned.ALL;
+use ieee.numeric_std.all;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -223,10 +225,21 @@ architecture Behavioral of Shell is
 			irq         : out std_logic );
 	end component;
 	
+	-- test timer (50Hz)
+	signal test_counter: std_logic_vector(15 downto 0);
+	
 begin
 
+	test_p: process(phi2, test_counter) 
+	begin
+		if (falling_edge(phi2)) then
+			test_counter <= test_counter + 1;
+		end if;
+	end process;
+	rtx <= test_counter(11);
+	
 	-- for now decouple bus
-	irq <= pia1_irq;
+	irq <= '0'; --pia1_irq;
 	
 	D_in <= D;
 	D <= (others => 'X') when rwb = '0'
@@ -236,7 +249,7 @@ begin
 				pia1_dout when pia1_sel = '1'
 			else pia2_dout when pia2_sel = '1'
 	--		else via1_dout when via1_sel = '1'
-			else "10101010";	-- test pattern, will be open
+			else "XXXXXXXX";	-- test pattern, will be open
 
 	-- I/O
 	
@@ -263,7 +276,7 @@ begin
 	lrts <= 'X';
 	ldtr <= 'X';
 
-	rtx <= '1'; --pia2_sel; --'X';
+	--rtx <= '1'; --pia2_sel; --'X';
 	rrts <= 'X';
 	rdtr <= 'X';
 
@@ -271,6 +284,15 @@ begin
 	dc <= '1';
 	te <= '1';
 	dio(7 downto 0) <= (others => 'X');
+
+	ren <= 'X';
+	ifc <= 'X';
+	ndac <= 'X';
+	nrfd <= 'X';
+	dav <= 'X';
+	eoi <= 'X';
+	atn <= 'X';
+	srq <= 'X';
 
 	----------------------------------------------------
 	
@@ -303,6 +325,18 @@ begin
 	ksel <= pia1_pa_out(3 downto 0);
 	pia1_pb_in <= kin;
 	
+	pia1_pa_in(7) <= up(10);
+	pia1_pa_in(6) <= eoi;
+	pia1_pa_in(5) <= '1';	-- cass#2 switch
+	pia1_pa_in(4) <= c1sw;	-- cass#1 switch
+	pia1_pa_in(3 downto 0) <= pia1_pa_out(3 downto 0);
+	
+	pia1_ca1_in <= c1rd;		-- cass#1 read
+	pia1_ca2_in <= 'X';		-- eoi out
+
+	pia1_cb1_in <= up(13);	-- vdrive
+	pia1_cb2_in <= 'X';		-- cwr out
+	
 	----------------------------------------------------
 
 	pia2_c: pia6520
@@ -330,6 +364,15 @@ begin
 		);
 
 	pia2_din <= D_in;
+	
+	pia2_pa_in <= dio;		-- dio out
+	pia2_pb_in <= dio;
+
+	pia2_ca1_in <= atn;
+	pia2_ca2_in <= 'X';		-- ndac out
+	
+	pia2_cb1_in <= srq;
+	pia2_cb2_in <= 'X';		-- dav out
 	
 	----------------------------------------------------
 
