@@ -171,6 +171,29 @@ architecture Behavioral of Shell is
 	signal pia2_cb1_in: std_logic;
 	signal pia2_cb2_in: std_logic;
 	signal pia2_cb2_out: std_logic;
+
+	signal via1_sel: std_logic;
+	signal via1_irq: std_logic;
+	signal via1_wren: std_logic;
+	signal via1_rden: std_logic;
+	signal via1_din: std_logic_vector(7 downto 0);
+	signal via1_dout: std_logic_vector(7 downto 0);
+	signal via1_pa_in: std_logic_vector(7 downto 0);
+	signal via1_pa_out: std_logic_vector(7 downto 0);
+	signal via1_pa_dir: std_logic_vector(7 downto 0);
+	signal via1_ca1_in: std_logic;
+	signal via1_ca2_in: std_logic;
+	signal via1_ca2_out: std_logic;
+	signal via1_ca2_dir: std_logic;
+	signal via1_pb_in: std_logic_vector(7 downto 0);
+	signal via1_pb_out: std_logic_vector(7 downto 0);
+	signal via1_pb_dir: std_logic_vector(7 downto 0);
+	signal via1_cb1_in: std_logic;
+	signal via1_cb1_out: std_logic;
+	signal via1_cb1_dir: std_logic;
+	signal via1_cb2_in: std_logic;
+	signal via1_cb2_out: std_logic;
+	signal via1_cb2_dir: std_logic;
 	
 	component pia6520 is
     Port ( nres : in  STD_LOGIC;
@@ -197,9 +220,7 @@ architecture Behavioral of Shell is
 
 	component via6522 is
 		port (
-			clock       : in  std_logic;
-			rising      : in  std_logic;
-			falling     : in  std_logic;
+			phi2        : in  std_logic;
 			reset       : in  std_logic;
     
 			addr        : in  std_logic_vector(3 downto 0);
@@ -208,7 +229,7 @@ architecture Behavioral of Shell is
 			data_in     : in  std_logic_vector(7 downto 0);
 			data_out    : out std_logic_vector(7 downto 0);
 
-			phi2_ref    : out std_logic;
+--			phi2_ref    : out std_logic;
 
 			-- pio --
 			port_a_o    : out std_logic_vector(7 downto 0);
@@ -253,7 +274,7 @@ begin
 	D_out(7 downto 0) <= 
 				pia1_dout when pia1_sel = '1'
 			else pia2_dout when pia2_sel = '1'
-	--		else via1_dout when via1_sel = '1'
+			else via1_dout when via1_sel = '1'
 			else "XXXXXXXX";	-- test pattern, will be open
 
 	-- I/O
@@ -385,29 +406,46 @@ begin
 	
 	----------------------------------------------------
 
---	via1_c: pia6520
---	   Port map (
---			nres,
---         phi2,
---         rwb,
---         pia2_sel,
---         pia2_irq,
---			A(1 downto 0),
---         pia2_din,
---			pia2_dout,
---
---			pia2_pa_in,
---			pia2_pa_out,			
---         pia2_ca1_in,
---         pia2_ca2_in,
---         pia2_ca2_out,
---
---			pia2_pb_in,
---			pia2_pb_out,			
---         pia2_cb1_in,
---         pia2_cb2_in,
---         pia2_cb2_out
---		);
+	via1_c: via6522
+	   Port map (
+         phi2,
+			not(nres),
+			A(3 downto 0),
+			via1_wren,
+			via1_rden,			
+         via1_din,
+			via1_dout,
+
+			via1_pa_out,			
+			via1_pa_dir,			
+			via1_pa_in,
+
+			via1_pb_out,			
+			via1_pb_dir,
+			via1_pb_in,
+			
+         via1_ca1_in,
+			
+         via1_ca2_out,
+         via1_ca2_in,
+         via1_ca2_dir,
+
+         via1_cb1_out,
+         via1_cb1_in,
+         via1_cb1_dir,
+
+         via1_cb2_out,
+         via1_cb2_in,
+         via1_cb2_dir,
+			
+			via1_irq
+		);
+		
+	via1_wren <= '1' when via1_sel = '1' and rwb = '0' else '0';
+	via1_rden <= '1' when via1_sel = '1' and rwb = '1' else '0';
+	
+	via1_din <= D_in;
+
 --
 --	pia2_din <= D;
 	----------------------------------------------------

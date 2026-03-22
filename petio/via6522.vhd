@@ -13,6 +13,9 @@
 -------------------------------------------------------------------------------
 -- taken from https://github.com/Rhialto/MegaPET/blob/rhialto/CORE/PET2001_MiSTer/rtl/via6522.vhd
 -- on 20260318
+--
+-- Note: due to the different setup, no fast clock with clock-enable signals
+-- are available, only phi2 directly. The design has been adapted accordingly
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -22,9 +25,10 @@ use ieee.std_logic_unsigned.all;
 
 entity via6522 is
 port (
-    clock       : in  std_logic;
-    rising      : in  std_logic;
-    falling     : in  std_logic;
+--    clock       : in  std_logic;
+--    rising      : in  std_logic;
+--    falling     : in  std_logic;
+	 phi2			 : in  std_logic;
     reset       : in  std_logic;
     
     addr        : in  std_logic_vector(3 downto 0);
@@ -33,7 +37,7 @@ port (
     data_in     : in  std_logic_vector(7 downto 0);
     data_out    : out std_logic_vector(7 downto 0);
 
-    phi2_ref    : out std_logic;
+--    phi2_ref    : out std_logic;
 
     -- pio --
     port_a_o    : out std_logic_vector(7 downto 0);
@@ -162,9 +166,10 @@ architecture Gideon of via6522 is
 begin
     irq <= irq_out;
     
-    write_t1c_l <= '1' when (addr = X"4" or addr = x"6") and wen='1' and falling = '1' else '0';
-    write_t1c_h <= '1' when addr = X"5" and wen='1' and falling = '1' else '0';
-    write_t2c_h <= '1' when addr = X"9" and wen='1' and falling = '1' else '0';
+	 -- TODO verify
+    write_t1c_l <= '1' when (addr = X"4" or addr = x"6") and wen='1' else '0'; --and falling = '1' else '0';
+    write_t1c_h <= '1' when addr = X"5" and wen='1' else '0'; --and falling = '1' else '0';
+    write_t2c_h <= '1' when addr = X"9" and wen='1' else '0'; --and falling = '1' else '0';
 
     ca1_event <= (ca1_d1 xor ca1_d2) and (ca1_d2 xor ca1_edge_select);
     ca2_event <= (ca2_d1 xor ca2_d2) and (ca2_d2 xor ca2_edge_select);
@@ -201,21 +206,21 @@ begin
         end if;
     end process;
 
-    process(clock)
-    begin
-        if rising_edge(clock) then
-            if rising = '1' then
-                phi2_ref <= '1';
-            elsif falling = '1' then
-                phi2_ref <= '0';
-            end if;
-        end if;
-    end process;
-    
+--    process(clock)
+--    begin
+--        if rising_edge(clock) then
+--            if rising = '1' then
+--                phi2_ref <= '1';
+--            elsif falling = '1' then
+--                phi2_ref <= '0';
+--            end if;
+--        end if;
+--    end process;
 
-    process(clock)
+    process(phi2)
     begin
-        if rising_edge(clock) then            
+--        if rising_edge(clock) then            
+			if (rising_edge(phi2)) then 
             -- CA1/CA2/CB1/CB2 edge detect flipflops
             ca1_c <= To_X01(ca1_i);
             ca2_c <= To_X01(ca2_i);
@@ -244,42 +249,51 @@ begin
             if pb_latch_en = '0' or (cb1_event = '1' and cb2_handshake_o = '1') then
                 irb <= port_b_c;
             end if;            
-
+			end if;
+			
             -- CA2 logic
             if ca1_event = '1' then
                 ca2_handshake_o <= '0';
-            elsif (ren = '1' or wen = '1') and addr = X"1" and falling = '1' then
+--            elsif (ren = '1' or wen = '1') and addr = X"1" and falling = '1' then
+            elsif (ren = '1' or wen = '1') and addr = X"1" and falling_edge(phi2) then
                 ca2_handshake_o <= '1';
             end if;
-            
-            if falling = '1' then
+				
+			if (falling_edge(phi2)) then
+            --if falling = '1' then
                 if (ren = '1' or wen = '1') and addr = X"1" then
                     ca2_pulse_o <= '0';
                 else            
                     ca2_pulse_o <= '1';
                 end if;
-            end if;
+         end if;
 
             -- CB2 logic
             if cb1_event = '1' then
                 cb2_handshake_o <= '0';
-            elsif (ren = '1' or wen = '1') and addr = X"0" and falling = '1' then
+--            elsif (ren = '1' or wen = '1') and addr = X"0" and falling = '1' then
+            elsif (ren = '1' or wen = '1') and addr = X"0" and falling_edge(phi2) then
                 cb2_handshake_o <= '1';
             end if;
             
-            if falling = '1' then
+--			end if;
+			if (falling_edge(phi2)) then
+            --if falling = '1' then
                 if (ren = '1' or wen = '1') and addr = X"0" then
                     cb2_pulse_o <= '0';
                 else            
                     cb2_pulse_o <= '1';
                 end if;
-            end if;
+         end if;
 
+			if (rising_edge(phi2)) then 
             -- Interrupt logic
             irq_flags <= irq_flags or irq_events;
-
+			end if;
+			
+			if (falling_edge(phi2)) then
             -- Writes --
-            if wen='1' and falling = '1' then
+            if wen='1' then --and falling = '1' then
                 last_data <= data_in;
                 case addr is
                 when X"0" => -- ORB
@@ -348,8 +362,9 @@ begin
                     null;
                 end case;
             end if;
-            
+       end if;     
             -- Reads - Output only --
+				-- we do it async here
             data_out <= X"00";
             case addr is
             when X"0" => -- ORB
@@ -392,8 +407,9 @@ begin
                 null;
             end case;
             
+			if (falling_edge(phi2)) then
             -- Read actions --
-            if ren = '1' and falling = '1' then
+            if ren = '1' then --and falling = '1' then
                 case addr is
                 when X"0" => -- ORB
                     if cb2_no_irq_clr='0' then
@@ -420,7 +436,7 @@ begin
                     null;
                 end case;
             end if;
-
+			end if;
             if reset='1' then
                 -- Reset avoids packing into shift register
                 ca1_c  <= '1';
@@ -448,7 +464,7 @@ begin
                 timer_a_latch  <= latch_reset_pattern;
                 timer_b_latch  <= latch_reset_pattern;
             end if;
-        end if;
+        --end if;
     end process;
 
     -- PIO Out select --
@@ -467,10 +483,11 @@ begin
         signal timer_a_toggle        : std_logic;
         signal timer_a_may_interrupt : std_logic;
     begin
-        process(clock)
+        process(phi2)
         begin
-            if rising_edge(clock) then
-                if falling = '1' then
+--            if rising_edge(clock) then
+--                if falling = '1' then
+					if (falling_edge(phi2)) then
                     -- always count, or load
                         
                     if timer_a_reload = '1' then
@@ -490,31 +507,42 @@ begin
                     end if;                    
                 end if;
                 
-                if rising = '1' then
+                if rising_edge(phi2) then
+--                if rising = '1' then
                     if timer_a_event = '1' and tmr_a_output_en = '1' then
                         timer_a_toggle <= not timer_a_toggle;
                     end if;
                 end if;
 
+             if falling_edge(phi2) then
                 if write_t1c_h = '1' then
                     timer_a_may_interrupt <= '1';
                     timer_a_toggle <= not tmr_a_output_en;
                     timer_a_count  <= data_in & timer_a_latch(7 downto 0);
                     timer_a_reload <= '0';
                 end if;
-
+				end if;
                 if reset='1' then
                     timer_a_may_interrupt <= '0';
                     timer_a_toggle <= '1';
                     timer_a_count  <= latch_reset_pattern;
                     timer_a_reload <= '0';
                 end if;
-            end if;
+            --end if;
         end process;
 
         timer_a_out   <= timer_a_toggle;
-        timer_a_event <= rising and timer_a_reload and timer_a_may_interrupt;
-         
+		  
+		  t_a_ev: process(phi2)
+		  begin
+				timer_a_event <= '0';
+				if (rising_edge(phi2)) then
+					if (timer_a_reload = '1' and timer_a_may_interrupt = '1') then
+						timer_a_event <= '1';
+					end if;
+				end if;
+--        timer_a_event <= rising and timer_a_reload and timer_a_may_interrupt;
+         end process;
     end block tmr_a;
     
     -- Timer B
@@ -524,18 +552,18 @@ begin
         signal timer_b_timeout       : std_logic;
         signal pb6_c, pb6_d          : std_logic;
     begin
-        process(clock)
+        process(phi2)
             variable timer_b_decrement   : std_logic;
         begin
-            if rising_edge(clock) then
+--            if rising_edge(clock) then
                 timer_b_decrement := '0';
 
-                if rising = '1' then
+                if (rising_edge(phi2)) then
                     pb6_c <= To_X01(port_b_i(6));
                     pb6_d <= pb6_c;
                 end if;
                                 
-                if falling = '1' then
+                if (falling_edge(phi2)) then
                     timer_b_timeout <= '0';
                     timer_b_tick  <= '0';
 
@@ -581,10 +609,20 @@ begin
                     timer_b_reload_lo    <= '0';
                     timer_b_oneshot_trig <= '0';                    
                 end if;
-            end if;
+ --           end if;
         end process;
 
-        timer_b_event <= rising and timer_b_timeout;
+		  t_b_ev: process(phi2)
+		  begin
+				timer_b_event <= '0';
+				if (rising_edge(phi2)) then
+					if (timer_b_timeout = '1') then
+						timer_b_event <= '1';
+					end if;
+				end if;
+         end process;
+--        timer_b_event <= rising and timer_b_timeout;
+
 
     end block tmr_b;
     
@@ -624,12 +662,12 @@ begin
         end process;
 
 
-        process(clock)
+        process(phi2)
         begin
-            if rising_edge(clock) then
-
-                if rising = '1' then
-
+--            if rising_edge(clock) then
+--                if rising = '1' then
+					  if (rising_edge(phi2)) then
+					  
                     if shift_active='0' then
                         if shift_mode_control = "000" then
                             shift_clock <= cb1_d1;
@@ -646,7 +684,8 @@ begin
 
                 end if;
 
-                if falling = '1' then
+                if (falling_edge(phi2)) then
+--                if falling = '1' then
                     shift_timer_tick <= timer_b_tick;
                 end if;
 
@@ -654,7 +693,7 @@ begin
                     shift_clock <= '1';
                     shift_clock_d <= '1';
                 end if;
-            end if;
+--            end if;
         end process;
 
         cb1_t_int <= '0' when shift_clk_sel="11" else serport_en;
@@ -666,12 +705,13 @@ begin
         shift_tick_r <= not shift_clock_d and shift_clock;
         shift_tick_f <= shift_clock_d and not shift_clock;
 
-        process(clock)
+        process(phi2)
         begin
-            if rising_edge(clock) then
+--            if rising_edge(clock) then
                 if reset = '1' then
                     shift_reg <= X"FF";
-                elsif falling = '1' then
+                elsif (falling_edge(phi2)) then
+                --elsif falling = '1' then
                     if wen = '1' and addr = X"A" then
                         shift_reg <= data_in;
                     elsif shift_dir='1' and shift_tick_f = '1' then -- output
@@ -680,16 +720,26 @@ begin
                         shift_reg <= shift_reg(6 downto 0) & cb2_d1;
                     end if;
                 end if;
-            end if;
+--            end if;
         end process;        
 
+		  s_ev: process(phi2)
+		  begin
+				serial_event <= '0';
+				if (rising_edge(phi2)) then
+					if (shift_tick_r = '1' and shift_active = '0' and serport_en = '1') then
+						serial_event <= '1';
+					end if;
+				end if;
+         end process;
         -- tell people that we're ready!
-        serial_event <= shift_tick_r and not shift_active and rising and serport_en;
+        --serial_event <= shift_tick_r and not shift_active and rising and serport_en;
 
-        process(clock)
+        process(phi2)
         begin
-            if rising_edge(clock) then
-                if falling = '1' then
+--            if rising_edge(clock) then
+--                if falling = '1' then
+                if (falling_edge(phi2)) then
                     if shift_active = '0' and shift_mode_control /= "000" then
                         if trigger_serial = '1' then
                             bit_cnt      <= 7;
@@ -712,7 +762,7 @@ begin
                     shift_active <= '0';
                     bit_cnt      <= 0;
                 end if;
-            end if;
+--            end if;
         end process;                
     end block ser;
 end Gideon;
