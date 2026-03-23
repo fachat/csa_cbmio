@@ -122,6 +122,7 @@ architecture Behavioral of Shell is
 	signal res: std_logic;
 	
 	-- IEEE488 signals output from PET (depends on direction)
+	signal ieee_is_out: std_logic;	-- 1 when sending from host (us) to device (on bus)
 	signal ndac_out: std_logic;
 	signal nrfd_out: std_logic;
 	signal dav_out: std_logic;
@@ -261,6 +262,19 @@ architecture Behavioral of Shell is
 			irq         : out std_logic );
 	end component;
 	
+	component ieeedir is
+    Port ( 
+           phi2 : in  STD_LOGIC;
+           nres : in  STD_LOGIC;
+			  dio_in : in  STD_LOGIC_VECTOR (7 downto 0);
+           atn_in : in  STD_LOGIC;
+           dav_in : in  STD_LOGIC;
+           nrfd_in : in  STD_LOGIC;
+           ndac_in : in  STD_LOGIC;
+			  is_out : out STD_LOGIC
+	 );
+	end component;
+
 	-- test timer (50Hz)
 	signal test_counter: std_logic_vector(15 downto 0);
 	
@@ -325,6 +339,7 @@ begin
 	atn <= 'Z';
 	srq <= 'Z';
 
+	
 	----------------------------------------------------
 	
 	pia1_c: pia6520
@@ -488,6 +503,17 @@ begin
 --	pia2_din <= D;
 	----------------------------------------------------
 
+	ieeedir_c: ieeedir
+	port map(
+		phi2,
+		nres,
+		dio,
+		atn,
+		dav,
+		nrfd,
+		ndac,
+		ieee_is_out
+	);
 	
 	-- IO select
 	select_c: ioselect
