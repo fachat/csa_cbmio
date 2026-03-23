@@ -118,6 +118,9 @@ architecture Behavioral of Shell is
 	signal sel_uart1: std_logic;
 	signal sel_uart2: std_logic;
 	
+	signal nbe_out: std_logic;
+	signal res: std_logic;
+	
 	-- IEEE488 signals output from PET (depends on direction)
 	signal ndac_out: std_logic;
 	signal nrfd_out: std_logic;
@@ -264,23 +267,25 @@ architecture Behavioral of Shell is
 begin
 
 	rtx <= pia1_sel;
-	rrts <= D_in(2);
+	rrts <= nbe_out; --D_in(2);
 	
-	irq <= pia1_irq or pia2_irq;
+	irq <= pia1_irq or pia2_irq or via1_irq;
+	
+	res <= not(nres);
 	
 	D_in <= D;
 	D <= (others => 'Z') when rwb = '0'
 			else D_out;	
-	D_out(7 downto 0) <= 
-				pia1_dout when pia1_sel = '1'
+	D_out <= pia1_dout when pia1_sel = '1'
 			else pia2_dout when pia2_sel = '1'
 			else via1_dout when via1_sel = '1'
-			else "XXXXXXXX";	-- test pattern, will be open
+			else "10101010";	-- test pattern
+			--else (others => 'X');
 
 	-- I/O
 	
 	-- userport
-	up(13 downto 0) <= (others => 'X');
+	up(13 downto 8) <= (others => 'Z');
 
 	-- SPI (5V)
 	spimosi <= '1';
@@ -288,37 +293,37 @@ begin
 	spiiosel <= '1';
 	
 	-- cassette
-	cwr <= 'X';
-	c1mtr <= 'X';
+	cwr <= 'Z';
+	c1mtr <= 'Z';
 
 	-- serial IEC
-	dataout <= 'X';
-	clkout <= 'X';
-	atnout <= 'X';
-	srqout <= 'X';
+	dataout <= 'Z';
+	clkout <= 'Z';
+	atnout <= 'Z';
+	srqout <= 'Z';
 	
 	-- rs232
-	ltx <= 'X';
-	lrts <= 'X';
-	ldtr <= 'X';
+	ltx <= 'Z';
+	lrts <= 'Z';
+	ldtr <= 'Z';
 
-	--rtx <= 'X';
-	--rrts <= 'X';
-	rdtr <= 'X';
+	--rtx <= 'Z';
+	--rrts <= 'Z';
+	rdtr <= 'Z';
 
 	-- IEEE488
 	dc <= '1';
 	te <= '1';
-	dio(7 downto 0) <= (others => 'X');
+	dio(7 downto 0) <= (others => 'Z');
 
-	ren <= 'X';
-	ifc <= 'X';
-	ndac <= 'X';
-	nrfd <= 'X';
-	dav <= 'X';
-	eoi <= 'X';
-	atn <= 'X';
-	srq <= 'X';
+	ren <= 'Z';
+	ifc <= 'Z';
+	ndac <= 'Z';
+	nrfd <= 'Z';
+	dav <= 'Z';
+	eoi <= 'Z';
+	atn <= 'Z';
+	srq <= 'Z';
 
 	----------------------------------------------------
 	
@@ -409,7 +414,7 @@ begin
 	via1_c: via6522
 	   Port map (
          phi2,
-			not(nres),
+			res,
 			A(3 downto 0),
 			via1_wren,
 			via1_rden,			
@@ -446,6 +451,39 @@ begin
 	
 	via1_din <= D_in;
 
+	via1_pa_in(3 downto 0) <= up(3 downto 0);
+	via1_pa_in(4) <= up(7);
+	via1_pa_in(5) <= up(6);
+	via1_pa_in(6) <= up(5);
+	via1_pa_in(5) <= up(4);
+	
+	up(0) <= via1_pa_out(0) when via1_pa_dir(0) = '1' else 'Z';
+	up(1) <= via1_pa_out(1) when via1_pa_dir(1) = '1' else 'Z';
+	up(2) <= via1_pa_out(2) when via1_pa_dir(2) = '1' else 'Z';
+	up(3) <= via1_pa_out(3) when via1_pa_dir(3) = '1' else 'Z';
+	up(4) <= via1_pa_out(7) when via1_pa_dir(7) = '1' else 'Z';
+	up(5) <= via1_pa_out(6) when via1_pa_dir(6) = '1' else 'Z';
+	up(6) <= via1_pa_out(5) when via1_pa_dir(5) = '1' else 'Z';
+	up(7) <= via1_pa_out(4) when via1_pa_dir(4) = '1' else 'Z';
+	
+	via1_pb_in(0) <= ndac;
+	nrfd_out <= via1_pb_out(1);
+	atn_out <= via1_pb_out(2);
+	cwr <= via1_pb_out(3);
+	-- c2mtr <= via_pb_out(4);
+	via1_pb_in(5) <= up(13);	-- vdrive
+	via1_pb_in(6) <= nrfd;
+	via1_pb_in(7) <= dav;
+	
+	-- graphic
+	up(11) <= via1_ca2_out when via1_ca2_dir = '1' else '1';
+	-- Userport CA1
+	via1_ca1_in <= up(8);
+	-- Cass#2 read
+	via1_cb1_in <= up(12);
+	-- shift register in/out
+	up(9) <= via1_cb2_out when via1_cb2_dir = '1' else '1';
+	
 --
 --	pia2_din <= D;
 	----------------------------------------------------
@@ -457,14 +495,16 @@ begin
 		A,
 		niosel,
 		nres,
-		nbe,
+		nbe_out,
 		pia1_sel,
 		pia2_sel,
-		sel_via1,
+		via1_sel,
 		sel_via2,
 		sel_uart1,
 		sel_uart2
 	);
+	
+	nbe <= nbe_out;
 	
 end Behavioral;
 

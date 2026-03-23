@@ -217,7 +217,9 @@ begin
 --        end if;
 --    end process;
 
-    process(phi2)
+    process(phi2, ren, wen, irq_events, addr, pio_i, acr, irb, ira, 
+				timer_a_out, timer_a_count, timer_a_latch, timer_b_count, 
+				shift_reg, pcr, irq_out, irq_mask, irq_flags, reset)
     begin
 --        if rising_edge(clock) then            
 			if (rising_edge(phi2)) then 
@@ -483,7 +485,7 @@ begin
         signal timer_a_toggle        : std_logic;
         signal timer_a_may_interrupt : std_logic;
     begin
-        process(phi2)
+        process(phi2, reset)
         begin
 --            if rising_edge(clock) then
 --                if falling = '1' then
@@ -552,7 +554,7 @@ begin
         signal timer_b_timeout       : std_logic;
         signal pb6_c, pb6_d          : std_logic;
     begin
-        process(phi2)
+        process(phi2, write_t2c_h, timer_b_latch, data_in, reset)
             variable timer_b_decrement   : std_logic;
         begin
 --            if rising_edge(clock) then
@@ -662,7 +664,7 @@ begin
         end process;
 
 
-        process(phi2)
+        process(phi2, reset)
         begin
 --            if rising_edge(clock) then
 --                if rising = '1' then
@@ -705,7 +707,7 @@ begin
         shift_tick_r <= not shift_clock_d and shift_clock;
         shift_tick_f <= shift_clock_d and not shift_clock;
 
-        process(phi2)
+        process(phi2, reset)
         begin
 --            if rising_edge(clock) then
                 if reset = '1' then
@@ -735,7 +737,7 @@ begin
         -- tell people that we're ready!
         --serial_event <= shift_tick_r and not shift_active and rising and serport_en;
 
-        process(phi2)
+        process(phi2, reset)
         begin
 --            if rising_edge(clock) then
 --                if falling = '1' then
