@@ -326,18 +326,27 @@ begin
 	rdtr <= 'Z';
 
 	-- IEEE488
-	dc <= '1';
-	te <= '1';
-	dio(7 downto 0) <= (others => 'Z');
-
-	ren <= 'Z';
-	ifc <= 'Z';
-	ndac <= 'Z';
-	nrfd <= 'Z';
-	dav <= 'Z';
-	eoi <= 'Z';
-	atn <= 'Z';
+	
+	-- Using the 7516x interface chips
+	-- https://www.ti.com/lit/ds/symlink/sn75161b.pdf?ts=1774340006842
+	--
+	-- 75161 direction control; 0 = controller
+	-- ATN out, SRQ in, REN out, IFC out
+	dc <= '0';
+	-- 7516x talk enable; 0: DAV in, EOI in (ATN hi), NRFD out, NDAC out
+	te <= ieee_is_out;
+	
+	atn <= atn_out;
+	ren <= '1';
+	ifc <= '1';
 	srq <= 'Z';
+
+	ndac <= ndac_out when ieee_is_out = '0' else 'Z';
+	nrfd <= nrfd_out when ieee_is_out = '0' else 'Z';
+	dav <= dav_out when ieee_is_out = '1' else 'Z';
+	eoi <= eoi_out when ieee_is_out = '1' else 'Z';
+	
+	dio(7 downto 0) <= dio_out when ieee_is_out = '1' else (others => 'Z');
 
 	
 	----------------------------------------------------
