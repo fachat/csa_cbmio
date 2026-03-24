@@ -270,7 +270,6 @@ architecture Behavioral of Shell is
            atn_in : in  STD_LOGIC;
            dav_in : in  STD_LOGIC;
            nrfd_in : in  STD_LOGIC;
-           ndac_in : in  STD_LOGIC;
 			  is_out : out STD_LOGIC
 	 );
 	end component;
@@ -526,7 +525,6 @@ begin
 		atn,
 		dav,
 		nrfd,
-		ndac,
 		ieee_is_out
 	);
 	

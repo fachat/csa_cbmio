@@ -40,7 +40,6 @@ entity ieeedir is
            atn_in : in  STD_LOGIC;
            dav_in : in  STD_LOGIC;
            nrfd_in : in  STD_LOGIC;
-           ndac_in : in  STD_LOGIC;
 			  is_out : out STD_LOGIC
 	 );
 end ieeedir;
