@@ -222,25 +222,41 @@ begin
 				shift_reg, pcr, irq_out, irq_mask, irq_flags, reset)
     begin
 			if (falling_edge(phi2)) then 
-            -- CA1/CA2/CB1/CB2 edge detect flipflops
-            ca1_c <= To_X01(ca1_i);
-            ca2_c <= To_X01(ca2_i);
-            cb1_c <= To_X01(cb1_i);
-            cb2_c <= To_X01(cb2_i);
+            if reset='1' then
+                -- Reset avoids packing into shift register
+                ca1_c  <= '1';
+                ca2_c  <= '1';
+                cb1_c  <= '1';
+                cb2_c  <= '1';
+                ca1_d1 <= '1';
+                ca2_d1 <= '1';
+                cb1_d1 <= '1';
+                cb2_d1 <= '1';
+                ca1_d2 <= '1';
+                ca2_d2 <= '1';
+                cb1_d2 <= '1';
+                cb2_d2 <= '1';
+				else
+					-- CA1/CA2/CB1/CB2 edge detect flipflops
+					ca1_c <= To_X01(ca1_i);
+					ca2_c <= To_X01(ca2_i);
+					cb1_c <= To_X01(cb1_i);
+					cb2_c <= To_X01(cb2_i);
 
-            ca1_d1 <= ca1_c;
-            ca2_d1 <= ca2_c;
-            cb1_d1 <= cb1_c;
-            cb2_d1 <= cb2_c;
+					ca1_d1 <= ca1_c;
+					ca2_d1 <= ca2_c;
+					cb1_d1 <= cb1_c;
+					cb2_d1 <= cb2_c;
 
-            ca1_d2 <= ca1_d1;
-            ca2_d2 <= ca2_d1;
-            cb1_d2 <= cb1_d1;
-            cb2_d2 <= cb2_d1;
+					ca1_d2 <= ca1_d1;
+					ca2_d2 <= ca2_d1;
+					cb1_d2 <= cb1_d1;
+					cb2_d2 <= cb2_d1;
 
-            -- input registers
-            port_a_c <= port_a_i;
-            port_b_c <= port_b_i;
+					-- input registers
+					port_a_c <= port_a_i;
+					port_b_c <= port_b_i;
+				end if;
 			end if;
 			
 			if (rising_edge(phi2)) then 
@@ -294,8 +310,21 @@ begin
 			end if;
 			
 			if (falling_edge(phi2)) then
+            if reset='1' then
+                pio_i         <= pio_default;
+                irq_mask      <= (others => '0');
+                irq_flags     <= (others => '0');
+                acr           <= (others => '0');
+                pcr           <= (others => '0');
+                ca2_handshake_o <= '1';
+                ca2_pulse_o     <= '1';
+                cb2_handshake_o <= '1';
+                cb2_pulse_o     <= '1';
+                timer_a_latch  <= latch_reset_pattern;
+                timer_b_latch  <= latch_reset_pattern;
+					 
+				elsif wen='1' then
             -- Writes --
-            if wen='1' then
                 last_data <= data_in;
                 case addr is
                 when X"0" => -- ORB
@@ -364,7 +393,7 @@ begin
                     null;
                 end case;
             end if;
-       end if;     
+			end if;     
 		 
             -- Reads - Output only --
 				-- we do it async here
@@ -440,34 +469,6 @@ begin
                 end case;
             end if;
 			end if;
-            if reset='1' then
-                -- Reset avoids packing into shift register
-                ca1_c  <= '1';
-                ca2_c  <= '1';
-                cb1_c  <= '1';
-                cb2_c  <= '1';
-                ca1_d1 <= '1';
-                ca2_d1 <= '1';
-                cb1_d1 <= '1';
-                cb2_d1 <= '1';
-                ca1_d2 <= '1';
-                ca2_d2 <= '1';
-                cb1_d2 <= '1';
-                cb2_d2 <= '1';
-
-                pio_i         <= pio_default;
-                irq_mask      <= (others => '0');
-                irq_flags     <= (others => '0');
-                acr           <= (others => '0');
-                pcr           <= (others => '0');
-                ca2_handshake_o <= '1';
-                ca2_pulse_o     <= '1';
-                cb2_handshake_o <= '1';
-                cb2_pulse_o     <= '1';
-                timer_a_latch  <= latch_reset_pattern;
-                timer_b_latch  <= latch_reset_pattern;
-            end if;
-        --end if;
     end process;
 
     -- PIO Out select --
@@ -488,50 +489,50 @@ begin
     begin
         process(phi2, reset)
         begin
---            if rising_edge(clock) then
---                if falling = '1' then
-					if (falling_edge(phi2)) then
-                    -- always count, or load
-                        
-                    if timer_a_reload = '1' then
-                        timer_a_count  <= timer_a_latch;
-                        if write_t1c_l = '1' then
-                            timer_a_count(7 downto 0) <= data_in;
-                        end if;
-                        timer_a_reload <= '0';
-                        timer_a_may_interrupt <= timer_a_may_interrupt and tmr_a_freerun;
-                    else
-                        if timer_a_count = X"0000" then
-                            -- generate an event if we were triggered
-                            timer_a_reload <= '1';
-                        end if;
-                        --Timer coutinues to count in both free run and one shot.                        
-                        timer_a_count <= timer_a_count - X"0001";
-                    end if;                    
-                end if;
-                
-                if rising_edge(phi2) then
---                if rising = '1' then
-                    if timer_a_event = '1' and tmr_a_output_en = '1' then
-                        timer_a_toggle <= not timer_a_toggle;
-                    end if;
+				-- note must be at falling edge, as write_t1c_l & data_in are directly coming from the CPU
+				if (falling_edge(phi2)) then
+                if reset='1' then
+                    timer_a_toggle <= '1';
+					 elsif write_t1c_h = '1' then
+                    timer_a_toggle <= not tmr_a_output_en;
+                elsif timer_a_event = '1' and tmr_a_output_en = '1' then
+                    timer_a_toggle <= not timer_a_toggle;
                 end if;
 
-             if falling_edge(phi2) then
-                if write_t1c_h = '1' then
-                    timer_a_may_interrupt <= '1';
-                    timer_a_toggle <= not tmr_a_output_en;
-                    timer_a_count  <= data_in & timer_a_latch(7 downto 0);
-                    timer_a_reload <= '0';
-                end if;
-				end if;
+                -- always count, or load
                 if reset='1' then
                     timer_a_may_interrupt <= '0';
-                    timer_a_toggle <= '1';
                     timer_a_count  <= latch_reset_pattern;
+                elsif write_t1c_h = '1' then
+						  -- write t1 counter high
+                    timer_a_may_interrupt <= '1';
+                    timer_a_count  <= data_in & timer_a_latch(7 downto 0);
+                elsif timer_a_reload = '1' then
+                    timer_a_count  <= timer_a_latch;
+						  -- are we writing to T1 counter low in exactly this moment?
+                    if write_t1c_l = '1' then
+                            timer_a_count(7 downto 0) <= data_in;
+                    end if;
+                    timer_a_may_interrupt <= timer_a_may_interrupt and tmr_a_freerun;
+                else
+                    --Timer coutinues to count in both free run and one shot.                        
+                    timer_a_count <= timer_a_count - X"0001";
+                end if;                    
+            end if;
+                
+            if rising_edge(phi2) then
+                if reset='1' then
                     timer_a_reload <= '0';
-                end if;
-            --end if;
+					 else
+                    if timer_a_count = X"0000" then
+                        -- generate an event if we were triggered
+                        timer_a_reload <= '1';
+						  else
+                        timer_a_reload <= '0';
+                    end if;
+					 end if;
+            end if;
+				
         end process;
 
         timer_a_out   <= timer_a_toggle;
