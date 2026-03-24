@@ -130,7 +130,7 @@ architecture Behavioral of Shell is
 	signal srq_out: std_logic;
 	signal eoi_out: std_logic;
 	signal dio_out: std_logic_vector(7 downto 0);
-	
+		
 	-- components and related signals
 	
 	component ioselect is
@@ -299,7 +299,10 @@ begin
 	-- I/O
 	
 	-- userport
-	up(13 downto 8) <= (others => 'Z');
+	up(8) <= 'Z';
+	up(10) <= 'Z';
+	up(12) <= 'Z';
+	up(13) <= 'Z';
 
 	-- SPI (5V)
 	spimosi <= '1';
@@ -423,6 +426,7 @@ begin
 	
 	pia2_pa_in <= dio;		-- dio out
 	pia2_pb_in <= dio;
+	dio_out <= pia2_pb_out;
 
 	pia2_ca1_in <= atn;
 	pia2_ca2_in <= 'X';		-- ndac out
@@ -432,7 +436,7 @@ begin
 	
 	pia2_cb2_in <= 'X';		-- dav out
 	dav_out <= pia2_cb2_out;
-	
+		
 	----------------------------------------------------
 
 	via1_c: via6522
@@ -481,6 +485,8 @@ begin
 	via1_pa_in(6) <= up(5);
 	via1_pa_in(5) <= up(4);
 	
+	via1_pb_in(0) <= ndac;
+	
 	up(0) <= via1_pa_out(0) when via1_pa_dir(0) = '1' else 'Z';
 	up(1) <= via1_pa_out(1) when via1_pa_dir(1) = '1' else 'Z';
 	up(2) <= via1_pa_out(2) when via1_pa_dir(2) = '1' else 'Z';
@@ -500,13 +506,13 @@ begin
 	via1_pb_in(7) <= dav;
 	
 	-- graphic
-	up(11) <= via1_ca2_out when via1_ca2_dir = '1' else '1';
+	up(11) <= via1_ca2_out when via1_ca2_dir = '1' else 'Z';
 	-- Userport CA1
 	via1_ca1_in <= up(8);
 	-- Cass#2 read
 	via1_cb1_in <= up(12);
 	-- shift register in/out
-	up(9) <= via1_cb2_out when via1_cb2_dir = '1' else '1';
+	up(9) <= via1_cb2_out when via1_cb2_dir = '1' else 'Z';
 	
 --
 --	pia2_din <= D;

@@ -62,7 +62,7 @@ architecture Behavioral of ieeedir is
 	
 begin
 
-	p: process(phi2)
+	p: process(phi2, nres, state)
 	begin
 		if (nres = '0') then
 			state <= S_IDLE;
