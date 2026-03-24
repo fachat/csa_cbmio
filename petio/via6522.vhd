@@ -221,8 +221,7 @@ begin
 				timer_a_out, timer_a_count, timer_a_latch, timer_b_count, 
 				shift_reg, pcr, irq_out, irq_mask, irq_flags, reset)
     begin
---        if rising_edge(clock) then            
-			if (rising_edge(phi2)) then 
+			if (falling_edge(phi2)) then 
             -- CA1/CA2/CB1/CB2 edge detect flipflops
             ca1_c <= To_X01(ca1_i);
             ca2_c <= To_X01(ca2_i);
@@ -242,7 +241,9 @@ begin
             -- input registers
             port_a_c <= port_a_i;
             port_b_c <= port_b_i;
-
+			end if;
+			
+			if (rising_edge(phi2)) then 
             -- input latch emulation
             if pa_latch_en = '0' or (ca1_event = '1' and ca2_handshake_o = '1') then
                 ira <= port_a_c;
@@ -254,38 +255,37 @@ begin
 			end if;
 			
             -- CA2 logic
+			if (falling_edge(phi2)) then
             if ca1_event = '1' then
                 ca2_handshake_o <= '0';
---            elsif (ren = '1' or wen = '1') and addr = X"1" and falling = '1' then
-            elsif (ren = '1' or wen = '1') and addr = X"1" and falling_edge(phi2) then
+            elsif (ren = '1' or wen = '1') and addr = X"1" then
                 ca2_handshake_o <= '1';
             end if;
-				
+			end if;
+			
 			if (falling_edge(phi2)) then
-            --if falling = '1' then
-                if (ren = '1' or wen = '1') and addr = X"1" then
-                    ca2_pulse_o <= '0';
-                else            
-                    ca2_pulse_o <= '1';
-                end if;
+            if (ren = '1' or wen = '1') and addr = X"1" then
+                ca2_pulse_o <= '0';
+            else            
+                ca2_pulse_o <= '1';
+            end if;
          end if;
 
             -- CB2 logic
+			if (falling_edge(phi2)) then
             if cb1_event = '1' then
                 cb2_handshake_o <= '0';
---            elsif (ren = '1' or wen = '1') and addr = X"0" and falling = '1' then
-            elsif (ren = '1' or wen = '1') and addr = X"0" and falling_edge(phi2) then
+            elsif (ren = '1' or wen = '1') and addr = X"0" then
                 cb2_handshake_o <= '1';
             end if;
-            
---			end if;
+			end if;
+
 			if (falling_edge(phi2)) then
-            --if falling = '1' then
-                if (ren = '1' or wen = '1') and addr = X"0" then
-                    cb2_pulse_o <= '0';
-                else            
-                    cb2_pulse_o <= '1';
-                end if;
+            if (ren = '1' or wen = '1') and addr = X"0" then
+                cb2_pulse_o <= '0';
+            else            
+                cb2_pulse_o <= '1';
+            end if;
          end if;
 
 			if (rising_edge(phi2)) then 
@@ -295,7 +295,7 @@ begin
 			
 			if (falling_edge(phi2)) then
             -- Writes --
-            if wen='1' then --and falling = '1' then
+            if wen='1' then
                 last_data <= data_in;
                 case addr is
                 when X"0" => -- ORB
@@ -365,6 +365,7 @@ begin
                 end case;
             end if;
        end if;     
+		 
             -- Reads - Output only --
 				-- we do it async here
             data_out <= X"00";
