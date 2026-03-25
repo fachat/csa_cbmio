@@ -539,8 +539,8 @@ begin
 		  
 		  t_a_ev: process(phi2)
 		  begin
-				timer_a_event <= '0';
 				if (rising_edge(phi2)) then
+					timer_a_event <= '0';
 					if (timer_a_reload = '1' and timer_a_may_interrupt = '1') then
 						timer_a_event <= '1';
 					end if;
@@ -551,58 +551,53 @@ begin
     
     -- Timer B
     tmr_b: block
-        signal timer_b_reload_lo     : std_logic;
         signal timer_b_oneshot_trig  : std_logic;
         signal timer_b_timeout       : std_logic;
         signal pb6_c, pb6_d          : std_logic;
+		  signal timer_b_decrement		 : std_logic;
     begin
         process(phi2, write_t2c_h, timer_b_latch, data_in, reset)
-            variable timer_b_decrement   : std_logic;
         begin
---            if rising_edge(clock) then
-                timer_b_decrement := '0';
 
-                if (rising_edge(phi2)) then
-                    pb6_c <= To_X01(port_b_i(6));
-                    pb6_d <= pb6_c;
-                end if;
+            if (falling_edge(phi2)) then
+                pb6_c <= To_X01(port_b_i(6));
+                pb6_d <= pb6_c;
+            end if;
                                 
-                if (falling_edge(phi2)) then
-                    timer_b_timeout <= '0';
-                    timer_b_tick  <= '0';
+            if (rising_edge(phi2)) then
+					 timer_b_decrement <= '0';
+                timer_b_tick  <= '0';
 
-                    if tmr_b_count_mode = '1' then
-                        if (pb6_d='1' and pb6_c='0') then
-                             timer_b_decrement := '1';
-                        end if;
-                    else -- one shot or used for shift register
-                        timer_b_decrement := '1';
-                    end if;    
-                        
-                    if timer_b_decrement = '1' then
-                        if timer_b_count = X"0000" then
-                            if timer_b_oneshot_trig = '1' then
-                                timer_b_oneshot_trig <= '0';
-                                timer_b_timeout <= '1';
-                            end if;
-                        end if;
-                        if timer_b_count(7 downto 0) = X"00" then
-                            case shift_mode_control is
-                            when "001" | "101" | "100" =>
-                                timer_b_reload_lo <= '1';
-                                timer_b_tick <= '1';
-                            when others =>
-                                null;
-                            end case;
-                        end if;
-                        timer_b_count <= timer_b_count - X"0001";
+                if tmr_b_count_mode = '1' then
+                    if (pb6_d='1' and pb6_c='0') then
+                         timer_b_decrement <= '1';
                     end if;
-                    if timer_b_reload_lo = '1' then
-                        timer_b_count(7 downto 0) <= timer_b_latch(7 downto 0);
-                        timer_b_reload_lo <= '0';
+                else -- one shot or used for shift register
+                    timer_b_decrement <= '1';
+                end if;    
+            end if;        
+				
+            if (falling_edge(phi2)) then
+                timer_b_timeout <= '0';
+                if timer_b_decrement = '1' then
+                    if timer_b_count = X"0000" then
+                         if timer_b_oneshot_trig = '1' then
+                            timer_b_oneshot_trig <= '0';
+                            timer_b_timeout <= '1';
+                        end if;
                     end if;
+						  if ((shift_mode_control = "001" 
+								or shift_mode_control = "101"
+								or shift_mode_control = "100")
+								and (timer_b_count(7 downto 0) = X"00")) then
+									timer_b_tick <= '1';
+									timer_b_count(7 downto 0) <= timer_b_latch(7 downto 0);
+							else
+								timer_b_count <= timer_b_count - X"0001";
+							end if;
                 end if;
 
+					-- write to T2 counter is on falling phi2
                 if write_t2c_h = '1' then
                     timer_b_count <= data_in & timer_b_latch(7 downto 0);
                     timer_b_oneshot_trig <= '1';
@@ -610,16 +605,15 @@ begin
 
                 if reset='1' then
                     timer_b_count  <= latch_reset_pattern;
-                    timer_b_reload_lo    <= '0';
                     timer_b_oneshot_trig <= '0';                    
                 end if;
- --           end if;
+            end if;
         end process;
 
 		  t_b_ev: process(phi2)
 		  begin
-				timer_b_event <= '0';
 				if (rising_edge(phi2)) then
+					timer_b_event <= '0';
 					if (timer_b_timeout = '1') then
 						timer_b_event <= '1';
 					end if;
@@ -651,7 +645,6 @@ begin
             
             when others =>
                 shift_pulse <= shift_clock and not shift_clock_d;
-
             end case;
 
             if shift_active = '0' then
@@ -668,9 +661,7 @@ begin
 
         process(phi2, reset)
         begin
---            if rising_edge(clock) then
---                if rising = '1' then
-					  if (rising_edge(phi2)) then
+					 if (rising_edge(phi2)) then
 					  
                     if shift_active='0' then
                         if shift_mode_control = "000" then
@@ -689,7 +680,6 @@ begin
                 end if;
 
                 if (falling_edge(phi2)) then
---                if falling = '1' then
                     shift_timer_tick <= timer_b_tick;
                 end if;
 
@@ -697,7 +687,6 @@ begin
                     shift_clock <= '1';
                     shift_clock_d <= '1';
                 end if;
---            end if;
         end process;
 
         cb1_t_int <= '0' when shift_clk_sel="11" else serport_en;
@@ -709,13 +698,13 @@ begin
         shift_tick_r <= not shift_clock_d and shift_clock;
         shift_tick_f <= shift_clock_d and not shift_clock;
 
+		  -- writing to the shift register (Reg 10)
         process(phi2, reset)
         begin
---            if rising_edge(clock) then
+            if (falling_edge(phi2)) then
                 if reset = '1' then
                     shift_reg <= X"FF";
-                elsif (falling_edge(phi2)) then
-                --elsif falling = '1' then
+                else
                     if wen = '1' and addr = X"A" then
                         shift_reg <= data_in;
                     elsif shift_dir='1' and shift_tick_f = '1' then -- output
@@ -724,27 +713,28 @@ begin
                         shift_reg <= shift_reg(6 downto 0) & cb2_d1;
                     end if;
                 end if;
---            end if;
+            end if;
         end process;        
 
 		  s_ev: process(phi2)
 		  begin
-				serial_event <= '0';
 				if (rising_edge(phi2)) then
+					serial_event <= '0';
 					if (shift_tick_r = '1' and shift_active = '0' and serport_en = '1') then
 						serial_event <= '1';
 					end if;
 				end if;
-         end process;
-        -- tell people that we're ready!
-        --serial_event <= shift_tick_r and not shift_active and rising and serport_en;
+        end process;
 
         process(phi2, reset)
         begin
---            if rising_edge(clock) then
---                if falling = '1' then
-                if (falling_edge(phi2)) then
+            if (falling_edge(phi2)) then
+                if reset='1' then
+                    shift_active <= '0';
+                    bit_cnt      <= 0;
+                else
                     if shift_active = '0' and shift_mode_control /= "000" then
+								-- accessing shift register
                         if trigger_serial = '1' then
                             bit_cnt      <= 7;
                             shift_active <= '1';
@@ -761,12 +751,7 @@ begin
                         end if;                            
                     end if;
                 end if;
-
-                if reset='1' then
-                    shift_active <= '0';
-                    bit_cnt      <= 0;
-                end if;
---            end if;
+            end if;
         end process;                
     end block ser;
 end Gideon;
