@@ -65,7 +65,7 @@ begin
 			-- check IO page
 			-- for testing use X900 for now
 			-- will be replaced with X800
-			if (A(11 downto 8) = "1001") then
+			if (A(11 downto 8) = "1000") then
 				-- select
 				case A(7 downto 3) is
 				when "00010" =>

@@ -87,7 +87,8 @@ architecture Gideon of via6522 is
     signal port_b_c      : std_logic_vector(7 downto 0) := (others => '0');
     
     signal irq_mask      : std_logic_vector(6 downto 0) := (others => '0');
-    signal irq_flags     : std_logic_vector(6 downto 0) := (others => '0');
+    signal irq_flags      : std_logic_vector(6 downto 0) := (others => '0');
+	 signal irq_clr_strobe: std_logic_vector(6 downto 0) := (others => '0');
     signal irq_events    : std_logic_vector(6 downto 0) := (others => '0');
     signal irq_out       : std_logic;
     
@@ -116,13 +117,13 @@ architecture Gideon of via6522 is
     alias  timer_b_event : std_logic is irq_events(5);
     alias  timer_a_event : std_logic is irq_events(6);
 
-    alias  ca2_flag      : std_logic is irq_flags(0);
-    alias  ca1_flag      : std_logic is irq_flags(1);
-    alias  serial_flag   : std_logic is irq_flags(2);
-    alias  cb2_flag      : std_logic is irq_flags(3);
-    alias  cb1_flag      : std_logic is irq_flags(4);
-    alias  timer_b_flag  : std_logic is irq_flags(5);
-    alias  timer_a_flag  : std_logic is irq_flags(6);
+    alias  ca2_clr_strobe      : std_logic is irq_clr_strobe(0);
+    alias  ca1_clr_strobe      : std_logic is irq_clr_strobe(1);
+    alias  serial_clr_strobe   : std_logic is irq_clr_strobe(2);
+    alias  cb2_clr_strobe      : std_logic is irq_clr_strobe(3);
+    alias  cb1_clr_strobe      : std_logic is irq_clr_strobe(4);
+    alias  timer_b_clr_strobe  : std_logic is irq_clr_strobe(5);
+    alias  timer_a_clr_strobe  : std_logic is irq_clr_strobe(6);
 
     alias tmr_a_output_en   : std_logic is acr(7);
     alias tmr_a_freerun     : std_logic is acr(6);
@@ -219,7 +220,7 @@ begin
 
     process(phi2, ren, wen, irq_events, addr, pio_i, acr, irb, ira, 
 				timer_a_out, timer_a_count, timer_a_latch, timer_b_count, 
-				shift_reg, pcr, irq_out, irq_mask, irq_flags, reset)
+				shift_reg, pcr, irq_out, irq_mask, irq_flags, irq_clr_strobe, reset)
     begin
 			if (falling_edge(phi2)) then 
             if reset='1' then
@@ -305,15 +306,18 @@ begin
          end if;
 
 			if (rising_edge(phi2)) then 
-            -- Interrupt logic
-            irq_flags <= irq_flags or irq_events;
+				if (reset = '1') then
+					irq_flags <= (others => '0');
+				else
+					-- Interrupt logic
+					irq_flags <= (irq_flags and not irq_clr_strobe) or irq_events;
+				end if;
 			end if;
 			
 			if (falling_edge(phi2)) then
             if reset='1' then
                 pio_i         <= pio_default;
                 irq_mask      <= (others => '0');
-                irq_flags     <= (others => '0');
                 acr           <= (others => '0');
                 pcr           <= (others => '0');
                 ca2_handshake_o <= '1';
@@ -328,18 +332,11 @@ begin
                 last_data <= data_in;
                 case addr is
                 when X"0" => -- ORB
+						cb1_clr_strobe <= '0';
                     pio_i.prb <= data_in;
-                    if cb2_no_irq_clr='0' then
-                        cb2_flag <= '0';
-                    end if;
-                    cb1_flag <= '0';
                 
                 when X"1" => -- ORA
                     pio_i.pra <= data_in;
-                    if ca2_no_irq_clr='0' then
-                        ca2_flag <= '0';
-                    end if;
-                    ca1_flag <= '0';
                     
                 when X"2" => -- DDRB
                     pio_i.ddrb <= data_in;
@@ -352,23 +349,21 @@ begin
                     
                 when X"5" => -- TA HI counter
                     timer_a_latch(15 downto 8) <= data_in;
-                    timer_a_flag <= '0';
                     
                 when X"6" => -- TA LO latch
                     timer_a_latch(7 downto 0) <= data_in;
                     
                 when X"7" => -- TA HI latch
                     timer_a_latch(15 downto 8) <= data_in;
-                    timer_a_flag <= '0';
                     
                 when X"8" => -- TB LO latch
                     timer_b_latch(7 downto 0) <= data_in;
                     
                 when X"9" => -- TB HI counter
-                    timer_b_flag <= '0';
+                    timer_b_clr_strobe <= '1';
                 
                 when X"A" => -- Serial port
-                    serial_flag <= '0';
+                    --serial_flag <= '0';
                     
                 when X"B" => -- ACR (Auxiliary Control Register)
                     acr <= data_in;
@@ -377,7 +372,7 @@ begin
                     pcr <= data_in;
                                     
                 when X"D" => -- IFR
-                    irq_flags <= irq_flags and not data_in(6 downto 0);
+                    irq_clr_strobe <= data_in(6 downto 0);
                     
                 when X"E" => -- IER
                     if data_in(7)='1' then -- set
@@ -440,34 +435,55 @@ begin
             end case;
             
 			if (falling_edge(phi2)) then
-            -- Read actions --
-            if ren = '1' then --and falling = '1' then
-                case addr is
+				ca1_clr_strobe <= '0';
+				ca2_clr_strobe <= '0';
+				cb1_clr_strobe <= '0';
+				cb2_clr_strobe <= '0';
+				timer_a_clr_strobe <= '0';
+				timer_b_clr_strobe <= '0';
+				serial_clr_strobe <= '0';
+            -- Read/Write actions --
+				if (ren = '1' or wen = '1') then
+					case addr is
                 when X"0" => -- ORB
                     if cb2_no_irq_clr='0' then
-                        cb2_flag <= '0';
+                        cb2_clr_strobe <= '1';
                     end if;
-                    cb1_flag <= '0';
+                    cb1_clr_strobe <= '1';
                                                 
                 when X"1" => -- ORA
                     if ca2_no_irq_clr='0' then
-                        ca2_flag <= '0';
+                        ca2_clr_strobe <= '1';
                     end if;
-                    ca1_flag <= '0';
+                    ca1_clr_strobe <= '1';
                     
                 when X"4" => -- TA LO counter
-                    timer_a_flag <= '0';
+                    if (ren = '1') then 
+								timer_a_clr_strobe <= '1';
+						  end if;
+
+                when X"5" => -- TA HI counter
+                    if (wen = '1') then 
+								timer_a_clr_strobe <= '1';
+						  end if;
+
+                when X"7" => -- TA HI latch
+						  if (wen = '1') then
+								timer_a_clr_strobe <= '1';
+						  end if;
                     
                 when X"8" => -- TB LO counter
-                    timer_b_flag <= '0';
+                    if (ren = '1') then 
+								timer_b_clr_strobe <= '1';
+						  end if;
                     
                 when X"A" => -- SR
-                    serial_flag <= '0';
+                    serial_clr_strobe <= '1';
     
                 when others =>
                     null;
-                end case;
-            end if;
+					end case;
+				end if;
 			end if;
     end process;
 
