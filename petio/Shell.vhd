@@ -121,6 +121,8 @@ architecture Behavioral of Shell is
 	signal nbe_out: std_logic;
 	signal res: std_logic;
 	
+	signal int_out: std_logic;
+
 	-- IEEE488 signals output from PET (depends on direction)
 	signal ieee_is_out: std_logic;	-- 1 when sending from host (us) to device (on bus)
 	signal ndac_out: std_logic;
@@ -282,7 +284,7 @@ begin
 	rtx <= pia1_sel;
 	rrts <= nbe_out; --D_in(2);
 	
-	irq <= pia1_irq or pia2_irq or via1_irq;
+	irq <= '0'; --pia1_irq or pia2_irq or via1_irq or int_out;
 	
 	res <= not(nres);
 	
@@ -297,7 +299,7 @@ begin
 
 	-- I/O
 	
-	-- userport
+	-- userport (inputs)
 	up(8) <= 'Z';
 	up(10) <= 'Z';
 	up(12) <= 'Z';
@@ -308,10 +310,6 @@ begin
 	spiclk <= '1';
 	spiiosel <= '1';
 	
-	-- cassette
-	cwr <= 'Z';
-	c1mtr <= 'Z';
-
 	-- serial IEC
 	dataout <= 'Z';
 	clkout <= 'Z';
@@ -350,6 +348,33 @@ begin
 	
 	dio(7 downto 0) <= dio_out when ieee_is_out = '1' else (others => 'Z');
 
+	
+	----------------------------------------------------
+	-- fake interrupt as long as pia int does not seem to work
+	
+	fake_int: block
+		signal int_cnt: std_logic_vector(15 downto 0);
+	begin
+	  int_p: process(phi2, nres)
+	  begin
+		if  (falling_edge(phi2)) then
+			if (nres = '0') then
+				int_cnt <= (others => '0');
+			elsif (int_cnt > 20000) then
+				int_cnt <= (others => '0');
+			else
+				int_cnt <= int_cnt + 1;
+			end if;
+		end if;
+		if (rising_edge(phi2)) then
+			if (int_cnt < 100) then
+				int_out <= '1';
+			else
+				int_out <= '0';
+			end if;
+		end if;
+	  end process;
+	end block fake_int;
 	
 	----------------------------------------------------
 	
@@ -393,7 +418,8 @@ begin
 	eoi_out <= pia1_ca2_out;
 	
 	pia1_cb1_in <= up(13);	-- vdrive
-	pia1_cb2_in <= 'X';		-- cwr out
+	pia1_cb2_in <= '1';	-- c1mtr out
+	c1mtr <= pia1_cb2_out;
 	
 	----------------------------------------------------
 

@@ -135,7 +135,7 @@ net up<9>			loc=p139	 | iostandard=lvttl;
 net up<10>			loc=p138	 | iostandard=lvttl;
 net up<11>			loc=p137	 | iostandard=lvttl;
 net up<12>			loc=p62	 | iostandard=lvttl;
-net up<13>			loc=p69	 | iostandard=lvttl;
+net up<13>			loc=p69	 | iostandard=lvttl | pullup;
 
 
 
