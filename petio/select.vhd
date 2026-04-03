@@ -32,6 +32,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity ioselect is
     Port ( A : in  STD_LOGIC_VECTOR (11 downto 0);
            niosel : in  STD_LOGIC;
+			  iopage : in STD_LOGIC;
 			  nres : in STD_LOGIC;
 			  nbe : out std_logic;
            pia1 : out  STD_LOGIC;
@@ -65,7 +66,8 @@ begin
 			-- check IO page
 			-- for testing use X900 for now
 			-- will be replaced with X800
-			if (A(11 downto 8) = "1001") then
+			if (A(11 downto 9) = "100"
+					and A(8) = iopage) then
 				-- select
 				case A(7 downto 3) is
 				when "00010" =>

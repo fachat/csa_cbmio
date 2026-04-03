@@ -138,6 +138,7 @@ architecture Behavioral of Shell is
 	component ioselect is
     Port ( A : in  STD_LOGIC_VECTOR (11 downto 0);
            niosel : in  STD_LOGIC;
+			  iopage : in STD_LOGIC;
 			  nres : in STD_LOGIC;
 			  nbe : out std_logic;
            pia1 : out  STD_LOGIC;
@@ -278,11 +279,14 @@ architecture Behavioral of Shell is
 
 	-- test timer (50Hz)
 	signal test_counter: std_logic_vector(15 downto 0);
+	-- which I/O page to use (either 8 or 9)
+	signal iopage: std_logic;
 	
 begin
 
 	rtx <= pia1_sel;
 	rrts <= nbe_out; --D_in(2);
+	iopage <= rcts;
 	
 	irq <= '0'; --pia1_irq or pia2_irq or via1_irq or int_out;
 	
@@ -559,6 +563,7 @@ begin
 	port map(
 		A,
 		niosel,
+		iopage,
 		nres,
 		nbe_out,
 		pia1_sel,

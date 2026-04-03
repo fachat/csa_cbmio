@@ -48,10 +48,10 @@ net ldsr				loc=p44 | iostandard=lvttl;
 net lri				loc=p47 | iostandard=lvttl;
 net ldcd				loc=p46 | iostandard=lvttl;
 
-net rcts				loc=p48 | iostandard=lvttl;
+net rcts				loc=p48 | iostandard=lvttl | pullup; # currently misused as config input
 net rrts				loc=p55 | iostandard=lvttl;
 net rtx				loc=p50 | iostandard=lvttl;
-net rrx				loc=p51 | iostandard=lvttl;
+net rrx				loc=p51 | iostandard=lvttl | pullup;
 net rdtr				loc=p57 | iostandard=lvttl;
 net rdsr				loc=p56 | iostandard=lvttl;
 
