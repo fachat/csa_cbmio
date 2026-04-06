@@ -566,16 +566,6 @@ begin
 
         timer_a_out   <= timer_a_toggle;
 		  
---		  t_a_ev: process(phi2)
---		  begin
---				if (rising_edge(phi2)) then
---					timer_a_event <= '0';
---					if (timer_a_reload = '1' and timer_a_may_interrupt = '1') then
---						timer_a_event <= '1';
---					end if;
---				end if;
-----        timer_a_event <= rising and timer_a_reload and timer_a_may_interrupt;
---         end process;
     end block tmr_a;
     
     -- Timer B
@@ -639,18 +629,7 @@ begin
             end if;
         end process;
 
---		  t_b_ev: process(phi2)
---		  begin
---				if (rising_edge(phi2)) then
---					timer_b_event <= '0';
---					if (timer_b_timeout = '1') then
---						timer_b_event <= '1';
---					end if;
---				end if;
---         end process;
-			timer_b_event <= timer_b_timeout;
---        timer_b_event <= rising and timer_b_timeout;
-
+ 		  timer_b_event <= timer_b_timeout;
 
     end block tmr_b;
     

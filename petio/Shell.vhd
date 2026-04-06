@@ -284,7 +284,7 @@ architecture Behavioral of Shell is
 	
 begin
 
-	rtx <= pia1_sel;
+	rtx <= pia1_cb1_in;
 	rrts <= nbe_out; --D_in(2);
 	iopage <= rcts;
 	
