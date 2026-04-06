@@ -207,16 +207,6 @@ begin
         end if;
     end process;
 
---    process(clock)
---    begin
---        if rising_edge(clock) then
---            if rising = '1' then
---                phi2_ref <= '1';
---            elsif falling = '1' then
---                phi2_ref <= '0';
---            end if;
---        end if;
---    end process;
 
     process(phi2, ren, wen, irq_events, addr, pio_i, acr, irb, ira, 
 				timer_a_out, timer_a_count, timer_a_latch, timer_b_count, 
