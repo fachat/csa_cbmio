@@ -332,7 +332,6 @@ begin
                 last_data <= data_in;
                 case addr is
                 when X"0" => -- ORB
-						cb1_clr_strobe <= '0';
                     pio_i.prb <= data_in;
                 
                 when X"1" => -- ORA
@@ -360,7 +359,7 @@ begin
                     timer_b_latch(7 downto 0) <= data_in;
                     
                 when X"9" => -- TB HI counter
-                    timer_b_clr_strobe <= '1';
+--                    timer_b_clr_strobe <= '1';
                 
                 when X"A" => -- Serial port
                     --serial_flag <= '0';
@@ -372,7 +371,7 @@ begin
                     pcr <= data_in;
                                     
                 when X"D" => -- IFR
-                    irq_clr_strobe <= data_in(6 downto 0);
+--                    irq_clr_strobe <= data_in(6 downto 0);
                     
                 when X"E" => -- IER
                     if data_in(7)='1' then -- set
@@ -477,9 +476,19 @@ begin
 								timer_b_clr_strobe <= '1';
 						  end if;
                     
+                when X"9" => -- TB HI counter
+						  if (wen = '1') then
+								timer_b_clr_strobe <= '1';
+						  end if;
+						  
                 when X"A" => -- SR
                     serial_clr_strobe <= '1';
     
+                when X"D" => -- IFR
+						  if (wen = '1') then
+								irq_clr_strobe <= data_in(6 downto 0);
+						  end if;
+
                 when others =>
                     null;
 					end case;
@@ -626,15 +635,16 @@ begin
             end if;
         end process;
 
-		  t_b_ev: process(phi2)
-		  begin
-				if (rising_edge(phi2)) then
-					timer_b_event <= '0';
-					if (timer_b_timeout = '1') then
-						timer_b_event <= '1';
-					end if;
-				end if;
-         end process;
+--		  t_b_ev: process(phi2)
+--		  begin
+--				if (rising_edge(phi2)) then
+--					timer_b_event <= '0';
+--					if (timer_b_timeout = '1') then
+--						timer_b_event <= '1';
+--					end if;
+--				end if;
+--         end process;
+			timer_b_event <= timer_b_timeout;
 --        timer_b_event <= rising and timer_b_timeout;
 
 
