@@ -71,8 +71,10 @@ architecture Behavioral of pia6520 is
 	signal cra: std_logic_vector(5 downto 0);
 	signal irqa1: std_logic;
 	signal irqa2: std_logic;
-	signal ca1_in_d: std_logic;	-- for edge detection
-	signal ca2_in_d: std_logic;	-- for edge detection
+	signal ca1_in_d1: std_logic;	-- for edge detection
+	signal ca2_in_d1: std_logic;	-- for edge detection
+	signal ca1_in_d2: std_logic;	-- for edge detection
+	signal ca2_in_d2: std_logic;	-- for edge detection
 	signal ca1_act_trans: std_logic;
 	signal ca2_act_trans: std_logic;
 	signal ca2_pulse: std_logic;
@@ -82,8 +84,10 @@ architecture Behavioral of pia6520 is
 	signal crb: std_logic_vector(5 downto 0);
 	signal irqb1: std_logic;
 	signal irqb2: std_logic;
-	signal cb1_in_d: std_logic;	-- for edge detection
-	signal cb2_in_d: std_logic;	-- for edge detection
+	signal cb1_in_d1: std_logic;	-- for edge detection
+	signal cb2_in_d1: std_logic;	-- for edge detection
+	signal cb1_in_d2: std_logic;	-- for edge detection
+	signal cb2_in_d2: std_logic;	-- for edge detection
 	signal cb1_act_trans: std_logic;
 	signal cb2_act_trans: std_logic;
 	signal cb2_pulse: std_logic;
@@ -167,32 +171,34 @@ begin
 	edge_a_p: process(phi2, ca1_in, ca1_in)
 	begin
 		if (falling_edge(phi2)) then
-			ca1_in_d <= ca1_in;
-			ca2_in_d <= ca2_in;
+			ca1_in_d1 <= ca1_in;
+			ca2_in_d1 <= ca2_in;
+			ca1_in_d2 <= ca1_in_d1;
+			ca2_in_d2 <= ca2_in_d1;
 		end if;
 	end process;
 	
 	-- detect active transition
-	edge2_a_p: process(phi2, cra, ca1_in, ca1_in_d, ca2_in, ca2_in_d)
+	edge2_a_p: process(phi2, cra, ca1_in_d1, ca1_in_d2, ca2_in_d1, ca2_in_d2)
 	begin 
 		if (rising_edge(phi2)) then
 			ca1_act_trans <= '0';
 			if (cra(1) = '0') then
-				if (ca1_in = '0' and ca1_in_d = '1') then
+				if (ca1_in_d1 = '0' and ca1_in_d2 = '1') then
 					ca1_act_trans <= '1';
 				end if;
 			else
-				if (ca1_in = '1' and ca1_in_d = '0') then
+				if (ca1_in_d1 = '1' and ca1_in_d2 = '0') then
 					ca1_act_trans <= '1';
 				end if;
 			end if;
 			ca2_act_trans <= '0';
 			if (cra(4) = '0') then
-				if (ca2_in = '0' and ca2_in_d = '1') then
+				if (ca2_in_d1 = '0' and ca2_in_d2 = '1') then
 					ca2_act_trans <= '1';
 				end if;
 			else
-				if (ca2_in = '1' and ca2_in_d = '0') then
+				if (ca2_in_d1 = '1' and ca2_in_d2 = '0') then
 					ca2_act_trans <= '1';
 				end if;
 			end if;
@@ -205,14 +211,14 @@ begin
 			irqa1 <= '0';
 			irqa2 <= '0';
 		elsif (falling_edge(phi2)) then
-			if (ca1_act_trans = '1' and cra(0) = '1') then
+			if (ca1_act_trans = '1') then
 				-- set on active transition and enabled in cra(0)
 				irqa1 <= '1';
 			elsif(rwb = '1' and porta_a = '1') then
 				-- clear on read Port A	
 				irqa1 <= '0';
 			end if;
-			if (ca2_act_trans = '1' and cra(3) = '1' and cra(5) = '0') then
+			if (ca2_act_trans = '1' and cra(5) = '0') then
 				-- set on active transition and enabled in cra(3) and CA2 is input (cra(5))
 				irqa2 <= '1';
 			elsif(rwb = '1' and porta_a = '1') then
@@ -229,32 +235,34 @@ begin
 	edge_b_p: process(phi2, cb1_in, cb2_in)
 	begin
 		if (falling_edge(phi2)) then
-			cb1_in_d <= cb1_in;
-			cb2_in_d <= cb2_in;
+			cb1_in_d1 <= cb1_in;
+			cb2_in_d1 <= cb2_in;
+			cb1_in_d2 <= cb1_in_d1;
+			cb2_in_d2 <= cb2_in_d1;
 		end if;
 	end process;
 	
 	-- detect active transition
-	edge2_b_p: process(phi2, crb, cb1_in, cb1_in_d, cb2_in, cb2_in_d)
+	edge2_b_p: process(phi2, crb, cb1_in_d1, cb1_in_d2, cb2_in_d1, cb2_in_d2)
 	begin 
 		if (rising_edge(phi2)) then
 			cb1_act_trans <= '0';
 			if (crb(1) = '0') then
-				if (cb1_in = '0' and cb1_in_d = '1') then
+				if (cb1_in_d1 = '0' and cb1_in_d2 = '1') then
 					cb1_act_trans <= '1';
 				end if;
 			else
-				if (cb1_in = '1' and cb1_in_d = '0') then
+				if (cb1_in_d1 = '1' and cb1_in_d2 = '0') then
 					cb1_act_trans <= '1';
 				end if;
 			end if;
 			cb2_act_trans <= '0';
 			if (crb(4) = '0') then
-				if (cb2_in = '0' and cb2_in_d = '1') then
+				if (cb2_in_d1 = '0' and cb2_in_d2 = '1') then
 					cb2_act_trans <= '1';
 				end if;
 			else
-				if (cb2_in = '1' and cb2_in_d = '0') then
+				if (cb2_in_d1 = '1' and cb2_in_d2 = '0') then
 					cb2_act_trans <= '1';
 				end if;
 			end if;
