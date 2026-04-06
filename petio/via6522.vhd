@@ -549,11 +549,15 @@ begin
                 if reset='1' then
                     timer_a_reload <= '0';
 					 else
+                    timer_a_reload <= '0';
+						  timer_a_event <= '0';
                     if timer_a_count = X"0000" then
                         -- generate an event if we were triggered
                         timer_a_reload <= '1';
-						  else
-                        timer_a_reload <= '0';
+								
+								if (timer_a_may_interrupt = '1') then 
+									timer_a_event <= '1';
+								end if;
                     end if;
 					 end if;
             end if;
@@ -562,16 +566,16 @@ begin
 
         timer_a_out   <= timer_a_toggle;
 		  
-		  t_a_ev: process(phi2)
-		  begin
-				if (rising_edge(phi2)) then
-					timer_a_event <= '0';
-					if (timer_a_reload = '1' and timer_a_may_interrupt = '1') then
-						timer_a_event <= '1';
-					end if;
-				end if;
---        timer_a_event <= rising and timer_a_reload and timer_a_may_interrupt;
-         end process;
+--		  t_a_ev: process(phi2)
+--		  begin
+--				if (rising_edge(phi2)) then
+--					timer_a_event <= '0';
+--					if (timer_a_reload = '1' and timer_a_may_interrupt = '1') then
+--						timer_a_event <= '1';
+--					end if;
+--				end if;
+----        timer_a_event <= rising and timer_a_reload and timer_a_may_interrupt;
+--         end process;
     end block tmr_a;
     
     -- Timer B
