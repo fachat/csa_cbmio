@@ -81,11 +81,11 @@ entity Shell is
 		-- serial IEC
 		datain: in std_logic;
 		clkin: in std_logic;
-		atnin: in std_logic;
+		satnin: in std_logic;
 		srqin: in std_logic;
 		dataout: out std_logic;
 		clkout: out std_logic;
-		atnout: out std_logic;
+		satnout: out std_logic;
 		srqout: out std_logic;
 		
 		-- keyboard
@@ -101,7 +101,7 @@ entity Shell is
 		dav: inout std_logic;
 		eoi: inout std_logic;
 		atn: inout std_logic;
-		srq: inout std_logic;
+		psrq: inout std_logic;
 		te: out std_logic;
 		dc: out std_logic
 	);
@@ -201,6 +201,29 @@ architecture Behavioral of Shell is
 	signal via1_cb2_in: std_logic;
 	signal via1_cb2_out: std_logic;
 	signal via1_cb2_dir: std_logic;
+
+	signal via2_sel: std_logic;
+	signal via2_irq: std_logic;
+	signal via2_wren: std_logic;
+	signal via2_rden: std_logic;
+	signal via2_din: std_logic_vector(7 downto 0);
+	signal via2_dout: std_logic_vector(7 downto 0);
+	signal via2_pa_in: std_logic_vector(7 downto 0);
+	signal via2_pa_out: std_logic_vector(7 downto 0);
+	signal via2_pa_dir: std_logic_vector(7 downto 0);
+	signal via2_ca1_in: std_logic;
+	signal via2_ca2_in: std_logic;
+	signal via2_ca2_out: std_logic;
+	signal via2_ca2_dir: std_logic;
+	signal via2_pb_in: std_logic_vector(7 downto 0);
+	signal via2_pb_out: std_logic_vector(7 downto 0);
+	signal via2_pb_dir: std_logic_vector(7 downto 0);
+	signal via2_cb1_in: std_logic;
+	signal via2_cb1_out: std_logic;
+	signal via2_cb1_dir: std_logic;
+	signal via2_cb2_in: std_logic;
+	signal via2_cb2_out: std_logic;
+	signal via2_cb2_dir: std_logic;
 	
 	component pia6520 is
     Port ( nres : in  STD_LOGIC;
@@ -298,6 +321,7 @@ begin
 	D_out <= pia1_dout when pia1_sel = '1'
 			else pia2_dout when pia2_sel = '1'
 			else via1_dout when via1_sel = '1'
+			else via2_dout when via2_sel = '1'
 			else "10101010";	-- test pattern
 			--else (others => 'X');
 
@@ -314,11 +338,6 @@ begin
 	spiclk <= '1';
 	spiiosel <= '1';
 	
-	-- serial IEC
-	dataout <= 'Z';
-	clkout <= 'Z';
-	atnout <= 'Z';
-	srqout <= 'Z';
 	
 	-- rs232
 	ltx <= 'Z';
@@ -346,7 +365,7 @@ begin
 	atn <= atn_out;
 	ren <= '1';
 	ifc <= '1';
-	srq <= 'Z';
+	psrq <= 'Z';
 
 	ndac <= ndac_out when ieee_is_out = '0' else 'Z';
 	nrfd <= nrfd_out when ieee_is_out = '0' else 'Z';
@@ -464,7 +483,7 @@ begin
 	pia2_ca2_in <= 'X';		-- ndac out
 	ndac_out <= pia2_ca2_out;
 	
-	pia2_cb1_in <= srq;
+	pia2_cb1_in <= psrq;
 	
 	pia2_cb2_in <= 'X';		-- dav out
 	dav_out <= pia2_cb2_out;
@@ -546,8 +565,66 @@ begin
 	-- shift register in/out
 	up(9) <= via1_cb2_out when via1_cb2_dir = '1' else 'Z';
 	
---
---	pia2_din <= D;
+	----------------------------------------------------
+
+	via2_c: via6522
+	   Port map (
+         phi2,
+			res,
+			A(3 downto 0),
+			via2_wren,
+			via2_rden,			
+         via2_din,
+			via2_dout,
+
+			via2_pa_out,			
+			via2_pa_dir,			
+			via2_pa_in,
+
+			via2_pb_out,			
+			via2_pb_dir,
+			via2_pb_in,
+			
+         via2_ca1_in,
+			
+         via2_ca2_out,
+         via2_ca2_in,
+         via2_ca2_dir,
+
+         via2_cb1_out,
+         via2_cb1_in,
+         via2_cb1_dir,
+
+         via2_cb2_out,
+         via2_cb2_in,
+         via2_cb2_dir,
+			
+			via2_irq
+		);
+		
+	via2_wren <= '1' when via2_sel = '1' and rwb = '0' else '0';
+	via2_rden <= '1' when via2_sel = '1' and rwb = '1' else '0';
+	
+	via2_din <= D_in;
+	
+	-- serial IEC bus
+	-- TODO: satna, fast bus
+	satnout 	<= via2_pb_out(3);
+	clkout 	<= via2_pb_out(4);
+	dataout 	<= via2_pb_out(5);
+	
+	via2_pb_in(0) <= '1'; -- fserdir
+	via2_pb_in(1) <= '1'; -- satna
+	via2_pb_in(2) <= not(satnin);	
+	via2_pb_in(3) <= via2_pb_out(3);	-- atnout
+	via2_pb_in(4) <= via2_pb_out(4);	-- clkout
+	via2_pb_in(5) <= via2_pb_out(5);	-- dataout
+	via2_pb_in(6) <= not(clkin);
+	via2_pb_in(7) <= not(datain);
+	
+	-- serial IEC
+	srqout <= 'Z';
+	
 	----------------------------------------------------
 
 	ieeedir_c: ieeedir
@@ -572,7 +649,7 @@ begin
 		pia1_sel,
 		pia2_sel,
 		via1_sel,
-		sel_via2,
+		via2_sel,
 		sel_uart1,
 		sel_uart2
 	);

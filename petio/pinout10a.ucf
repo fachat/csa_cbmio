@@ -71,12 +71,12 @@ net spimosi			loc=p64	| iostandard=lvttl;
 
 net datain			loc=p143		| iostandard=lvttl;
 net clkin			loc=p142		| iostandard=lvttl;
-net atnin			loc=p134		| iostandard=lvttl;
+net satnin			loc=p134		| iostandard=lvttl;
 net srqin			loc=p141		| iostandard=lvttl;
 
 net dataout			loc=p133		| iostandard=lvttl;
 net clkout			loc=p144		| iostandard=lvttl;
-net atnout			loc=p131		| iostandard=lvttl;
+net satnout			loc=p131		| iostandard=lvttl;
 net srqout			loc=p132		| iostandard=lvttl;
 
 # keyboard
@@ -113,7 +113,7 @@ net eoi				loc=p87		| iostandard=lvttl;
 net atn				loc=p85		| iostandard=lvttl;
 net ifc				loc=p94		| iostandard=lvttl;
 net ren				loc=p95		| iostandard=lvttl;
-net srq				loc=p84		| iostandard=lvttl;
+net psrq				loc=p84		| iostandard=lvttl;
 net te				loc=p83		| iostandard=lvttl;
 net dc				loc=p82		| iostandard=lvttl;
 

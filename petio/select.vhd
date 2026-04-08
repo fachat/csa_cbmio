@@ -49,7 +49,7 @@ architecture Behavioral of ioselect is
 	
 begin
 
-	is_io_p: process(A, niosel, nres)
+	is_io_p: process(A, niosel, iopage, nres)
 	begin
 
 		nbe <= '1';
