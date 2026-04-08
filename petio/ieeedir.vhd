@@ -48,9 +48,9 @@ architecture Behavioral of ieeedir is
 
 	type t_state is (
 		S_IDLE,		-- IEEE488 idle
-		S_ATN,		-- ATN low detected
-		S_ATN_WAIT,	-- received a low NRFD as indication of a connected drive, now waiting for DAV low
-		S_ATN_HOLD,	-- DAV is low, data is clocked into hold, and evaluated when DAV goes high, waiting for DAV hi
+		S_ATN,		-- ATN low detected, waiting for DAV low; data is latched when DAV is low
+		S_ATN_HOLD,	-- DAV was low, data is evaluated
+		S_ATN_WAIT,	-- waiting for ATN hi
 		S_TALK,		-- talk mode, sending to bus
 		S_LISTEN		-- listen mode, receiving from bus
 		);
@@ -76,12 +76,6 @@ begin
 			when S_ATN =>
 				if (atn_in = '1') then
 					state <= target;
-				elsif (nrfd_in = '0') then
-					state <= S_ATN_WAIT;
-				end if;
-			when S_ATN_WAIT =>
-				if (atn_in = '1') then
-					state <= target;
 				elsif (dav_in = '0') then
 					state <= S_ATN_HOLD;
 					hold <= dio_in;
@@ -103,21 +97,22 @@ begin
 							target <= S_TALK;
 						end if;
 					end if;
-					if (dav_in = '1') then
-						state <= S_ATN_WAIT;
-					end if;
+					state <= S_ATN_WAIT;
+				end if;
+			when S_ATN_WAIT =>
+				if (atn_in = '1') then
+					state <= target;
 				end if;
 			when others =>
 				if (atn_in = '0') then
 					state <= S_ATN;
 				end if;
-			end case;
-			
+			end case;			
 		end if;
 		
 		case (state) is
-		when S_IDLE => is_out <= '0';
-		when S_LISTEN => is_out <= '0';
+		--when S_IDLE => is_out <= '0';
+		when S_TALK => is_out <= '0';
 		when others => is_out <= '1';
 		end case;
 		

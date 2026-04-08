@@ -284,11 +284,11 @@ architecture Behavioral of Shell is
 	
 begin
 
-	rtx <= pia1_cb1_in;
+	rtx <= ieee_is_out;
 	rrts <= nbe_out; --D_in(2);
 	iopage <= rcts;
 	
-	irq <= '0'; --pia1_irq or pia2_irq or via1_irq or int_out;
+	irq <= pia1_irq or pia2_irq or via1_irq or int_out;
 	
 	res <= not(nres);
 	
@@ -338,6 +338,9 @@ begin
 	-- ATN out, SRQ in, REN out, IFC out
 	dc <= '0';
 	-- 7516x talk enable; 0: DAV in, EOI in (ATN hi), NRFD out, NDAC out
+	-- 						 PET receives = TALK from device
+	-- 7516x talk enable; 1: DAV out, EOI out, NRFD in, NDAC in
+	-- 						 PET sends data = ATN, device LISTENs
 	te <= ieee_is_out;
 	
 	atn <= atn_out;
@@ -551,7 +554,7 @@ begin
 	port map(
 		phi2,
 		nres,
-		dio,
+		not(dio),
 		atn,
 		dav,
 		nrfd,
