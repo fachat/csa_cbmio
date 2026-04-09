@@ -113,8 +113,6 @@ architecture Behavioral of Shell is
 	signal D_out: std_logic_vector(7 downto 0);
 	
 	-- select signals (temporary until all units are implemented)
-	signal sel_via1: std_logic;
-	signal sel_via2: std_logic;
 	signal sel_uart1: std_logic;
 	signal sel_uart2: std_logic;
 	
@@ -132,7 +130,10 @@ architecture Behavioral of Shell is
 	signal srq_out: std_logic;
 	signal eoi_out: std_logic;
 	signal dio_out: std_logic_vector(7 downto 0);
-		
+
+	-- Serial IEC
+	signal fserdir: std_logic;
+	
 	-- components and related signals
 	
 	component ioselect is
@@ -611,7 +612,18 @@ begin
 	-- TODO: satna, fast bus
 	satnout 	<= via2_pb_out(3);
 	clkout 	<= via2_pb_out(4);
-	dataout 	<= via2_pb_out(5);
+	
+	dataout 	<= via2_pb_out(5) and not(via2_cb2_out) when fserdir = '1' 
+					else via2_pb_out(5);	
+	srqout <= not(via2_cb1_out) when fserdir = '1' 
+					else '0';
+	
+	fserdir <= via2_pb_out(0);
+	
+	via2_cb1_in <= srqin;
+	via2_cb2_in <= datain;
+	
+	via2_pa_in <= (others => '1');
 	
 	via2_pb_in(0) <= '1'; -- fserdir
 	via2_pb_in(1) <= '1'; -- satna
@@ -621,6 +633,8 @@ begin
 	via2_pb_in(5) <= via2_pb_out(5);	-- dataout
 	via2_pb_in(6) <= not(clkin);
 	via2_pb_in(7) <= not(datain);
+	
+	
 	
 	-- serial IEC
 	srqout <= 'Z';
