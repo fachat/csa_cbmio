@@ -613,10 +613,12 @@ begin
 	satnout 	<= via2_pb_out(3);
 	clkout 	<= via2_pb_out(4);
 	
-	dataout 	<= via2_pb_out(5) and not(via2_cb2_out) when fserdir = '1' 
-					else via2_pb_out(5);	
-	srqout <= not(via2_cb1_out) when fserdir = '1' 
-					else '0';
+	dataout <= via2_pb_out(5);	
+--	dataout 	<= via2_pb_out(5) or not(via2_cb2_out) when fserdir = '0' 
+--				else via2_pb_out(5);	
+	srqout <= '0';
+--	srqout <= not(via2_cb1_out) when fserdir = '0' 
+--				else '0';
 	
 	fserdir <= via2_pb_out(0);
 	
@@ -634,10 +636,6 @@ begin
 	via2_pb_in(6) <= not(clkin);
 	via2_pb_in(7) <= not(datain);
 	
-	
-	
-	-- serial IEC
-	srqout <= 'Z';
 	
 	----------------------------------------------------
 
