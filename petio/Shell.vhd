@@ -111,11 +111,7 @@ architecture Behavioral of Shell is
 
 	signal D_in: std_logic_vector(7 downto 0);
 	signal D_out: std_logic_vector(7 downto 0);
-	
-	-- select signals (temporary until all units are implemented)
-	signal sel_uart1: std_logic;
-	signal sel_uart2: std_logic;
-	
+		
 	signal nbe_out: std_logic;
 	signal res: std_logic;
 	
@@ -226,6 +222,16 @@ architecture Behavioral of Shell is
 	signal via2_cb2_out: std_logic;
 	signal via2_cb2_dir: std_logic;
 	
+	signal uart1_sel: std_logic;
+	signal uart1_irq: std_logic;
+	signal uart1_din: std_logic_vector(7 downto 0);
+	signal uart1_dout: std_logic_vector(7 downto 0);
+
+	signal uart2_sel: std_logic;
+	signal uart2_irq: std_logic;
+	signal uart2_din: std_logic_vector(7 downto 0);
+	signal uart2_dout: std_logic_vector(7 downto 0);
+	
 	component pia6520 is
     Port ( nres : in  STD_LOGIC;
            phi2 : in  STD_LOGIC;
@@ -301,8 +307,31 @@ architecture Behavioral of Shell is
 	 );
 	end component;
 
+	component uart_shell is
+    Port ( phi2 : in  STD_LOGIC;
+           rwb : in  STD_LOGIC;
+           nres : in  STD_LOGIC;
+			  sel : in STD_LOGIC;
+           addr : in  STD_LOGIC_VECTOR (2 downto 0);
+           din : in  STD_LOGIC_VECTOR (7 downto 0);
+           dout : out  STD_LOGIC_VECTOR (7 downto 0);
+           irq : out  STD_LOGIC;
+           rx : in  STD_LOGIC;
+           tx : out  STD_LOGIC;
+           cts : in  STD_LOGIC;
+           rts : out  STD_LOGIC;
+           dsr : in  STD_LOGIC;
+           dtr : out  STD_LOGIC;
+           ri : in  STD_LOGIC;
+           dcd : in  STD_LOGIC);
+	end component;
+	
 	-- test timer (50Hz)
 	signal test_counter: std_logic_vector(15 downto 0);
+	-- test
+	signal ign_rtx: std_logic;
+	signal ign_rrts: std_logic;
+	
 	-- which I/O page to use (either 8 or 9)
 	signal iopage: std_logic;
 	
@@ -312,7 +341,12 @@ begin
 	rrts <= nbe_out; --D_in(2);
 	iopage <= rcts;
 	
-	irq <= pia1_irq or pia2_irq or via1_irq or int_out;
+	irq <= pia1_irq 
+		or pia2_irq 
+		or via1_irq 
+		or uart1_irq
+		or uart2_irq
+		or int_out;
 	
 	res <= not(nres);
 	
@@ -323,6 +357,8 @@ begin
 			else pia2_dout when pia2_sel = '1'
 			else via1_dout when via1_sel = '1'
 			else via2_dout when via2_sel = '1'
+			else uart1_dout when uart1_sel = '1'
+			else uart2_dout when uart2_sel = '1'
 			else "10101010";	-- test pattern
 			--else (others => 'X');
 
@@ -339,15 +375,6 @@ begin
 	spiclk <= '1';
 	spiiosel <= '1';
 	
-	
-	-- rs232
-	ltx <= 'Z';
-	lrts <= 'Z';
-	ldtr <= 'Z';
-
-	--rtx <= 'Z';
-	--rrts <= 'Z';
-	rdtr <= 'Z';
 
 	-- IEEE488
 	
@@ -634,7 +661,52 @@ begin
 	via2_pb_in(5) <= via2_pb_out(5);	-- dataout
 	via2_pb_in(6) <= not(clkin);
 	via2_pb_in(7) <= not(datain);
+
+	----------------------------------------------------
 	
+	uart1: uart_shell 
+    Port map ( 
+				phi2,
+				rwb,
+				nres,
+				uart1_sel,
+				A(2 downto 0),
+				uart1_din,
+				uart1_dout,
+				uart1_irq,
+				lrx,
+				ltx,
+				lcts,
+				lrts,
+				ldsr,
+				ldtr,
+				lri,
+				ldcd
+	);
+
+	uart1_din <= D_in;
+
+	uart2: uart_shell 
+    Port map ( 
+				phi2,
+				rwb,
+				nres,
+				uart2_sel,
+				A(2 downto 0),
+				uart2_din,
+				uart2_dout,
+				uart2_irq,
+				rrx,
+				ign_rtx,
+				rcts,
+				ign_rrts,
+				rdsr,
+				rdtr,
+				'0',
+				'0'
+	);
+
+	uart2_din <= D_in;
 	
 	----------------------------------------------------
 
@@ -661,8 +733,8 @@ begin
 		pia2_sel,
 		via1_sel,
 		via2_sel,
-		sel_uart1,
-		sel_uart2
+		uart1_sel,
+		uart2_sel
 	);
 	
 	nbe <= nbe_out;

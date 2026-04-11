@@ -3,9 +3,13 @@
 # bus
 
 # needs to be fixed - phi2 needs to be at a GCLK pin!
-net phi2 			loc=p23 | iostandard=lvttl;
+#net phi2 			loc=p23 | iostandard=lvttl;
+# required due to UART's use with too many non-clock resources
+net phi2 			loc=p23 | iostandard=lvttl | CLOCK_DEDICATED_ROUTE=false;
 
 inst "phi2" bufg=clk;
+# required as uart has too many inputs depending on it
+PIN "phi2_BUFGP/BUFG.O" CLOCK_DEDICATED_ROUTE = FALSE;
 
 net rwb				loc=p2 | iostandard=lvcmos33;
 net niosel			loc=p5 | iostandard=lvcmos33;
