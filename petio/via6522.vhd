@@ -125,6 +125,9 @@ architecture Gideon of via6522 is
     alias  timer_b_clr_strobe  : std_logic is irq_clr_strobe(5);
     alias  timer_a_clr_strobe  : std_logic is irq_clr_strobe(6);
 
+    alias  ca1_irq_flag      : std_logic is irq_flags(1);
+    alias  cb1_irq_flag      : std_logic is irq_flags(5);
+
     alias tmr_a_output_en   : std_logic is acr(7);
     alias tmr_a_freerun     : std_logic is acr(6);
     alias tmr_b_count_mode  : std_logic is acr(5);
@@ -252,11 +255,13 @@ begin
 			
 			if (rising_edge(phi2)) then 
             -- input latch emulation
-            if pa_latch_en = '0' or (ca1_event = '1' and ca2_handshake_o = '1') then
+--            if pa_latch_en = '0' or (ca1_event = '1' and ca2_handshake_o = '1') then
+            if pa_latch_en = '0' or ca1_irq_flag = '0' then
                 ira <= port_a_c;
             end if;
             
-            if pb_latch_en = '0' or (cb1_event = '1' and cb2_handshake_o = '1') then
+--            if pb_latch_en = '0' or (cb1_event = '1' and cb2_handshake_o = '1') then
+            if pb_latch_en = '0' or cb1_irq_flag = '0' then
                 irb <= port_b_c;
             end if;            
 			end if;
