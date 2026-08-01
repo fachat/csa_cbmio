@@ -372,7 +372,6 @@ begin
 	
 	-- userport (inputs)
 	up(8) <= 'Z';
-	up(10) <= 'Z';
 	up(12) <= 'Z';
 	up(13) <= 'Z';
 
@@ -468,6 +467,8 @@ begin
 	pia1_pb_in <= kin;
 	
 	pia1_pa_in(7) <= up(10);
+	up(10) <= pia1_pa_out(7) when pia1_pa_dir(7) = '1' else 'Z';
+	
 	pia1_pa_in(6) <= eoi;
 	pia1_pa_in(5) <= '1';	-- cass#2 switch
 	pia1_pa_in(4) <= c1sw;	-- cass#1 switch
