@@ -70,8 +70,8 @@ entity Shell is
 		--rri: in std_logic;
 		
 		-- cassette interface
-		c1sw: in std_logic;
-		cwr: out std_logic;
+		c1sw: inout std_logic;
+		cwr: inout std_logic;
 		c1rd: in std_logic;
 		c1mtr: out std_logic;
 		
@@ -151,11 +151,13 @@ architecture Behavioral of Shell is
 	signal pia1_din: std_logic_vector(7 downto 0);
 	signal pia1_dout: std_logic_vector(7 downto 0);
 	signal pia1_pa_in: std_logic_vector(7 downto 0);
+	signal pia1_pa_dir: std_logic_vector(7 downto 0);
 	signal pia1_pa_out: std_logic_vector(7 downto 0);
 	signal pia1_ca1_in: std_logic;
 	signal pia1_ca2_in: std_logic;
 	signal pia1_ca2_out: std_logic;
 	signal pia1_pb_in: std_logic_vector(7 downto 0);
+	signal pia1_pb_dir: std_logic_vector(7 downto 0);
 	signal pia1_pb_out: std_logic_vector(7 downto 0);
 	signal pia1_cb1_in: std_logic;
 	signal pia1_cb2_in: std_logic;
@@ -166,11 +168,13 @@ architecture Behavioral of Shell is
 	signal pia2_din: std_logic_vector(7 downto 0);
 	signal pia2_dout: std_logic_vector(7 downto 0);
 	signal pia2_pa_in: std_logic_vector(7 downto 0);
+	signal pia2_pa_dir: std_logic_vector(7 downto 0);
 	signal pia2_pa_out: std_logic_vector(7 downto 0);
 	signal pia2_ca1_in: std_logic;
 	signal pia2_ca2_in: std_logic;
 	signal pia2_ca2_out: std_logic;
 	signal pia2_pb_in: std_logic_vector(7 downto 0);
+	signal pia2_pb_dir: std_logic_vector(7 downto 0);
 	signal pia2_pb_out: std_logic_vector(7 downto 0);
 	signal pia2_cb1_in: std_logic;
 	signal pia2_cb2_in: std_logic;
@@ -243,12 +247,14 @@ architecture Behavioral of Shell is
            data_out : out  STD_LOGIC_VECTOR (7 downto 0);
 
            porta_in : in  STD_LOGIC_VECTOR (7 downto 0);
+           porta_dir : out  STD_LOGIC_VECTOR (7 downto 0);
            porta_out : out  STD_LOGIC_VECTOR (7 downto 0);
            ca1_in : in  STD_LOGIC;
            ca2_in : in  STD_LOGIC;
            ca2_out : out  STD_LOGIC;
 			  
            portb_in : in  STD_LOGIC_VECTOR (7 downto 0);
+           portb_dir : in  STD_LOGIC_VECTOR (7 downto 0);
            portb_out : out  STD_LOGIC_VECTOR (7 downto 0);
            cb1_in : in  STD_LOGIC;
            cb2_in : in  STD_LOGIC;
@@ -359,7 +365,7 @@ begin
 			else via2_dout when via2_sel = '1'
 			else uart1_dout when uart1_sel = '1'
 			else uart2_dout when uart2_sel = '1'
-			else "10101010";	-- test pattern
+			else "11101000";	-- open bus pattern $e8
 			--else (others => 'X');
 
 	-- I/O
@@ -375,7 +381,6 @@ begin
 	spiclk <= '1';
 	spiiosel <= '1';
 	
-
 	-- IEEE488
 	
 	-- Using the 7516x interface chips
@@ -401,7 +406,6 @@ begin
 	eoi <= eoi_out when ieee_is_out = '1' else 'Z';
 	
 	dio(7 downto 0) <= dio_out when ieee_is_out = '1' else (others => 'Z');
-
 	
 	----------------------------------------------------
 	-- fake interrupt as long as pia int does not seem to work
@@ -444,12 +448,14 @@ begin
 			pia1_dout,
 
 			pia1_pa_in,
+			pia1_pa_dir,
 			pia1_pa_out,			
          pia1_ca1_in,
          pia1_ca2_in,
          pia1_ca2_out,
 
 			pia1_pb_in,
+			pia1_pb_dir,
 			pia1_pb_out,			
          pia1_cb1_in,
          pia1_cb2_in,
@@ -466,6 +472,8 @@ begin
 	pia1_pa_in(5) <= '1';	-- cass#2 switch
 	pia1_pa_in(4) <= c1sw;	-- cass#1 switch
 	pia1_pa_in(3 downto 0) <= pia1_pa_out(3 downto 0);
+
+	c1sw <= pia1_pa_out(4) when pia1_pa_dir(0) = '1' else 'Z';
 	
 	pia1_ca1_in <= c1rd;		-- cass#1 read
 	pia1_ca2_in <= 'X';		-- eoi out
@@ -489,12 +497,14 @@ begin
 			pia2_dout,
 
 			pia2_pa_in,
+			pia2_pa_dir,
 			pia2_pa_out,			
          pia2_ca1_in,
          pia2_ca2_in,
          pia2_ca2_out,
 
 			pia2_pb_in,
+			pia2_pa_dir,
 			pia2_pb_out,			
          pia2_cb1_in,
          pia2_cb2_in,
@@ -562,9 +572,10 @@ begin
 	via1_pa_in(4) <= up(7);
 	via1_pa_in(5) <= up(6);
 	via1_pa_in(6) <= up(5);
-	via1_pa_in(5) <= up(4);
+	via1_pa_in(7) <= up(4);
 	
 	via1_pb_in(0) <= ndac;
+	via1_pb_in(3) <= cwr;
 	
 	up(0) <= via1_pa_out(0) when via1_pa_dir(0) = '1' else 'Z';
 	up(1) <= via1_pa_out(1) when via1_pa_dir(1) = '1' else 'Z';
@@ -578,7 +589,8 @@ begin
 	via1_pb_in(0) <= ndac;
 	nrfd_out <= via1_pb_out(1);
 	atn_out <= via1_pb_out(2);
-	cwr <= via1_pb_out(3);
+	cwr <= via1_pb_out(3) when via1_pb_dir(3) = '1' else 'Z';
+	
 	-- c2mtr <= via_pb_out(4);
 	via1_pb_in(5) <= up(13);	-- vdrive
 	via1_pb_in(6) <= nrfd;
@@ -586,12 +598,15 @@ begin
 	
 	-- graphic
 	up(11) <= via1_ca2_out when via1_ca2_dir = '1' else 'Z';
+
 	-- Userport CA1
 	via1_ca1_in <= up(8);
 	-- Cass#2 read
 	via1_cb1_in <= up(12);
+	
 	-- shift register in/out
 	up(9) <= via1_cb2_out when via1_cb2_dir = '1' else 'Z';
+	via1_cb2_in <= up(9);
 	
 	----------------------------------------------------
 

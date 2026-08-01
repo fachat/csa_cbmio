@@ -74,14 +74,18 @@ begin
 					pia1 <= '1';
 					nbe <= '0';
 				when "00011" =>
-					uart1 <= '1';
-					nbe <= '0';
+					if (A(2) = '0') then
+						uart1 <= '1';
+						nbe <= '0';
+					end if;
 				when "00100" =>
 					pia2 <= '1';
 					nbe <= '0';
 				when "00101" =>
-					uart2 <= '1';
-					nbe <= '0';
+					if (A(2) = '0') then
+						uart2 <= '1';
+						nbe <= '0';
+					end if;
 				when "01000" =>
 					via1 <= '1';
 					nbe <= '0';

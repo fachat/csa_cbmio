@@ -61,6 +61,11 @@
 ////                                                              ////
 //////////////////////////////////////////////////////////////////////
 //
+//
+// 2026/04/11 fachat
+// Adapted to 6502 interface by removing clk and ack from register handling
+// Basically removing the sampling of the interface signals from 1.16 it seems.
+//
 // CVS Revision History
 //
 // $Log: not supported by cvs2svn $
@@ -138,7 +143,7 @@ module uart_top	(
 	wb_clk_i, 
 	
 	// Wishbone signals
-	wb_rst_i, wb_adr_i, wb_dat_i, wb_dat_o, wb_we_i, wb_stb_i, wb_cyc_i, wb_ack_o, wb_sel_i,
+	wb_rst_i, wb_adr_i, wb_dat_i, wb_dat_o, wb_we_i, wb_stb_i, wb_cyc_i, 
 	int_o, // interrupt request
 
 	// UART	signals
@@ -164,8 +169,6 @@ output [7:0] 	 wb_dat_o;
 input 								 wb_we_i;
 input 								 wb_stb_i;
 input 								 wb_cyc_i;
-input [3:0]							 wb_sel_i;
-output 								 wb_ack_o;
 output 								 int_o;
 
 // UART	signals
@@ -188,50 +191,37 @@ wire 									 stx_pad_o;
 wire 									 rts_pad_o;
 wire 									 dtr_pad_o;
 
-wire [2:0] 	 wb_adr_i;
-wire [7:0] 	 wb_dat_i;
-wire [7:0] 	 wb_dat_o;
+wire [2:0] 		 					wb_adr_i;
+wire [7:0] 	 						wb_dat_i;
+wire [7:0] 	 						wb_dat_o;
 
-wire [7:0] 							 wb_dat8_i; // 8-bit internal data input
-wire [7:0] 							 wb_dat8_o; // 8-bit internal data output
-wire [31:0] 						 wb_dat32_o; // debug interface 32-bit output
-wire [3:0] 							 wb_sel_i;  // WISHBONE select signal
-wire [2:0] 	 wb_adr_int;
 wire 									 we_o;	// Write enable for registers
-wire		          	     re_o;	// Read enable for registers
+wire		          	     		re_o;	// Read enable for registers
 //
 // MODULE INSTANCES
 //
 
 ////  WISHBONE interface module
 uart_wb		wb_interface(
-		.clk(		wb_clk_i		),
+		.clk(			wb_clk_i		),
 		.wb_rst_i(	wb_rst_i	),
-	.wb_dat_i(wb_dat_i),
-	.wb_dat_o(wb_dat_o),
-	.wb_dat8_i(wb_dat8_i),
-	.wb_dat8_o(wb_dat8_o),
-	 .wb_dat32_o(32'b0),								 
-	 .wb_sel_i(4'b0),
 		.wb_we_i(	wb_we_i		),
 		.wb_stb_i(	wb_stb_i	),
 		.wb_cyc_i(	wb_cyc_i	),
-		.wb_ack_o(	wb_ack_o	),
-	.wb_adr_i(wb_adr_i),
-	.wb_adr_int(wb_adr_int),
 		.we_o(		we_o		),
-		.re_o(re_o)
+		.re_o(		re_o)
 		);
 
 // Registers
 uart_regs #(.SIM (SIM))	regs(
 	.clk(		wb_clk_i		),
+	.wb_cyc_i(	wb_cyc_i ),
 	.wb_rst_i(	wb_rst_i	),
-	.wb_addr_i(	wb_adr_int	),
-	.wb_dat_i(	wb_dat8_i	),
-	.wb_dat_o(	wb_dat8_o	),
+	.wb_addr_i(	wb_adr_i	),
+	.wb_dat_i(	wb_dat_i	),
+	.wb_dat_o(	wb_dat_o	),
 	.wb_we_i(	we_o		),
-   .wb_re_i(re_o),
+   .wb_re_i(	re_o		),
 	.modem_inputs(	{cts_pad_i, dsr_pad_i,
 	ri_pad_i,  dcd_pad_i}	),
 	.stx_pad_o(		stx_pad_o		),

@@ -40,6 +40,7 @@ entity pia6520 is
            data_out : out  STD_LOGIC_VECTOR (7 downto 0);
 
            porta_in : in  STD_LOGIC_VECTOR (7 downto 0);
+           porta_dir : out  STD_LOGIC_VECTOR (7 downto 0);
            porta_out : out  STD_LOGIC_VECTOR (7 downto 0);
            ca1_in : in  STD_LOGIC;
            ca2_in : in  STD_LOGIC;
@@ -47,6 +48,7 @@ entity pia6520 is
 			  
            portb_in : in  STD_LOGIC_VECTOR (7 downto 0);
            portb_out : out  STD_LOGIC_VECTOR (7 downto 0);
+           portb_dir : out  STD_LOGIC_VECTOR (7 downto 0);
            cb1_in : in  STD_LOGIC;
            cb2_in : in  STD_LOGIC;
            cb2_out : out  STD_LOGIC);
@@ -100,6 +102,9 @@ begin
 	ddrb_a <= '1' when sel = '1' and addr = REG_PORTB and crb(2) = '0' else '0';
 	cra_a <= '1' when sel = '1' and addr = REG_CRA else '0';
 	crb_a <= '1' when sel = '1' and addr = REG_CRB else '0';
+	
+	porta_dir <= ddra;
+	portb_dir <= ddrb;
 	
 	-- write CRA
 	cra_p: process(nres, phi2, sel, rwb, cra_a)
