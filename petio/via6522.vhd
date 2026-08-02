@@ -90,6 +90,7 @@ architecture Gideon of via6522 is
     signal irq_flags      : std_logic_vector(6 downto 0) := (others => '0');
 	 signal irq_clr_strobe: std_logic_vector(6 downto 0) := (others => '0');
     signal irq_events    : std_logic_vector(6 downto 0) := (others => '0');
+    signal irq_events_d  : std_logic_vector(6 downto 0) := (others => '0');
     signal irq_out       : std_logic;
     
     signal timer_a_latch : std_logic_vector(15 downto 0) := latch_reset_pattern;
@@ -116,6 +117,9 @@ architecture Gideon of via6522 is
     alias  cb1_event     : std_logic is irq_events(4);
     alias  timer_b_event : std_logic is irq_events(5);
     alias  timer_a_event : std_logic is irq_events(6);
+
+    alias  ca1_event_d   : std_logic is irq_events_d(1);
+    alias  cb1_event_d   : std_logic is irq_events_d(4);
 
     alias  ca2_clr_strobe      : std_logic is irq_clr_strobe(0);
     alias  ca1_clr_strobe      : std_logic is irq_clr_strobe(1);
@@ -255,23 +259,25 @@ begin
 			
 			if (rising_edge(phi2)) then 
             -- input latch emulation
---            if pa_latch_en = '0' or (ca1_event = '1' and ca2_handshake_o = '1') then
             if pa_latch_en = '0' or ca1_irq_flag = '0' then
                 ira <= port_a_c;
             end if;
             
---            if pb_latch_en = '0' or (cb1_event = '1' and cb2_handshake_o = '1') then
             if pb_latch_en = '0' or cb1_irq_flag = '0' then
                 irb <= port_b_c;
             end if;            
 			end if;
+
+			if (rising_edge(phi2)) then 
+				irq_events_d <= irq_events;
+			end if;
 			
-            -- CA2 logic
+          -- CA2 logic
 			if (falling_edge(phi2)) then
-            if ca1_event = '1' then
-                ca2_handshake_o <= '0';
-            elsif (ren = '1' or wen = '1') and addr = X"1" then
+            if ca1_i = ca1_edge_select then
                 ca2_handshake_o <= '1';
+            elsif (ren = '1' or wen = '1') and addr = X"1" then
+                ca2_handshake_o <= '0';
             end if;
 			end if;
 			
@@ -285,10 +291,10 @@ begin
 
             -- CB2 logic
 			if (falling_edge(phi2)) then
-            if cb1_event = '1' then
-                cb2_handshake_o <= '0';
-            elsif (ren = '1' or wen = '1') and addr = X"0" then
+            if cb1_i = cb1_edge_select then
                 cb2_handshake_o <= '1';
+            elsif (ren = '1' or wen = '1') and addr = X"0" then
+                cb2_handshake_o <= '0';
             end if;
 			end if;
 
