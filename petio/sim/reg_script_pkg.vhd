@@ -58,6 +58,7 @@ package body reg_script_pkg is
     variable adr : integer;
     variable dat : integer;
     variable opc : character;
+    variable opstr : string(1 to 1);
     variable idx : natural := 0;
     variable last_cycle : integer := -1;
     variable hash_pos : integer;
@@ -92,10 +93,11 @@ package body reg_script_pkg is
         next;
       end if;
 
-      read(l, opc, ok);
+      read(l, opstr, ok);
       if not ok then
         assert false report "Invalid script line (missing operation)" severity failure;
       end if;
+      opc := opstr(1);
 
       if cyc < 0 then
         assert false report "Negative cycle in script" severity failure;
@@ -142,7 +144,7 @@ package body reg_script_pkg is
           cmds(idx).data := std_logic_vector(to_unsigned(dat, 8));
 
         when others =>
-          assert false report "Invalid operation in script (use R/W/N)" severity failure;
+          assert false report "Invalid operation in script (opc='" & opc & "', use R/W/N)" severity failure;
       end case;
 
       idx := idx + 1;
