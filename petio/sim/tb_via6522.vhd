@@ -71,9 +71,9 @@ begin
   begin
     loop
       phi2 <= '0';
-      wait for 5 ns;
+      wait for 500 ns;
       phi2 <= '1';
-      wait for 5 ns;
+      wait for 500 ns;
     end loop;
   end process;
 
@@ -106,9 +106,11 @@ begin
     wait until reset = '0';
 
     while cycle <= max_cycle + 4 loop
-      wait until rising_edge(phi2);
+      wait until falling_edge(phi2);
       wen <= '0';
       ren <= '0';
+
+      wait for 100 ns;
 
       if (cmd_idx < cmd_count) and cmds(cmd_idx).valid and (cmds(cmd_idx).cycle = cycle) then
         cmd := cmds(cmd_idx);
