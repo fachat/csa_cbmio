@@ -58,15 +58,18 @@ package body reg_script_pkg is
     variable adr : integer;
     variable dat : integer;
     variable opc : character;
-    variable opstr : string(1 to 1);
     variable idx : natural := 0;
     variable last_cycle : integer := -1;
     variable hash_pos : integer;
+    variable line_no : natural := 0;
+    variable op_pos : integer;
+    variable p : integer;
   begin
     count := 0;
 
     while not endfile(f) loop
       readline(f, raw);
+      line_no := line_no + 1;
       hash_pos := 0;
       for i in raw.all'range loop
         if raw.all(i) = '#' then
@@ -88,16 +91,35 @@ package body reg_script_pkg is
         next;
       end if;
 
+      -- Find operation token position in current line (1-based in stripped line)
+      op_pos := 0;
+      p := l.all'low;
+      while p <= l.all'high and (l.all(p) = ' ' or l.all(p) = character'val(9)) loop
+        p := p + 1;
+      end loop;
+      while p <= l.all'high and (l.all(p) /= ' ' and l.all(p) /= character'val(9)) loop
+        p := p + 1;
+      end loop;
+      while p <= l.all'high and (l.all(p) = ' ' or l.all(p) = character'val(9)) loop
+        p := p + 1;
+      end loop;
+      if p <= l.all'high then
+        op_pos := p;
+      end if;
+
       read(l, cyc, ok);
       if not ok then
         next;
       end if;
 
-      read(l, opstr, ok);
+      opc := ' ';
+      loop
+        read(l, opc, ok);
+        exit when (not ok) or (opc /= ' ' and opc /= character'val(9));
+      end loop;
       if not ok then
-        assert false report "Invalid script line (missing operation)" severity failure;
+        assert false report "Invalid script line (missing operation) at line " & integer'image(integer(line_no)) severity failure;
       end if;
-      opc := opstr(1);
 
       if cyc < 0 then
         assert false report "Negative cycle in script" severity failure;
@@ -144,7 +166,9 @@ package body reg_script_pkg is
           cmds(idx).data := std_logic_vector(to_unsigned(dat, 8));
 
         when others =>
-          assert false report "Invalid operation in script (opc='" & opc & "', use R/W/N)" severity failure;
+          assert false report "Invalid operation in script at line " & integer'image(integer(line_no))
+            & ", char " & integer'image(op_pos)
+            & " (opc='" & opc & "', use R/W/N)" severity failure;
       end case;
 
       idx := idx + 1;
