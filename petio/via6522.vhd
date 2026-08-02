@@ -90,7 +90,6 @@ architecture Gideon of via6522 is
     signal irq_flags      : std_logic_vector(6 downto 0) := (others => '0');
 	 signal irq_clr_strobe: std_logic_vector(6 downto 0) := (others => '0');
     signal irq_events    : std_logic_vector(6 downto 0) := (others => '0');
-    signal irq_events_d  : std_logic_vector(6 downto 0) := (others => '0');
     signal irq_out       : std_logic;
     
     signal timer_a_latch : std_logic_vector(15 downto 0) := latch_reset_pattern;
@@ -117,9 +116,6 @@ architecture Gideon of via6522 is
     alias  cb1_event     : std_logic is irq_events(4);
     alias  timer_b_event : std_logic is irq_events(5);
     alias  timer_a_event : std_logic is irq_events(6);
-
-    alias  ca1_event_d   : std_logic is irq_events_d(1);
-    alias  cb1_event_d   : std_logic is irq_events_d(4);
 
     alias  ca2_clr_strobe      : std_logic is irq_clr_strobe(0);
     alias  ca1_clr_strobe      : std_logic is irq_clr_strobe(1);
@@ -268,10 +264,6 @@ begin
             end if;            
 			end if;
 
-			if (rising_edge(phi2)) then 
-				irq_events_d <= irq_events;
-			end if;
-			
           -- CA2 logic
 			if (falling_edge(phi2)) then
             if ca1_i = ca1_edge_select then
@@ -510,6 +502,7 @@ begin
     -- Timer A
     tmr_a: block
         signal timer_a_reload        : std_logic;
+        signal timer_a_reload_d      : std_logic;
         signal timer_a_toggle        : std_logic;
         signal timer_a_may_interrupt : std_logic;
     begin
@@ -529,17 +522,20 @@ begin
                 if reset='1' then
                     timer_a_may_interrupt <= '0';
                     timer_a_count  <= latch_reset_pattern;
+						  
                 elsif write_t1c_h = '1' then
 						  -- write t1 counter high
                     timer_a_may_interrupt <= '1';
                     timer_a_count  <= data_in & timer_a_latch(7 downto 0);
-                elsif timer_a_reload = '1' then
+						  
+                elsif timer_a_reload_d = '1' then
                     timer_a_count  <= timer_a_latch;
 						  -- are we writing to T1 counter low in exactly this moment?
                     if write_t1c_l = '1' then
                             timer_a_count(7 downto 0) <= data_in;
                     end if;
                     timer_a_may_interrupt <= timer_a_may_interrupt and tmr_a_freerun;
+						  
                 else
                     --Timer coutinues to count in both free run and one shot.                        
                     timer_a_count <= timer_a_count - X"0001";
@@ -555,11 +551,14 @@ begin
                     if timer_a_count = X"0000" then
                         -- generate an event if we were triggered
                         timer_a_reload <= '1';
-								
-								if (timer_a_may_interrupt = '1') then 
-									timer_a_event <= '1';
-								end if;
                     end if;
+					 end if;
+					 
+					 timer_a_reload_d <= timer_a_reload;
+					 if (timer_a_reload = '1' and timer_a_may_interrupt = '1') then 
+						  timer_a_event <= '1';
+					 else
+						  timer_a_event <= '0';
 					 end if;
             end if;
 				
