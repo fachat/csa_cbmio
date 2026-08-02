@@ -575,7 +575,7 @@ begin
 	via1_pa_in(6) <= up(5);
 	via1_pa_in(7) <= up(4);
 	
-	via1_pb_in(0) <= ndac;
+	via1_pb_in(0) <= ndac and ndac_out;
 	via1_pb_in(3) <= cwr;
 	
 	up(0) <= via1_pa_out(0) when via1_pa_dir(0) = '1' else 'Z';
@@ -587,14 +587,13 @@ begin
 	up(6) <= via1_pa_out(5) when via1_pa_dir(5) = '1' else 'Z';
 	up(7) <= via1_pa_out(4) when via1_pa_dir(4) = '1' else 'Z';
 	
-	via1_pb_in(0) <= ndac;
 	nrfd_out <= via1_pb_out(1);
 	atn_out <= via1_pb_out(2);
 	cwr <= via1_pb_out(3) when via1_pb_dir(3) = '1' else 'Z';
 	
 	-- c2mtr <= via_pb_out(4);
 	via1_pb_in(5) <= up(13);	-- vdrive
-	via1_pb_in(6) <= nrfd;
+	via1_pb_in(6) <= nrfd and nrfd_out;
 	via1_pb_in(7) <= dav;
 	
 	-- graphic
