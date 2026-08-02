@@ -9,7 +9,7 @@ via:
 	$(GHDL) -a $(GHDLFLAGS) ../via6522.vhd reg_script_pkg.vhd tb_via6522.vhd
 	$(GHDL) -e $(GHDLFLAGS) tb_via6522
 	$(GHDL) -r $(GHDLFLAGS) tb_via6522 -gscript_file=$(if $(SCRIPT),$(SCRIPT),scripts/via_script.txt) --vcd=via.vcd
-	$(VIEWER) via.vcd
+	$(VIEWER) via.vcd via.gtkw
 
 pia:
 	$(GHDL) -a $(GHDLFLAGS) ../pia6520.vhd reg_script_pkg.vhd tb_pia6520.vhd

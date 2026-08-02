@@ -1,7 +1,15 @@
 # cycle op addr data
-0 W 2 255
-1 W 0 85
-3 R 0
-5 N
-7 W 14 64
-9 R 14
+0 W 11 0	# 0 to ACR, T1 single shot
+4 W 4 2		# T1 Low latch
+8 W 5 0		# T1 High counter, start counting
+9 N
+10 N
+11 N		# LDA VIA_T1CL
+12 N
+13 N
+14 R 4
+28 R 4
+42 R 4
+56 R 4
+1024 N
+
