@@ -52,6 +52,7 @@ package body reg_script_pkg is
   ) is
     file f       : text open read_mode is filename;
     variable l   : line;
+    variable raw : line;
     variable ok  : boolean;
     variable cyc : integer;
     variable adr : integer;
@@ -59,16 +60,30 @@ package body reg_script_pkg is
     variable opc : character;
     variable idx : natural := 0;
     variable last_cycle : integer := -1;
+    variable hash_pos : integer;
   begin
     count := 0;
 
     while not endfile(f) loop
-      readline(f, l);
-      if l'length = 0 then
-        next;
+      readline(f, raw);
+      hash_pos := 0;
+      for i in raw.all'range loop
+        if raw.all(i) = '#' then
+          hash_pos := i;
+          exit;
+        end if;
+      end loop;
+
+      if hash_pos /= 0 then
+        if hash_pos = raw.all'low then
+          next;
+        end if;
+        l := new string'(raw.all(raw.all'low to hash_pos - 1));
+      else
+        l := new string'(raw.all);
       end if;
 
-      if l.all(1) = '#' then
+      if l'length = 0 then
         next;
       end if;
 
