@@ -1,0 +1,7 @@
+# cycle op addr data
+0 W 1 4
+1 W 0 240
+2 W 3 5
+4 R 1
+6 N
+8 R 0
