@@ -78,11 +78,13 @@ begin
     init_cmds(cmds);
     load_script(script_file, cmds, cmd_count);
 
-    for i in 0 to cmd_count - 1 loop
-      if cmds(i).cycle > max_cycle then
-        max_cycle := cmds(i).cycle;
-      end if;
-    end loop;
+    if cmd_count > 0 then
+      for i in 0 to cmd_count - 1 loop
+        if cmds(i).cycle > max_cycle then
+          max_cycle := cmds(i).cycle;
+        end if;
+      end loop;
+    end if;
 
     wait until nres = '1';
 
