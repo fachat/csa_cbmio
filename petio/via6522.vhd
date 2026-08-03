@@ -81,6 +81,7 @@ architecture Gideon of via6522 is
     constant latch_reset_pattern : std_logic_vector(15 downto 0) := X"5550";
 
     signal last_data     : std_logic_vector(7 downto 0) := X"55";
+    signal data_out_l    : std_logic_vector(7 downto 0) := X"55";
     
     signal pio_i         : pio_t;
     signal port_a_c      : std_logic_vector(7 downto 0) := (others => '0');
@@ -384,7 +385,6 @@ begin
 		 
             -- Reads - Output only --
 				-- we do it async here
-            data_out <= X"00";
             case addr is
             when X"0" => -- ORB
                 --Port B reads its own output register for pins set to output.
@@ -411,21 +411,21 @@ begin
             when X"9" => -- TA HI counter
                 data_out <= timer_b_count(15 downto 8);
             when X"A" => -- SR
-                data_out  <= shift_reg;
+                data_out <= shift_reg;
             when X"B" => -- ACR
-                data_out  <= acr;
+                data_out <= acr;
             when X"C" => -- PCR
-                data_out  <= pcr;
+                data_out <= pcr;
             when X"D" => -- IFR
-                data_out  <= irq_out & irq_flags;
+                data_out <= irq_out & irq_flags;
             when X"E" => -- IER
-                data_out  <= '0' & irq_mask;
+                data_out <= '0' & irq_mask;
             when X"F" => -- ORA
-                data_out  <= ira;
+                data_out <= ira;
             when others =>
                 null;
             end case;
-            
+			
 			if (falling_edge(phi2)) then
 				ca1_clr_strobe <= '0';
 				ca2_clr_strobe <= '0';
@@ -503,6 +503,9 @@ begin
     tmr_a: block
         signal timer_a_reload        : std_logic;
         signal timer_a_reload_d      : std_logic;
+        signal timer_a_reload_d2     : std_logic;
+		  signal timer_a_was_load		 : std_logic;
+		  signal timer_a_was_load_d	 : std_logic;
         signal timer_a_toggle        : std_logic;
         signal timer_a_may_interrupt : std_logic;
     begin
@@ -518,6 +521,7 @@ begin
                     timer_a_toggle <= not timer_a_toggle;
                 end if;
 
+					 timer_a_was_load <= '0';
                 -- always count, or load
                 if reset='1' then
                     timer_a_may_interrupt <= '0';
@@ -527,8 +531,9 @@ begin
 						  -- write t1 counter high
                     timer_a_may_interrupt <= '1';
                     timer_a_count  <= data_in & timer_a_latch(7 downto 0);
+						  timer_a_was_load <= '1';
 						  
-                elsif timer_a_reload_d = '1' then
+                elsif timer_a_reload_d2 = '1' or timer_a_was_load = '1' then
                     timer_a_count  <= timer_a_latch;
 						  -- are we writing to T1 counter low in exactly this moment?
                     if write_t1c_l = '1' then
@@ -540,6 +545,8 @@ begin
                     --Timer coutinues to count in both free run and one shot.                        
                     timer_a_count <= timer_a_count - X"0001";
                 end if;                    
+					 
+ 					 timer_a_reload_d <= timer_a_reload;
             end if;
                 
             if rising_edge(phi2) then
@@ -554,12 +561,13 @@ begin
                     end if;
 					 end if;
 					 
-					 timer_a_reload_d <= timer_a_reload;
+					 timer_a_reload_d2 <= timer_a_reload_d and not(timer_a_was_load);
+					 
 					 if (timer_a_reload = '1' and timer_a_may_interrupt = '1') then 
 						  timer_a_event <= '1';
 					 else
 						  timer_a_event <= '0';
-					 end if;
+					 end if;					 
             end if;
 				
         end process;

@@ -343,7 +343,7 @@ architecture Behavioral of Shell is
 	
 begin
 
-	rtx <= ieee_is_out;
+	rtx <= '1' when via1_sel ='1' and A(3 downto 0) = X"6" else '0';
 	rrts <= nbe_out; --D_in(2);
 	iopage <= rcts;
 	

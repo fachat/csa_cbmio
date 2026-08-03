@@ -1,19 +1,19 @@
 [*]
 [*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
-[*] Sun Aug  2 14:32:21 2026
+[*] Mon Aug  3 21:29:12 2026
 [*]
 [dumpfile] "/home/fachat/Shared/csa_cbmio/petio/sim/via.vcd"
-[dumpfile_mtime] "Sun Aug  2 14:31:26 2026"
-[dumpfile_size] 81478
+[dumpfile_mtime] "Mon Aug  3 21:27:40 2026"
+[dumpfile_size] 38866
 [savefile] "/home/fachat/Shared/csa_cbmio/petio/sim/via.gtkw"
-[timestart] 0
+[timestart] 23730000000
 [size] 1920 993
-[pos] -1 -1
-*-32.099998 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] -27 -1
+*-31.500000 31440000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_via6522.
 [treeopen] tb_via6522.dut.
 [sst_width] 239
-[signals_width] 182
+[signals_width] 198
 [sst_expanded] 1
 [sst_vpaned_height] 296
 @28
@@ -23,12 +23,12 @@ tb_via6522.dut.wen
 @22
 tb_via6522.dut.addr[3:0]
 tb_via6522.dut.data_in[7:0]
+tb_via6522.dut.data_out_l[7:0]
 tb_via6522.dut.data_out[7:0]
 tb_via6522.dut.acr[7:0]
 tb_via6522.dut.pcr[7:0]
-@29
-tb_via6522.dut.write_t1c_l
 @28
+tb_via6522.dut.write_t1c_l
 tb_via6522.dut.write_t1c_h
 @22
 tb_via6522.dut.timer_a_latch[15:0]
@@ -36,6 +36,8 @@ tb_via6522.dut.timer_a_count[15:0]
 @28
 tb_via6522.dut.tmr_a.timer_a_reload
 tb_via6522.dut.tmr_a.timer_a_reload_d
+tb_via6522.dut.tmr_a.timer_a_reload_d2
+tb_via6522.dut.tmr_a.timer_a_was_load
 tb_via6522.dut.tmr_a.timer_a_toggle
 [pattern_trace] 1
 [pattern_trace] 0
