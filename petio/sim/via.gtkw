@@ -1,19 +1,19 @@
 [*]
 [*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
-[*] Mon Aug  3 21:29:12 2026
+[*] Tue Aug  4 20:53:57 2026
 [*]
 [dumpfile] "/home/fachat/Shared/csa_cbmio/petio/sim/via.vcd"
-[dumpfile_mtime] "Mon Aug  3 21:27:40 2026"
-[dumpfile_size] 38866
+[dumpfile_mtime] "Tue Aug  4 20:52:24 2026"
+[dumpfile_size] 25967
 [savefile] "/home/fachat/Shared/csa_cbmio/petio/sim/via.gtkw"
-[timestart] 23730000000
+[timestart] 16350000000
 [size] 1920 993
-[pos] -27 -1
+[pos] -1 -1
 *-31.500000 31440000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_via6522.
 [treeopen] tb_via6522.dut.
 [sst_width] 239
-[signals_width] 198
+[signals_width] 222
 [sst_expanded] 1
 [sst_vpaned_height] 296
 @28
@@ -31,13 +31,12 @@ tb_via6522.dut.pcr[7:0]
 tb_via6522.dut.write_t1c_l
 tb_via6522.dut.write_t1c_h
 @22
+tb_via6522.dut.tmr_a.timer_a_input_latch[7:0]
 tb_via6522.dut.timer_a_latch[15:0]
 tb_via6522.dut.timer_a_count[15:0]
 @28
 tb_via6522.dut.tmr_a.timer_a_reload
 tb_via6522.dut.tmr_a.timer_a_reload_d
-tb_via6522.dut.tmr_a.timer_a_reload_d2
-tb_via6522.dut.tmr_a.timer_a_was_load
 tb_via6522.dut.tmr_a.timer_a_toggle
 [pattern_trace] 1
 [pattern_trace] 0

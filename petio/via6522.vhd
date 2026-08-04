@@ -501,6 +501,8 @@ begin
 
     -- Timer A
     tmr_a: block
+		  signal timer_a_input_latch   : std_logic_vector(7 downto 0);
+		  signal timer_a_write_t1c_h   : std_logic;	-- half cycle after actual write
         signal timer_a_reload        : std_logic;
         signal timer_a_reload_d      : std_logic;
         signal timer_a_reload_d2     : std_logic;
@@ -509,7 +511,7 @@ begin
         signal timer_a_toggle        : std_logic;
         signal timer_a_may_interrupt : std_logic;
     begin
-        process(phi2, reset)
+        process(phi2, reset, data_in, write_t1c_h, timer_a_was_load, timer_a_reload, timer_a_reload_d, timer_a_count, timer_a_write_t1c_h)
         begin
 				-- note must be at falling edge, as write_t1c_l & data_in are directly coming from the CPU
 				if (falling_edge(phi2)) then
@@ -521,24 +523,30 @@ begin
                     timer_a_toggle <= not timer_a_toggle;
                 end if;
 
-					 timer_a_was_load <= '0';
+					 -- from 6522 dissection, data is latched at falling phi2, and only used in following half-cycle
+					 if (write_t1c_h = '1') then
+					     timer_a_input_latch <= data_in;
+					     timer_a_write_t1c_h <= '1';
+				    else
+					     timer_a_write_t1c_h <= '0';
+					 end if;
+				end if;
+				
+				if (rising_edge(phi2)) then
+				
                 -- always count, or load
                 if reset='1' then
                     timer_a_may_interrupt <= '0';
                     timer_a_count  <= latch_reset_pattern;
 						  
-                elsif write_t1c_h = '1' then
+                elsif timer_a_write_t1c_h = '1' then
 						  -- write t1 counter high
                     timer_a_may_interrupt <= '1';
-                    timer_a_count  <= data_in & timer_a_latch(7 downto 0);
-						  timer_a_was_load <= '1';
-						  
-                elsif timer_a_reload_d2 = '1' or timer_a_was_load = '1' then
+                    timer_a_count  <= timer_a_input_latch & timer_a_latch(7 downto 0);
+
+                elsif timer_a_reload_d = '1' then
+						  -- reload the timer
                     timer_a_count  <= timer_a_latch;
-						  -- are we writing to T1 counter low in exactly this moment?
-                    if write_t1c_l = '1' then
-                            timer_a_count(7 downto 0) <= data_in;
-                    end if;
                     timer_a_may_interrupt <= timer_a_may_interrupt and tmr_a_freerun;
 						  
                 else
@@ -546,28 +554,26 @@ begin
                     timer_a_count <= timer_a_count - X"0001";
                 end if;                    
 					 
- 					 timer_a_reload_d <= timer_a_reload;
+					 if (timer_a_reload = '1' and timer_a_may_interrupt = '1') then 
+						  timer_a_event <= '1';
+					 else
+						  timer_a_event <= '0';
+					 end if;					 
             end if;
                 
-            if rising_edge(phi2) then
+            if falling_edge(phi2) then
                 if reset='1' then
                     timer_a_reload <= '0';
 					 else
                     timer_a_reload <= '0';
-						  timer_a_event <= '0';
                     if timer_a_count = X"0000" then
                         -- generate an event if we were triggered
                         timer_a_reload <= '1';
                     end if;
 					 end if;
 					 
-					 timer_a_reload_d2 <= timer_a_reload_d and not(timer_a_was_load);
+					 timer_a_reload_d <= timer_a_reload and not(timer_a_write_t1c_h);
 					 
-					 if (timer_a_reload = '1' and timer_a_may_interrupt = '1') then 
-						  timer_a_event <= '1';
-					 else
-						  timer_a_event <= '0';
-					 end if;					 
             end if;
 				
         end process;
