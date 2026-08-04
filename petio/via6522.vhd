@@ -581,22 +581,48 @@ begin
     
     -- Timer B
     tmr_b: block
+		  signal timer_b_input_latch   : std_logic_vector(7 downto 0);
+		  signal timer_b_write_t2c_h   : std_logic;	-- half cycle after actual write
+        signal timer_b_reload        : std_logic;
+        signal timer_b_reload_d      : std_logic;
         signal timer_b_oneshot_trig  : std_logic;
         signal timer_b_timeout       : std_logic;
         signal pb6_c, pb6_d          : std_logic;
 		  signal timer_b_decrement		 : std_logic;
     begin
-        process(phi2, write_t2c_h, timer_b_latch, data_in, reset)
+        process(phi2, write_t2c_h, timer_b_latch, data_in, reset, timer_b_input_latch, timer_b_write_t2c_h, timer_b_reload, timer_b_reload_d)
         begin
 
-            if (falling_edge(phi2)) then
+				-- "the pulse must be low on the leading edge of phi2"
+            if (rising_edge(phi2)) then
                 pb6_c <= To_X01(port_b_i(6));
                 pb6_d <= pb6_c;
             end if;
-                                
-            if (rising_edge(phi2)) then
+            
+				if (falling_edge(phi2)) then
+					 if (write_t2c_h = '1') then
+						 timer_b_input_latch <= data_in;
+						 timer_b_write_t2c_h <= '1';
+					 else
+						 timer_b_write_t2c_h <= '0';
+					 end if;
+				end if;
+
+            if falling_edge(phi2) then
+                if reset='1' then
+                    timer_b_reload <= '0';
+					 else
+                    timer_b_reload <= '0';
+						  if timer_b_count = X"0000" then
+								-- generate an event if we were triggered
+								timer_b_reload <= '1';
+                    end if;
+					 end if;
+					 timer_b_reload_d <= timer_b_reload and not(timer_b_write_t2c_h);					 
+            end if;
+				
+            if (falling_edge(phi2)) then
 					 timer_b_decrement <= '0';
-                timer_b_tick  <= '0';
 
                 if tmr_b_count_mode = '1' then
                     if (pb6_d='1' and pb6_c='0') then
@@ -607,35 +633,38 @@ begin
                 end if;    
             end if;        
 				
-            if (falling_edge(phi2)) then
+            if (rising_edge(phi2)) then
                 timer_b_timeout <= '0';
-                if timer_b_decrement = '1' then
-                    if timer_b_count = X"0000" then
-                         if timer_b_oneshot_trig = '1' then
-                            timer_b_oneshot_trig <= '0';
-                            timer_b_timeout <= '1';
-                        end if;
-                    end if;
-						  if ((shift_mode_control = "001" 
-								or shift_mode_control = "101"
-								or shift_mode_control = "100")
-								and (timer_b_count(7 downto 0) = X"00")) then
-									timer_b_tick <= '1';
-									timer_b_count(7 downto 0) <= timer_b_latch(7 downto 0);
-							else
-								timer_b_count <= timer_b_count - X"0001";
-							end if;
-                end if;
-
-					-- write to T2 counter is on falling phi2
-                if write_t2c_h = '1' then
-                    timer_b_count <= data_in & timer_b_latch(7 downto 0);
-                    timer_b_oneshot_trig <= '1';
-                end if;
-
+                timer_b_tick  <= '0';
+					 
                 if reset='1' then
                     timer_b_count  <= latch_reset_pattern;
                     timer_b_oneshot_trig <= '0';                    
+
+                elsif timer_b_write_t2c_h = '1' then
+						  -- write to T2 counter is on falling phi2
+                    timer_b_count <= timer_b_input_latch & timer_b_latch(7 downto 0);
+                    timer_b_oneshot_trig <= '1';
+
+                elsif timer_b_decrement = '1' then
+                    if timer_b_reload_d = '1' then
+								if ((shift_mode_control = "001" 
+									or shift_mode_control = "101"
+									or shift_mode_control = "100")
+									and (timer_b_count(7 downto 0) = X"00")) then
+									
+									-- shift modes only re-load lower 8 bits
+									timer_b_tick <= '1';
+									timer_b_count <= x"00" & timer_b_latch(7 downto 0);
+									
+                        elsif timer_b_oneshot_trig = '1' then
+									 -- end of timing if one-shot only
+                            timer_b_oneshot_trig <= '0';
+                            timer_b_timeout <= '1';
+                        end if;
+							else
+								timer_b_count <= timer_b_count - X"0001";
+							end if;
                 end if;
             end if;
         end process;
