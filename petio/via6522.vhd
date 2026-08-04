@@ -661,6 +661,7 @@ begin
 									 -- end of timing if one-shot only
                             timer_b_oneshot_trig <= '0';
                             timer_b_timeout <= '1';
+									 timer_b_count <= timer_b_count - X"0001";
                         end if;
 							else
 								timer_b_count <= timer_b_count - X"0001";
