@@ -505,13 +505,10 @@ begin
 		  signal timer_a_write_t1c_h   : std_logic;	-- half cycle after actual write
         signal timer_a_reload        : std_logic;
         signal timer_a_reload_d      : std_logic;
-        signal timer_a_reload_d2     : std_logic;
-		  signal timer_a_was_load		 : std_logic;
-		  signal timer_a_was_load_d	 : std_logic;
         signal timer_a_toggle        : std_logic;
         signal timer_a_may_interrupt : std_logic;
     begin
-        process(phi2, reset, data_in, write_t1c_h, timer_a_was_load, timer_a_reload, timer_a_reload_d, timer_a_count, timer_a_write_t1c_h)
+        process(phi2, reset, data_in, write_t1c_h, timer_a_reload, timer_a_reload_d, timer_a_count, timer_a_write_t1c_h)
         begin
 				-- note must be at falling edge, as write_t1c_l & data_in are directly coming from the CPU
 				if (falling_edge(phi2)) then
