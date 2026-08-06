@@ -1,12 +1,12 @@
 [*]
 [*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
-[*] Tue Aug  4 22:07:01 2026
+[*] Thu Aug  6 20:25:16 2026
 [*]
 [dumpfile] "/home/fachat/Shared/csa_cbmio/petio/sim/via.vcd"
-[dumpfile_mtime] "Tue Aug  4 22:06:07 2026"
-[dumpfile_size] 35639
+[dumpfile_mtime] "Thu Aug  6 20:24:30 2026"
+[dumpfile_size] 16185
 [savefile] "/home/fachat/Shared/csa_cbmio/petio/sim/via.gtkw"
-[timestart] 16350000000
+[timestart] 43590000000
 [size] 1920 993
 [pos] -1 -1
 *-31.500000 31440000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
@@ -51,7 +51,9 @@ tb_via6522.dut.timer_b_latch[15:0]
 tb_via6522.dut.timer_b_count[15:0]
 @28
 tb_via6522.dut.tmr_b.timer_b_reload
-@29
 tb_via6522.dut.tmr_b.timer_b_reload_d
+tb_via6522.dut.tmr_b.timer_b_decrement
+@29
+tb_via6522.dut.tmr_b.timer_b_oneshot_trig
 [pattern_trace] 1
 [pattern_trace] 0

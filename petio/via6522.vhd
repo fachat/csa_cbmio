@@ -213,7 +213,7 @@ begin
 
 
     process(phi2, ren, wen, irq_events, addr, pio_i, acr, irb, ira, 
-				timer_a_out, timer_a_count, timer_a_latch, timer_b_count, 
+				timer_a_out, timer_a_count, timer_a_latch, timer_b_count, timer_b_latch,
 				shift_reg, pcr, irq_out, irq_mask, irq_flags, irq_clr_strobe, reset)
     begin
 			if (falling_edge(phi2)) then 
@@ -613,9 +613,19 @@ begin
                     timer_b_reload <= '0';
 					 else
                     timer_b_reload <= '0';
-						  if timer_b_count = X"0000" then
-								-- generate an event if we were triggered
-								timer_b_reload <= '1';
+                    if ((shift_mode_control = "001" 
+									or shift_mode_control = "101"
+									or shift_mode_control = "100")
+									and (timer_b_count(7 downto 0) = X"00")) then
+						      if timer_b_count(7 downto 0) = X"00" then
+								    -- generate an event if we were triggered
+								    timer_b_reload <= '1';
+                        end if;
+						  else
+						      if timer_b_count = X"0000" then
+								    -- generate an event if we were triggered
+								    timer_b_reload <= '1';
+                        end if;
                     end if;
 					 end if;
 					 timer_b_reload_d <= timer_b_reload and not(timer_b_write_t2c_h);					 
@@ -651,11 +661,12 @@ begin
 								if ((shift_mode_control = "001" 
 									or shift_mode_control = "101"
 									or shift_mode_control = "100")
-									and (timer_b_count(7 downto 0) = X"00")) then
+									) then
 									
 									-- shift modes only re-load lower 8 bits
 									timer_b_tick <= '1';
-									timer_b_count <= x"00" & timer_b_latch(7 downto 0);
+									--timer_b_count <= x"00" & timer_b_latch(7 downto 0);
+									timer_b_count(7 downto 0) <= timer_b_latch(7 downto 0);
 									
                         elsif timer_b_oneshot_trig = '1' then
 									 -- end of timing if one-shot only

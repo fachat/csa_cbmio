@@ -1,0 +1,18 @@
+# cycle op addr data
+0 W 11 0	# 0 to ACR, T1 single shot
+6 W 8 255	# T2 L
+12 W 9 4	# T2 H
+# set SR to shift in via T2
+16 R 11 
+24 W 11 4	# set to shift in under T2
+# set T2 to $0210
+30 W 8 16
+36 W 9 2	# load counter, start T2
+40 R 10		# read SR to start shifting
+# start measuring loop
+46 R 9
+60 R 9
+74 R 9
+88 R 9
+102 R 9
+
