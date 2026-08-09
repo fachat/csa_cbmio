@@ -1,0 +1,75 @@
+[*]
+[*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
+[*] Sun Aug  9 11:22:37 2026
+[*]
+[dumpfile] "/home/fachat/Shared/csa_cbmio/petio/sim/shell_cpu.vcd"
+[dumpfile_mtime] "Sun Aug  9 11:14:28 2026"
+[dumpfile_size] 163915
+[savefile] "/home/fachat/Shared/csa_cbmio/petio/sim/romtb.gtkw"
+[timestart] 28250000000
+[size] 1920 993
+[pos] -1 -1
+*-30.834156 33651000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb_shell_cpu.
+[treeopen] tb_shell_cpu.shell_dut.
+[treeopen] tb_shell_cpu.shell_dut.via1_c.
+[sst_width] 239
+[signals_width] 182
+[sst_expanded] 1
+[sst_vpaned_height] 296
+@200
+-CPU
+@28
+tb_shell_cpu.cpu_dut.nres
+tb_shell_cpu.cpu_dut.phi2
+@22
+tb_shell_cpu.cpu_dut.cpu_addr[15:0]
+@28
+tb_shell_cpu.cpu_dut.cpu_rwb
+@22
+tb_shell_cpu.cpu_dut.cpu_din[7:0]
+tb_shell_cpu.cpu_dut.cpu_dout[7:0]
+tb_shell_cpu.cpu_dut.opcode[7:0]
+@28
+tb_shell_cpu.cpu_dut.cpu_nirq
+tb_shell_cpu.cpu_dut.cpu_nnmi
+@200
+-Shell
+@28
+tb_shell_cpu.shell_dut.nres
+@22
+tb_shell_cpu.shell_dut.a[11:0]
+@28
+tb_shell_cpu.shell_dut.niosel
+tb_shell_cpu.shell_dut.via1_sel
+tb_shell_cpu.shell_dut.via1_rden
+tb_shell_cpu.shell_dut.via1_wren
+@200
+-VIA
+@28
+tb_shell_cpu.shell_dut.via2_c.reset
+tb_shell_cpu.shell_dut.via2_c.phi2
+tb_shell_cpu.shell_dut.via1_c.ren
+tb_shell_cpu.shell_dut.via1_c.wen
+@22
+tb_shell_cpu.shell_dut.via1_c.addr[3:0]
+tb_shell_cpu.shell_dut.via1_c.acr[7:0]
+tb_shell_cpu.shell_dut.via1_c.pcr[7:0]
+@28
+tb_shell_cpu.shell_dut.via1_c.timer_b_tick
+@22
+tb_shell_cpu.shell_dut.via1_c.timer_b_count[15:0]
+@28
+tb_shell_cpu.shell_dut.via1_c.irq_events[6:0]
+tb_shell_cpu.shell_dut.via1_c.irq_flags[6:0]
+@200
+-VIA SR
+@28
+tb_shell_cpu.shell_dut.via1_c.ser.sr_is_output
+tb_shell_cpu.shell_dut.via1_c.ser.sr_disabled
+tb_shell_cpu.shell_dut.via1_c.ser.sr_running
+tb_shell_cpu.shell_dut.via1_c.ser.sr_shift
+@29
+tb_shell_cpu.shell_dut.via1_c.ser.sr_wr
+[pattern_trace] 1
+[pattern_trace] 0
