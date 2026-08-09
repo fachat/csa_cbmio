@@ -3090,18 +3090,18 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "Notes:\n- Note that the /OE (and DIR) outputs reference VCCA, and are CMOS, so \n  driving from 3.3V does not reach 3.5 Vi_hi_min"
+	(text "Notes:\n- Note that the /OE (and DIR) inputs on the 8T245\n  reference VCCA, and are CMOS, so driving from 3.3V \n  does not reach 3.5 Vi_hi_min; therefore bus is on\n  B side"
 		(exclude_from_sim no)
 		(at 191.008 30.734 0)
 		(effects
 			(font
-				(size 1.27 1.27)
+				(size 2 2)
 			)
 			(justify left)
 		)
 		(uuid "3bd9c3a7-96d4-460c-aaa6-cca5ab45c177")
 	)
-	(text "CSA-CBMIO-V1.0A"
+	(text "CSA-CBMIO-V1.0B"
 		(exclude_from_sim no)
 		(at 186.69 173.99 0)
 		(effects
@@ -3123,7 +3123,7 @@
 		)
 		(uuid "86e94b53-9db6-4f1b-b3b2-0a13c00a513b")
 	)
-	(text "CSA-CBMIO-V1.0A-20250815"
+	(text "CSA-CBMIO-V1.0B-20250825"
 		(exclude_from_sim no)
 		(at 209.042 185.674 0)
 		(effects
@@ -3133,6 +3133,17 @@
 			(justify left bottom)
 		)
 		(uuid "f7a83786-4868-48d0-af40-2b95cb310f44")
+	)
+	(text "1.0B:\n- fix 74lvc8t245 footprint"
+		(exclude_from_sim no)
+		(at 198.12 152.4 0)
+		(effects
+			(font
+				(size 2 2)
+			)
+			(justify left)
+		)
+		(uuid "fd124d9a-42fc-4b84-bd2c-649eb8034951")
 	)
 	(junction
 		(at 121.92 50.8)
@@ -6310,7 +6321,7 @@
 				(hide yes)
 			)
 		)
-		(property "Footprint" "Package_SO:TSSOP-24_6.1x7.8mm_P0.65mm"
+		(property "Footprint" "Package_SO:TSSOP-24_4.4x7.8mm_P0.65mm"
 			(at 146.05 63.5 0)
 			(effects
 				(font

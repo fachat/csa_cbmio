@@ -10088,7 +10088,7 @@
 		)
 		(uuid "34f840b6-e39f-4aa2-9b9b-ebd7c49a158d")
 	)
-	(text "CSA-CBMIO-V1.0A"
+	(text "CSA-CBMIO-V1.0B"
 		(exclude_from_sim no)
 		(at 339.09 261.112 0)
 		(effects
@@ -10099,12 +10099,12 @@
 		)
 		(uuid "44a250a3-61f9-498d-a5e9-bf307a9e293b")
 	)
-	(text "Note:\n- FPGA has do to internal pull-ups\n- 7516x are LS type which should have internal\n  pull-ups. Optional external pull ups can be used"
+	(text "Note:\n- FPGA has do to internal pull-ups\n- 7516x are LS type which should have internal\n  pull-ups. Optional external pull ups can be used\n- ATNA handling is still missing, need two\n  more I/O pins for Serial and Parallel...\n  (or sacrifice two from userport...)"
 		(exclude_from_sim no)
-		(at 320.802 28.956 0)
+		(at 207.518 231.14 0)
 		(effects
 			(font
-				(size 1.27 1.27)
+				(size 2 2)
 			)
 			(justify left)
 		)

@@ -2661,7 +2661,7 @@
 		)
 		(uuid "6f5f2016-8f49-43cc-90a7-bac83d445e43")
 	)
-	(text "CSA-CBMIO-V1.0A"
+	(text "CSA-CBMIO-V1.0B"
 		(exclude_from_sim no)
 		(at 210.82 175.006 0)
 		(effects
