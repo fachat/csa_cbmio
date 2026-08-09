@@ -45,7 +45,7 @@ begin
   --   phi2 low  -> CPU drives address + rwb
   --   phi2 high -> CPU samples/drives data
   ---------------------------------------------------------------------------
-  cpu_p: process
+  cpu_proc: process
     ---------------------------------------------------------------------------
     -- Helpers operating on shared signals
     ---------------------------------------------------------------------------
