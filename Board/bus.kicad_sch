@@ -6286,7 +6286,7 @@
 			(uuid "8dddfcfc-23dc-43a1-b197-d53567a11b10")
 		)
 		(instances
-			(project ""
+			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/67fa4363-94f9-4272-9424-80003c5e48fd"
 					(reference "U2")
 					(unit 1)

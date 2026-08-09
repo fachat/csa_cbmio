@@ -2650,7 +2650,7 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "Note:\n- for full UltiPET compatibility, a direction switch for the \n  Joystick config is needed. This should then be UP13\n"
+	(text "Note:\n- for full UltiPET compatibility, a direction switch for the \n  Joystick config is needed. This could then be UP13;\n  But if we want to make it work for B-series as well,\n  use a separate I/O\n"
 		(exclude_from_sim no)
 		(at 218.694 26.416 0)
 		(effects
@@ -2660,6 +2660,17 @@
 			(justify left)
 		)
 		(uuid "6f5f2016-8f49-43cc-90a7-bac83d445e43")
+	)
+	(text "TODO:\n- VDRIVE input from CPU board. \n  Note: UltraCPU has push driver, not working\n  with O.C. circuit here. Needs separate input\n  with O.C. driver\n- also, Graphics output to UltraCPU board"
+		(exclude_from_sim no)
+		(at 184.15 130.81 0)
+		(effects
+			(font
+				(size 2.54 2.54)
+			)
+			(justify left)
+		)
+		(uuid "7613417c-8885-489f-8635-cafcc7678f45")
 	)
 	(text "CSA-CBMIO-V1.0B"
 		(exclude_from_sim no)
@@ -5812,7 +5823,7 @@
 			(uuid "bb2ec7b0-b8c7-446d-87c4-c47e9d7c88b4")
 		)
 		(instances
-			(project ""
+			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/7c8914b4-a2ef-4231-b3f7-1105ec77241e"
 					(reference "U23")
 					(unit 1)
@@ -7304,7 +7315,7 @@
 			(uuid "7ff791a0-377b-45fb-baac-2c91455ba72d")
 		)
 		(instances
-			(project ""
+			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/7c8914b4-a2ef-4231-b3f7-1105ec77241e"
 					(reference "U20")
 					(unit 1)

@@ -10437,7 +10437,7 @@
 			(uuid "ceca86b2-d19d-4438-884c-d9d3ed808ce3")
 		)
 		(instances
-			(project ""
+			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/5a5ee5d6-5c57-47d8-89f1-607b8332e7b6"
 					(reference "U15")
 					(unit 1)

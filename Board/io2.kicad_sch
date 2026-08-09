@@ -10099,9 +10099,9 @@
 		)
 		(uuid "44a250a3-61f9-498d-a5e9-bf307a9e293b")
 	)
-	(text "Note:\n- FPGA has do to internal pull-ups\n- 7516x are LS type which should have internal\n  pull-ups. Optional external pull ups can be used\n- ATNA handling is still missing, need two\n  more I/O pins for Serial and Parallel...\n  (or sacrifice two from userport...)"
+	(text "Note:\n- FPGA has do to internal pull-ups\n- 7516x are LS type which should have internal\n  pull-ups. Optional external pull ups can be used\n- Par ATNA handling is still missing, need one\n  more I/O pins for Parallel ATNA. Serial can be done\n  inside the FPGA"
 		(exclude_from_sim no)
-		(at 207.518 231.14 0)
+		(at 198.12 219.71 0)
 		(effects
 			(font
 				(size 2 2)
@@ -10131,6 +10131,17 @@
 			(justify left bottom)
 		)
 		(uuid "d26ccb27-80f2-4b8f-8127-54c1aec579ea")
+	)
+	(text "TODO:\n- Adding a 74LVC165 to clock in keyboard\n  input instead of 8 parallel gives\n  5 more free I/O for Par ATNA, joy setup, ...\n- separate connectors for PET and UPET\n  keyboards\n- UPET kbd (now pin 30) -> restore key to NMI\n- Replace U14 with U10E + pullup"
+		(exclude_from_sim no)
+		(at 170.18 261.62 0)
+		(effects
+			(font
+				(size 2.54 2.54)
+			)
+			(justify left)
+		)
+		(uuid "e2fce3d8-9976-42bf-8a0a-ba1208c56077")
 	)
 	(junction
 		(at 392.43 120.65)
@@ -18496,7 +18507,7 @@
 			(uuid "a4951b2c-6abf-43cb-b722-64d8b50cdd87")
 		)
 		(instances
-			(project ""
+			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/70ccb61c-5015-4d74-a36e-b1514308c68b"
 					(reference "J2")
 					(unit 1)
@@ -18856,7 +18867,7 @@
 			(uuid "641e4679-6ecf-4440-b3ac-aa0b7592f8d7")
 		)
 		(instances
-			(project ""
+			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/70ccb61c-5015-4d74-a36e-b1514308c68b"
 					(reference "U10")
 					(unit 1)
@@ -18960,7 +18971,7 @@
 			(uuid "641e4679-6ecf-4440-b3ac-aa0b7592f8d8")
 		)
 		(instances
-			(project ""
+			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/70ccb61c-5015-4d74-a36e-b1514308c68b"
 					(reference "U10")
 					(unit 2)
@@ -19202,7 +19213,7 @@
 			(uuid "6804af81-5e67-402d-9768-24516de70342")
 		)
 		(instances
-			(project ""
+			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/70ccb61c-5015-4d74-a36e-b1514308c68b"
 					(reference "U12")
 					(unit 1)
@@ -19281,7 +19292,7 @@
 			(uuid "1559c605-c012-45b5-b844-e30d066a545a")
 		)
 		(instances
-			(project ""
+			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/70ccb61c-5015-4d74-a36e-b1514308c68b"
 					(reference "RN6")
 					(unit 1)
@@ -19506,7 +19517,7 @@
 			(uuid "0aaa5df1-1f75-4e73-8ead-f72a4b7354eb")
 		)
 		(instances
-			(project ""
+			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/70ccb61c-5015-4d74-a36e-b1514308c68b"
 					(reference "RN1")
 					(unit 1)
@@ -20719,7 +20730,7 @@
 			(uuid "641e4679-6ecf-4440-b3ac-aa0b7592f8d9")
 		)
 		(instances
-			(project ""
+			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/70ccb61c-5015-4d74-a36e-b1514308c68b"
 					(reference "U10")
 					(unit 7)
@@ -20793,7 +20804,7 @@
 			(uuid "bc818afb-3dd2-41ac-81d0-71addb93da6c")
 		)
 		(instances
-			(project ""
+			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/70ccb61c-5015-4d74-a36e-b1514308c68b"
 					(reference "U14")
 					(unit 1)
@@ -21197,7 +21208,7 @@
 			(uuid "641e4679-6ecf-4440-b3ac-aa0b7592f8da")
 		)
 		(instances
-			(project ""
+			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/70ccb61c-5015-4d74-a36e-b1514308c68b"
 					(reference "U10")
 					(unit 5)
@@ -22251,7 +22262,7 @@
 			(uuid "fe64a63a-4ec0-4e3d-a1f6-5a6fc8e3eb41")
 		)
 		(instances
-			(project ""
+			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/70ccb61c-5015-4d74-a36e-b1514308c68b"
 					(reference "J1")
 					(unit 1)
@@ -22771,7 +22782,7 @@
 			(uuid "641e4679-6ecf-4440-b3ac-aa0b7592f8db")
 		)
 		(instances
-			(project ""
+			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/70ccb61c-5015-4d74-a36e-b1514308c68b"
 					(reference "U10")
 					(unit 4)
@@ -22945,7 +22956,7 @@
 			(uuid "641e4679-6ecf-4440-b3ac-aa0b7592f8dc")
 		)
 		(instances
-			(project ""
+			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/70ccb61c-5015-4d74-a36e-b1514308c68b"
 					(reference "U10")
 					(unit 3)
