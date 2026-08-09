@@ -67,7 +67,7 @@ port (
     
 end via6522;
 
-architecture Gideon of via6522 is
+architecture viasim of via6522 is
 
     type pio_t is
     record
@@ -109,6 +109,8 @@ architecture Gideon of via6522 is
     signal cb1_o_int     : std_logic;
     signal cb2_t_int     : std_logic;
     signal cb2_o_int     : std_logic;
+	 
+	 signal sr_uses_t2    : std_logic;
 
     alias  ca2_event     : std_logic is irq_events(0);
     alias  ca1_event     : std_logic is irq_events(1);
@@ -163,6 +165,8 @@ architecture Gideon of via6522 is
     signal ca1_d2, ca2_d2   : std_logic;
     signal cb1_d2, cb2_d2   : std_logic;
     
+	 signal cb1_pos, cb1_neg : std_logic;
+	 
     signal ca2_handshake_o  : std_logic;
     signal ca2_pulse_o      : std_logic;
     signal cb2_handshake_o  : std_logic;
@@ -181,6 +185,10 @@ begin
     cb1_event <= (cb1_d1 xor cb1_d2) and (cb1_d2 xor cb1_edge_select);
     cb2_event <= (cb2_d1 xor cb2_d2) and (cb2_d2 xor cb2_edge_select);
 
+	 -- CB1 pos/neg edge detector, used in shift register
+	 cb1_pos <= '1' when (cb1_d1 = '0' and cb1_d2 = '1') else '0';
+	 cb1_neg <= '1' when (cb1_d1 = '1' and cb1_d2 = '0') else '0';
+	 
     ca2_t <= ca2_is_output;
     cb2_t_int <= cb2_is_output when serport_en='0' else shift_dir;
     cb2_o_int <= hs_cb2_o      when serport_en='0' else ser_cb2_o;
@@ -235,7 +243,12 @@ begin
 					-- CA1/CA2/CB1/CB2 edge detect flipflops
 					ca1_c <= To_X01(ca1_i);
 					ca2_c <= To_X01(ca2_i);
-					cb1_c <= To_X01(cb1_i);
+					if (acr(4) = '1') then
+						-- shift register output
+						cb1_c <= cb1_o_int;
+					else
+						cb1_c <= To_X01(cb1_i);
+					end if;
 					cb2_c <= To_X01(cb2_i);
 
 					ca1_d1 <= ca1_c;
@@ -686,7 +699,27 @@ begin
     end block tmr_b;
     
     ser: block
+		signal sr_running					: std_logic;
+		signal sr_shift					: std_logic;
+		
+		signal sr_uses_phi2				: std_logic;
+		signal sr_uses_ext_clk			: std_logic;
+		signal sr_disabled				: std_logic;
+		signal sr_is_output				: std_logic;
+		
+		signal sr_toggle_clk_output	: std_logic;
+		signal sr_toggle_clk_output_d	: std_logic;
+		signal sr_cb1_q					: std_logic;
+		
+		signal ifr2							: std_logic;
+		signal sr_wr						: std_logic;
+		signal sr_rd						: std_logic;
+		
+		signal sr_bit_cnt					: integer range 0 to 8;
+		signal sr_last_bit				: std_logic;
+		
         signal trigger_serial: std_logic;
+        signal trigger_serial_d: std_logic;
         signal shift_clock_d : std_logic;
         signal shift_clock   : std_logic;
         signal shift_tick_r  : std_logic;
@@ -695,125 +728,239 @@ begin
         signal bit_cnt       : integer range 0 to 7;
         signal shift_pulse   : std_logic;
     begin
-        process(shift_active, timer_b_tick, shift_clk_sel, shift_clock, shift_clock_d, shift_timer_tick)
-        begin
-            case shift_clk_sel is
-            when "10" =>
-                shift_pulse <= '1';
-                
-            when "00"|"01" =>
-                shift_pulse <= shift_timer_tick;
-            
-            when others =>
-                shift_pulse <= shift_clock and not shift_clock_d;
-            end case;
+	 
+		sr_uses_t2 <= '1' when acr(4 downto 2) = "100" or acr(3 downto 2) = "01"
+							else '0';
+		sr_uses_phi2 <= not(acr(2)) and acr(3);
+		sr_uses_ext_clk <= acr(2) and acr(3);
+		sr_disabled <= not(acr(2)) and not(acr(3)) and not(acr(4));
+		sr_is_output <= acr(4);
+		
+		ifr2 <= irq_flags(2);
+      sr_wr <= '1' when wen='1' and addr=x"A" else '0';
+      sr_rd <= '1' when ren='1' and addr=x"A" else '0';
 
-            if shift_active = '0' then
-                -- Mode 0 still loads the shift register to external pulse (MMBEEB SD-Card interface uses this)
-                if shift_mode_control = "000" then
-                    shift_pulse <= shift_clock and not shift_clock_d;
-                else
-                    shift_pulse <= '0';
-                end if;
-            end if;
+		-- input except when using as shift clock output
+		cb1_t_int <= '0' when sr_disabled = '1' or sr_uses_ext_clk = '1' else '1';
+		serport_en <= not(sr_disabled);
+		cb1_o_int <= sr_cb1_q;
 
-        end process;
+		sr_control: process(phi2, sr_uses_t2, sr_disabled, ifr2, sr_toggle_clk_output, timer_b_tick, sr_running, sr_wr, sr_rd)
+		begin
+			if (falling_edge(phi2)) then
+				sr_toggle_clk_output <= '0';
+				if (sr_disabled = '0'
+					and ifr2 = '0'
+					) then		
+					if (sr_uses_phi2 = '1') then
+						sr_toggle_clk_output <= '1';
+					elsif (sr_uses_t2 = '1') then
+						sr_toggle_clk_output <= timer_b_tick;
+					end if;
+				end if;
+			end if;
+			
+			if (rising_edge(phi2)) then
+				sr_toggle_clk_output_d <= sr_toggle_clk_output;
+			end if;
+			
+			if (falling_edge(phi2)) then
+				if (sr_running = '0') then
+					sr_cb1_q <= '1';
+				elsif (sr_toggle_clk_output_d = '1') then
+					sr_cb1_q <= not(sr_cb1_q);
+				end if;
+			end if;		
+
+			--sr_running needs to be available at falling edge already after ifr2 has been set on rising edge
+--			if (falling_edge(phi2)) then
+				if (sr_wr = '1' or sr_rd = '1') then
+					sr_running <= '1';
+				elsif (ifr2 = '1' or sr_disabled = '1') then
+					sr_running <= '0';
+				end if;
+--			end if;
+			
+			if (falling_edge(phi2)) then
+				if (ifr2 = '1') then
+					sr_shift <= '0';
+				elsif (sr_wr = '1') then
+					sr_shift <= '0';
+				else
+					if (sr_is_output = '1') then
+						sr_shift <= cb1_neg;
+					else
+						sr_shift <= cb1_pos;
+					end if;
+				end if;
+			end if;
+			
+			if (falling_edge(phi2)) then
+				if (sr_running = '0') then
+					sr_bit_cnt <= 8;
+				elsif (sr_shift = '1' and sr_bit_cnt /= 0) then
+					sr_bit_cnt <= sr_bit_cnt - 1;
+				end if;
+				
+				-- serial_event = s_ifr2, is set on falling edge
+				-- irf2 is then set on rising edge
+				-- and evaluated for sr_running on falling edge
+				serial_event <= '0';
+				if (sr_bit_cnt = 0 and serial_event = '0') then
+					sr_last_bit <= '1';
+					if (sr_cb1_q = '1' or sr_uses_ext_clk = '1') then
+						serial_event <= '1';
+					end if;
+				else
+					sr_last_bit <= '0';
+				end if;
+			end if;
+				
+		end process;
+
+		sr: process(phi2, reset, data_in, shift_reg, cb2_d1)
+		begin
+			if (falling_edge(phi2)) then
+				if reset = '1' then
+					shift_reg <= X"FF";
+				else
+					if wen = '1' and addr = X"A" then
+						shift_reg <= data_in;
+					elsif sr_shift = '1' then
+						if (sr_is_output = '1') then
+							shift_reg <= shift_reg(6 downto 0) & shift_reg(7);
+						else
+							shift_reg <= shift_reg(6 downto 0) & cb2_d1;
+						end if;
+					end if;
+				end if;
+				
+				-- SR_Out latch
+				ser_cb2_o <= shift_reg(7);
+			end if;			
+		end process;
+
+--        process(shift_active, timer_b_tick, shift_clk_sel, shift_clock, shift_clock_d, shift_timer_tick)
+--        begin
+--            case shift_clk_sel is
+--            when "10" =>
+--                shift_pulse <= '1';
+--                
+--            when "00"|"01" =>
+--                shift_pulse <= shift_timer_tick;
+--            
+--            when others =>
+--                shift_pulse <= shift_clock and not shift_clock_d;
+--            end case;
+--
+--            if shift_mode_control = "000" then
+--					 if shift_active = '0' then
+--                -- Mode 0 still loads the shift register to external pulse (MMBEEB SD-Card interface uses this)
+--                    shift_pulse <= shift_clock and not shift_clock_d;
+--                end if;
+--            end if;
+--
+--        end process;
 
 
-        process(phi2, reset)
-        begin
-					 if (rising_edge(phi2)) then
-					  
-                    if shift_active='0' then
-                        if shift_mode_control = "000" then
-                            shift_clock <= cb1_d1;
-                        else
-                            shift_clock <= '1';
-                        end if;
-                    elsif shift_clk_sel = "11" then
-                        shift_clock <= cb1_d1;
-                    elsif shift_pulse = '1' then
-                        shift_clock <= not shift_clock;
-                    end if;
+--        process(phi2, reset)
+--        begin
+--					 if (rising_edge(phi2)) then
+--					  
+--                    if shift_active='0' then
+--                        if shift_mode_control = "000" then
+--                            shift_clock <= cb1_d1;
+--                        else
+--                            shift_clock <= '1';
+--                        end if;
+--                    elsif shift_clk_sel = "11" then
+--                        shift_clock <= cb1_d1;
+--                    elsif shift_pulse = '1' then
+--                        shift_clock <= not shift_clock;
+--                    end if;
+--
+--                    shift_clock_d <= shift_clock;
+--
+--                end if;
+--
+--                if (falling_edge(phi2)) then
+--                    shift_timer_tick <= timer_b_tick;
+--                end if;
+--
+--                if reset = '1' then
+--                    shift_clock <= '1';
+--                    shift_clock_d <= '1';
+--                end if;
+--        end process;
 
-                    shift_clock_d <= shift_clock;
+--        cb1_t_int <= '0' when shift_clk_sel="11" else serport_en;
 
-                end if;
-
-                if (falling_edge(phi2)) then
-                    shift_timer_tick <= timer_b_tick;
-                end if;
-
-                if reset = '1' then
-                    shift_clock <= '1';
-                    shift_clock_d <= '1';
-                end if;
-        end process;
-
-        cb1_t_int <= '0' when shift_clk_sel="11" else serport_en;
-        cb1_o_int <= shift_clock_d;
-        ser_cb2_o <= shift_reg(7);
-
-        serport_en <= shift_dir or shift_clk_sel(1) or shift_clk_sel(0);
+--        serport_en <= shift_dir or shift_clk_sel(1) or shift_clk_sel(0);
         trigger_serial <= '1' when (ren='1' or wen='1') and addr=x"A" else '0';
         shift_tick_r <= not shift_clock_d and shift_clock;
         shift_tick_f <= shift_clock_d and not shift_clock;
 
-		  -- writing to the shift register (Reg 10)
-        process(phi2, reset)
-        begin
-            if (falling_edge(phi2)) then
-                if reset = '1' then
-                    shift_reg <= X"FF";
-                else
-                    if wen = '1' and addr = X"A" then
-                        shift_reg <= data_in;
-                    elsif shift_dir='1' and shift_tick_f = '1' then -- output
-                        shift_reg <= shift_reg(6 downto 0) & shift_reg(7);
-                    elsif shift_dir='0' and shift_tick_r = '1' then -- input
-                        shift_reg <= shift_reg(6 downto 0) & cb2_d1;
-                    end if;
-                end if;
-            end if;
-        end process;        
+--		  -- writing to the shift register (Reg 10)
+--        process(phi2, reset)
+--        begin
+--            if (falling_edge(phi2)) then
+--                if reset = '1' then
+--                    shift_reg <= X"FF";
+--                else
+--                    if wen = '1' and addr = X"A" then
+--                        shift_reg <= data_in;
+--                    elsif shift_dir='1' and shift_tick_f = '1' then -- output
+--                        shift_reg <= shift_reg(6 downto 0) & shift_reg(7);
+--                    elsif shift_dir='0' and shift_tick_r = '1' then -- input
+--                        shift_reg <= shift_reg(6 downto 0) & cb2_d1;
+--                    end if;
+--                end if;
+--            end if;
+--        end process;        
 
-		  s_ev: process(phi2)
-		  begin
-				if (rising_edge(phi2)) then
-					serial_event <= '0';
-					if (shift_tick_r = '1' and shift_active = '0' and serport_en = '1') then
-						serial_event <= '1';
-					end if;
-				end if;
-        end process;
+--		  s_ev: process(phi2)
+--		  begin
+--				if (rising_edge(phi2)) then
+--					serial_event <= '0';
+--					if (shift_tick_r = '1' and shift_active = '0' and serport_en = '1') then
+--						serial_event <= '1';
+--					end if;
+--				end if;
+--        end process;
 
-        process(phi2, reset)
-        begin
-            if (falling_edge(phi2)) then
-                if reset='1' then
-                    shift_active <= '0';
-                    bit_cnt      <= 0;
-                else
-                    if shift_active = '0' and shift_mode_control /= "000" then
-								-- accessing shift register
-                        if trigger_serial = '1' then
-                            bit_cnt      <= 7;
-                            shift_active <= '1';
-                        end if;
-                    else -- we're active
-                        if shift_clk_sel = "00" then
-                            shift_active <= shift_dir; -- when '1' we're active, but for mode 000 we go inactive.
-                        elsif shift_pulse = '1' and shift_clock = '1' then
-                            if bit_cnt = 0 then
-                                shift_active <= '0';
-                            else
-                                bit_cnt <= bit_cnt - 1;
-                            end if;
-                        end if;                            
-                    end if;
-                end if;
-            end if;
-        end process;                
+--        process(phi2, reset)
+--        begin
+--            if (falling_edge(phi2)) then
+--                if reset='1' then
+--                    shift_active <= '0';
+--                    bit_cnt      <= 0;
+--                else
+--						  if (trigger_serial = '1' and shift_mode_control = "101") then
+--								trigger_serial_d <= '1';
+--						  end if;
+--                    if shift_active = '0' and shift_mode_control /= "000" then
+--								-- accessing shift register
+--                        if ((trigger_serial_d = '1' and shift_mode_control = "101" and shift_pulse = '1')
+--									or (trigger_serial = '1' and shift_mode_control /= "101")
+--									) then
+--                            bit_cnt      <= 7;
+--                            shift_active <= '1';
+--									 trigger_serial_d <= '0';
+--                        end if;
+--                    else -- we're active
+--                        if shift_clk_sel = "00" then
+--                            shift_active <= shift_dir; -- when '1' we're active, but for mode 000 we go inactive.
+--                        elsif shift_pulse = '1' and shift_clock = '1' then
+--                            if bit_cnt = 0 then
+--                                shift_active <= '0';
+--                            else
+--                                bit_cnt <= bit_cnt - 1;
+--                            end if;
+--                        end if;                            
+--                    end if;
+--                end if;
+--            end if;
+--        end process;                
     end block ser;
-end Gideon;
+end viasim;
 
