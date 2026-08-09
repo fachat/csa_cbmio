@@ -76,3 +76,40 @@ make shell_cpu ROM=mytest.bin
 ```
 
 The waveform is written to `shell_cpu.vcd`.
+
+### Test fixture — exposed pin connections
+
+To allow ROM test programs to exercise the I/O ports end-to-end, the
+testbench cross-wires certain exposed pins so that writing to one pin and
+reading back the opposite pin of the pair exercises the full output→wire→input
+path. `std_logic` resolution is used throughout: whichever endpoint is
+configured as an output drives the shared node with `'0'` or `'1'`; the
+opposite end (configured as an input) drives the node with `'Z'`, which the
+resolver ignores.
+
+| Connection | Shell signal A | Shell signal B | Notes |
+|---|---|---|---|
+| VIA1 PA0 ↔ VIA1 PA1 | `up(0)` | `up(1)` | bidirectional |
+| VIA1 PA2 ↔ VIA1 PA3 | `up(2)` | `up(3)` | bidirectional |
+| VIA1 PA4 ↔ VIA1 PB3 | `up(7)` | `cwr` | bidirectional |
+| VIA1 PA5 ↔ VIA1 PA6 | `up(6)` | `up(5)` | bidirectional |
+| PIA1 PA7 ↔ VIA1 CB1 | `up(10)` | `up(12)` | bidirectional |
+| PIA1 CA1 ↔ VIA1 CA2 | `c1rd` | `up(11)` | VIA1 CA2 → PIA1 CA1 only; PIA CA1 is always an input; `'1'` (idle) when CA2 is in input mode |
+
+The pin mapping within `Shell.vhd` that translates internal VIA/PIA signals
+to the Shell's external ports:
+
+| VIA1/PIA1 pin | Shell external port bit |
+|---|---|
+| VIA1 PA0 | `up(0)` |
+| VIA1 PA1 | `up(1)` |
+| VIA1 PA2 | `up(2)` |
+| VIA1 PA3 | `up(3)` |
+| VIA1 PA4 | `up(7)` |
+| VIA1 PA5 | `up(6)` |
+| VIA1 PA6 | `up(5)` |
+| VIA1 PB3 | `cwr` |
+| VIA1 CA2 | `up(11)` |
+| VIA1 CB1 | `up(12)` |
+| PIA1 PA7 | `up(10)` |
+| PIA1 CA1 | `c1rd` |
