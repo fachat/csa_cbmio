@@ -254,7 +254,7 @@ architecture Behavioral of Shell is
            ca2_out : out  STD_LOGIC;
 			  
            portb_in : in  STD_LOGIC_VECTOR (7 downto 0);
-           portb_dir : in  STD_LOGIC_VECTOR (7 downto 0);
+           portb_dir : out  STD_LOGIC_VECTOR (7 downto 0);
            portb_out : out  STD_LOGIC_VECTOR (7 downto 0);
            cb1_in : in  STD_LOGIC;
            cb2_in : in  STD_LOGIC;

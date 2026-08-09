@@ -171,7 +171,6 @@ architecture viasim of via6522 is
     signal ca2_pulse_o      : std_logic;
     signal cb2_handshake_o  : std_logic;
     signal cb2_pulse_o      : std_logic;
-    signal shift_active     : std_logic;
 begin
     irq <= irq_out;
     
