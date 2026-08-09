@@ -45,7 +45,7 @@ Override script file:
 ## Shell CPU testbench (`tb_shell_cpu`)
 
 `tb_shell_cpu.vhd` instantiates the full `Shell.vhd` design and drives it with
-a cycle-accurate behavioural 6502 CPU model.
+the extracted `cpu6502.vhd` cycle-accurate behavioural 6502 CPU model.
 
 ### Memory map
 
@@ -53,12 +53,12 @@ a cycle-accurate behavioural 6502 CPU model.
 |---------------|-------------|
 | `$0000–$03FF` | 1 kB RAM |
 | `$E800–$E87F` | Shell I/O (`niosel` asserted) |
-| `$FC00–$FFFF` | 1 kB ROM loaded from `rom_file` |
+| `$E000–$FFFF` | 8 kB ROM loaded from `rom_file` (except `$E800–$E87F`, where Shell I/O has priority) |
 
 ### ROM loading
 
 The ROM binary is specified via the `rom_file` generic (default: `rom.bin`).
-If the binary is smaller than 1 kB it is placed at the **end** of the ROM
+If the binary is smaller than 8 kB it is placed at the **end** of the ROM
 region so that the 6502 vector area (`$FFFA–$FFFF`) is always populated.
 
 ### Simulation flow

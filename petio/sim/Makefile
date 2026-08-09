@@ -33,6 +33,7 @@ shell_cpu:
 		../ieeedir.vhd \
 		../uart_shell.vhd \
 		../Shell.vhd \
+		cpu6502.vhd \
 		tb_shell_cpu.vhd
 	$(GHDL) -e $(GHDLFLAGS) tb_shell_cpu
 	$(GHDL) -r $(GHDLFLAGS) tb_shell_cpu \
