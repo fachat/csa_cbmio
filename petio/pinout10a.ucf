@@ -1,0 +1,143 @@
+
+
+# bus
+
+# needs to be fixed - phi2 needs to be at a GCLK pin!
+#net phi2 			loc=p23 | iostandard=lvttl;
+# required due to UART's use with too many non-clock resources
+net phi2 			loc=p23 | iostandard=lvttl | CLOCK_DEDICATED_ROUTE=false;
+
+inst "phi2" bufg=clk;
+# required as uart has too many inputs depending on it
+PIN "phi2_BUFGP/BUFG.O" CLOCK_DEDICATED_ROUTE = FALSE;
+
+net rwb				loc=p2 | iostandard=lvcmos33;
+net niosel			loc=p5 | iostandard=lvcmos33;
+net nres				loc=p6 | iostandard=lvcmos33;
+net irq				loc=p1 | iostandard=lvcmos33;
+net nbe				loc=p35 | iostandard=lvcmos33;
+
+net a<0>				loc=p7 | iostandard=lvttl;
+net a<1>				loc=p8 | iostandard=lvttl;
+net a<2>				loc=p9 | iostandard=lvttl;
+net a<3>				loc=p10 | iostandard=lvttl;
+net a<4>				loc=p11 | iostandard=lvttl;
+net a<5>				loc=p12 | iostandard=lvttl;
+net a<6>				loc=p14 | iostandard=lvttl;
+net a<7>				loc=p15 | iostandard=lvttl;
+net a<8>				loc=p16 | iostandard=lvttl;
+net a<9>				loc=p17 | iostandard=lvttl;
+net a<10>			loc=p21 | iostandard=lvttl;
+net a<11>			loc=p22 | iostandard=lvttl;
+
+net d<0>				loc=p24 | iostandard=lvttl;
+net d<1>				loc=p26 | iostandard=lvttl;
+net d<2>				loc=p27 | iostandard=lvttl;
+net d<3>				loc=p29 | iostandard=lvttl;
+net d<4>				loc=p30 | iostandard=lvttl;
+net d<5>				loc=p32 | iostandard=lvttl;
+net d<6>				loc=p33 | iostandard=lvttl;
+net d<7>				loc=p34 | iostandard=lvttl;
+
+# serial (rs232)
+
+net lcts				loc=p39 | iostandard=lvttl;
+net lrts				loc=p43 | iostandard=lvttl;
+net ltx				loc=p40 | iostandard=lvttl;
+net lrx				loc=p41 | iostandard=lvttl;
+net ldtr				loc=p45 | iostandard=lvttl;
+net ldsr				loc=p44 | iostandard=lvttl;
+net lri				loc=p47 | iostandard=lvttl;
+net ldcd				loc=p46 | iostandard=lvttl;
+
+net rcts				loc=p48 | iostandard=lvttl | pullup; # currently misused as config input
+net rrts				loc=p55 | iostandard=lvttl;
+net rtx				loc=p50 | iostandard=lvttl;
+net rrx				loc=p51 | iostandard=lvttl | pullup;
+net rdtr				loc=p57 | iostandard=lvttl;
+net rdsr				loc=p56 | iostandard=lvttl;
+
+# cassette
+
+net c1sw				loc=p58	| iostandard=lvttl;
+net cwr				loc=p60	| iostandard=lvttl;
+net c1rd				loc=p59	| iostandard=lvttl;
+net c1mtr			loc=p61	| iostandard=lvttl;
+
+# SPI
+
+net spiiosel		loc=p66	| iostandard=lvttl;
+net spiclk			loc=p70	| iostandard=lvttl;
+net spimiso			loc=p67	| iostandard=lvttl;
+net spimosi			loc=p64	| iostandard=lvttl;
+
+# serial IEC
+
+net datain			loc=p143		| iostandard=lvttl;
+net clkin			loc=p142		| iostandard=lvttl;
+net satnin			loc=p134		| iostandard=lvttl;
+net srqin			loc=p141		| iostandard=lvttl;
+
+net dataout			loc=p133		| iostandard=lvttl;
+net clkout			loc=p144		| iostandard=lvttl;
+net satnout			loc=p131		| iostandard=lvttl;
+net srqout			loc=p132		| iostandard=lvttl;
+
+# keyboard
+
+net ksel<0>			loc=p123		| iostandard=lvttl;
+net ksel<1>			loc=p124		| iostandard=lvttl;
+net ksel<2>			loc=p126		| iostandard=lvttl;
+net ksel<3>			loc=p127		| iostandard=lvttl;
+
+net kin<0>			loc=p121		| iostandard=lvttl;
+net kin<1>			loc=p120		| iostandard=lvttl;
+net kin<2>			loc=p119		| iostandard=lvttl;
+net kin<3>			loc=p118		| iostandard=lvttl;
+net kin<4>			loc=p117		| iostandard=lvttl;
+net kin<5>			loc=p116		| iostandard=lvttl;
+net kin<6>			loc=p115		| iostandard=lvttl;
+net kin<7>			loc=p114		| iostandard=lvttl;
+
+# IEEE488
+
+net dio<0>			loc=p105		| iostandard=lvttl;
+net dio<1>			loc=p104		| iostandard=lvttl;
+net dio<2>			loc=p102		| iostandard=lvttl;
+net dio<3>			loc=p101		| iostandard=lvttl;
+net dio<4>			loc=p100		| iostandard=lvttl;
+net dio<5>			loc=p99		| iostandard=lvttl;
+net dio<6>			loc=p98		| iostandard=lvttl;
+net dio<7>			loc=p97		| iostandard=lvttl;
+
+net nrfd				loc=p92		| iostandard=lvttl;
+net ndac				loc=p93		| iostandard=lvttl;
+net dav				loc=p88		| iostandard=lvttl;
+net eoi				loc=p87		| iostandard=lvttl;
+net atn				loc=p85		| iostandard=lvttl;
+net ifc				loc=p94		| iostandard=lvttl;
+net ren				loc=p95		| iostandard=lvttl;
+net psrq				loc=p84		| iostandard=lvttl;
+net te				loc=p83		| iostandard=lvttl;
+net dc				loc=p82		| iostandard=lvttl;
+
+
+# userport
+
+net up<0>			loc=p81	 | iostandard=lvttl;
+net up<1>			loc=p80	 | iostandard=lvttl;
+net up<2>			loc=p79	 | iostandard=lvttl;
+net up<3>			loc=p78	 | iostandard=lvttl;
+net up<4>			loc=p75	 | iostandard=lvttl;
+net up<5>			loc=p74	 | iostandard=lvttl;
+net up<6>			loc=p112	 | iostandard=lvttl;
+net up<7>			loc=p111	 | iostandard=lvttl;
+net up<8>			loc=p140	 | iostandard=lvttl;
+net up<9>			loc=p139	 | iostandard=lvttl;
+net up<10>			loc=p138	 | iostandard=lvttl;
+net up<11>			loc=p137	 | iostandard=lvttl;
+net up<12>			loc=p62	 | iostandard=lvttl;
+net up<13>			loc=p69	 | iostandard=lvttl | pullup;
+
+
+

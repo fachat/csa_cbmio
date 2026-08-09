@@ -1,0 +1,15 @@
+# cycle op addr data
+0 W 11 0	# 0 to ACR, T1 single shot
+1 W 8 0		# T2 Low C
+3 W 9 0		# T2 High C
+# meas_t1
+22 W 8 0	# T2 High order latch
+26 W 9 0	# T2 High counter, start counting
+# reading starts 6 cycles after last write, and then every 14 cycles
+32 R 4
+46 R 4
+60 R 4
+74 R 4
+88 R 4
+256 N
+
