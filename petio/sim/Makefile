@@ -1,6 +1,7 @@
 GHDL ?= ghdl
 GHDLFLAGS := --std=08 -fsynopsys
 SCRIPT ?=
+ROM ?= rom.bin
 VIEWER ?= gtkwave
 
 all: via pia uart
@@ -23,3 +24,17 @@ uart:
 
 clean:
 	rm -f work-obj08.cf
+
+shell_cpu:
+	$(GHDL) -a $(GHDLFLAGS) \
+		../select.vhd \
+		../pia6520.vhd \
+		../via6522.vhd \
+		../ieeedir.vhd \
+		../uart_shell.vhd \
+		../Shell.vhd \
+		tb_shell_cpu.vhd
+	$(GHDL) -e $(GHDLFLAGS) tb_shell_cpu
+	$(GHDL) -r $(GHDLFLAGS) tb_shell_cpu \
+		-grom_file=$(ROM) \
+		--vcd=shell_cpu.vcd
