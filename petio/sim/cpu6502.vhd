@@ -340,7 +340,8 @@ begin
 
   begin
     -------------------------------------------------------------------------
-    -- Wait until after ROM has been loaded (time 0 delta)
+    -- Wait 1 ns so the parent testbench's ROM-loading process can initialize
+    -- the ROM contents before the CPU begins fetching.
     -------------------------------------------------------------------------
     wait for 1 ns;
 
@@ -379,7 +380,7 @@ begin
     cpu_sp <= v_sp;
     cpu_p  <= v_p;
 
-    report "tb_shell_cpu: CPU starting at PC=$"
+    report "cpu6502: CPU starting at PC=$"
            & to_hstring(v_pc) severity note;
 
     -------------------------------------------------------------------------
@@ -393,7 +394,7 @@ begin
     -------------------------------------------------------------------------
     loop
       if v_cyc > 1_000_000 then
-        report "tb_shell_cpu: safety timeout after 1 000 000 bus cycles"
+        report "cpu6502: safety timeout after 1 000 000 bus cycles"
                severity failure;
       end if;
 
@@ -411,7 +412,7 @@ begin
       if v_op = x"00" then
         -- dummy reads (BRK is 2-byte opcode)
         bus_read(v_pc, v_d);   -- read signature byte
-        report "tb_shell_cpu: BRK at PC=$" & to_hstring(v_pc - 1)
+        report "cpu6502: BRK at PC=$" & to_hstring(v_pc - 1)
                & "  A=$" & to_hstring(v_a)
                & "  X=$" & to_hstring(v_x)
                & "  Y=$" & to_hstring(v_y)
@@ -691,7 +692,7 @@ begin
         -- Unknown opcode: report and halt
         -- ---------------------------------------------------------------
         when others =>
-          report "tb_shell_cpu: unimplemented opcode $" & to_hstring(v_op)
+          report "cpu6502: unimplemented opcode $" & to_hstring(v_op)
                  & " at PC=$" & to_hstring(v_pc - 1)
                  severity failure;
 
