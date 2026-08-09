@@ -14,8 +14,9 @@
 -- that the 6502 reset/irq/nmi vectors at $FFFA-$FFFF are always populated.
 --
 -- Simulation flow
---   1. nres held low for 8 clock cycles (reset)
---   2. nres released; CPU fetches reset vector from ROM and begins execution
+--   1. nres held low for 8 phi2 cycles (external reset duration)
+--   2. nres released; CPU performs its 7-cycle internal reset sequence,
+--      fetches the reset vector from ROM, and begins execution
 --   3. Simulation ends when the CPU executes a BRK (opcode $00) at any address
 --      or after 1 000 000 clock cycles (safety timeout)
 ----------------------------------------------------------------------------------
@@ -623,6 +624,9 @@ begin
 
     procedure alu_sbc(operand : unsigned(7 downto 0)) is
     begin
+      -- Note: BCD subtraction (D flag set) is not accurately modelled here;
+      -- the simplified BCD path in alu_adc does not implement the correct
+      -- decimal-mode SBC algorithm.  Binary (non-BCD) SBC is fully correct.
       alu_adc(not operand);
     end procedure;
 
@@ -654,11 +658,8 @@ begin
       if cond then
         -- 1 extra cycle for taken branch
         bus_read(v_pc, v_d);   -- dummy: fetch next instruction (discarded)
-        if rel(7) = '0' then
-          dest := v_pc + rel;
-        else
-          dest := v_pc + (x"FF" & rel);   -- sign-extend
-        end if;
+        -- Sign-extend the 8-bit relative offset to 16 bits and add to PC
+        dest := unsigned(resize(signed(rel), 16)) + v_pc;
         if dest(15 downto 8) /= v_pc(15 downto 8) then
           -- 1 extra cycle for page cross
           bus_read(v_pc, v_d);
@@ -992,6 +993,13 @@ begin
           v_pc := v_hi & v_lo;
 
         when x"20" =>                             -- JSR abs
+          -- Cycle sequence: fetch lo, read SP (dummy), push PCH, push PCL,
+          -- fetch hi, jump.  The return address pushed (v_pc after lo fetch)
+          -- equals JSR_addr+2, so RTS (which adds 1) returns to JSR_addr+3
+          -- — the instruction immediately after JSR.  This is correct.
+          -- Note: the real 6502 performs an internal operation in cycle 3 and
+          -- fetches the hi byte in cycle 6 (after the pushes); this model
+          -- replicates the cycle count and the pushed address correctly.
           fetch_byte(v_lo);
           bus_read(x"01" & v_sp, v_d);           -- internal cycle
           push(v_pc(15 downto 8));
