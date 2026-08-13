@@ -39,3 +39,4 @@ shell_cpu:
 	$(GHDL) -r $(GHDLFLAGS) tb_shell_cpu \
 		-grom_file=$(ROM) \
 		--vcd=shell_cpu.vcd
+	$(VIEWER) shell_cpu.vcd romtb.gtkw

@@ -414,35 +414,41 @@ begin
   --   PIA1 CA1  -> c1rd     VIA1 CA2  -> up(11)
   ---------------------------------------------------------------------------
 
+  process -- (shell_up, node_pa0_pa1, node_pa2_pa3, shell_cwr, node_pa4_pb3, node_pa5_pa6)
+  begin
+
   -- VIA1 PA0 <-> VIA1 PA1
+  node_pa0_pa1 <= 'H';
   node_pa0_pa1 <= shell_up(0);   -- PA0 output drives node
   node_pa0_pa1 <= shell_up(1);   -- PA1 output drives node (resolved)
   shell_up(0)  <= node_pa0_pa1;  -- PA0 input reads node
   shell_up(1)  <= node_pa0_pa1;  -- PA1 input reads node
 
   -- VIA1 PA2 <-> VIA1 PA3
+  node_pa2_pa3 <= 'H';
   node_pa2_pa3 <= shell_up(2);
   node_pa2_pa3 <= shell_up(3);
   shell_up(2)  <= node_pa2_pa3;
   shell_up(3)  <= node_pa2_pa3;
 
   -- VIA1 PA4 <-> VIA1 PB3
+  node_pa4_pb3 <= 'H';
   node_pa4_pb3 <= shell_up(7);
   node_pa4_pb3 <= shell_cwr;
   shell_up(7)  <= node_pa4_pb3;
   shell_cwr    <= node_pa4_pb3;
 
   -- VIA1 PA5 <-> VIA1 PA6
+  node_pa5_pa6 <= 'H';
   node_pa5_pa6 <= shell_up(6);
   node_pa5_pa6 <= shell_up(5);
   shell_up(6)  <= node_pa5_pa6;
   shell_up(5)  <= node_pa5_pa6;
 
   -- PIA1 PA7 <-> VIA1 CB1
-  node_pa7_cb1 <= shell_up(10);
-  node_pa7_cb1 <= shell_up(12);
-  shell_up(10) <= node_pa7_cb1;
-  shell_up(12) <= node_pa7_cb1;
+  node_pa7_cb1 <= to_01(shell_up(10) and shell_up(12), 'H');
+  shell_up(10) <= to_01(node_pa7_cb1, '1');
+  shell_up(12) <= to_01(node_pa7_cb1, '1');
 
   -- PIA1 CA1 <-> VIA1 CA2
   -- PIA1 CA1 is always an input in the PIA6520; VIA1 CA2 can be output
@@ -450,5 +456,10 @@ begin
   -- to_01 maps driven '0'/'1' through unchanged; all other states
   -- (Z, U, X, W, L, H, -) default to the pull-up value '1'.
   shell_c1rd <= to_01(shell_up(11), '1');
+
+  wait for 2 ns;
+
+  wait;
+  end process;
 
 end architecture;

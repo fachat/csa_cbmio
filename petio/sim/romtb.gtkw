@@ -1,20 +1,20 @@
 [*]
 [*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
-[*] Sun Aug  9 11:22:37 2026
+[*] Thu Aug 13 22:01:30 2026
 [*]
 [dumpfile] "/home/fachat/Shared/csa_cbmio/petio/sim/shell_cpu.vcd"
-[dumpfile_mtime] "Sun Aug  9 11:14:28 2026"
-[dumpfile_size] 163915
+[dumpfile_mtime] "Thu Aug 13 22:00:41 2026"
+[dumpfile_size] 149942
 [savefile] "/home/fachat/Shared/csa_cbmio/petio/sim/romtb.gtkw"
-[timestart] 28250000000
+[timestart] 208209000000
 [size] 1920 993
 [pos] -1 -1
-*-30.834156 33651000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-30.834156 127002000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_shell_cpu.
 [treeopen] tb_shell_cpu.shell_dut.
 [treeopen] tb_shell_cpu.shell_dut.via1_c.
 [sst_width] 239
-[signals_width] 182
+[signals_width] 312
 [sst_expanded] 1
 [sst_vpaned_height] 296
 @200
@@ -34,6 +34,11 @@ tb_shell_cpu.cpu_dut.opcode[7:0]
 tb_shell_cpu.cpu_dut.cpu_nirq
 tb_shell_cpu.cpu_dut.cpu_nnmi
 @200
+-TB
+@28
+tb_shell_cpu.node_pa7_cb1
+tb_shell_cpu.shell_up[13:0]
+@200
 -Shell
 @28
 tb_shell_cpu.shell_dut.nres
@@ -44,6 +49,7 @@ tb_shell_cpu.shell_dut.niosel
 tb_shell_cpu.shell_dut.via1_sel
 tb_shell_cpu.shell_dut.via1_rden
 tb_shell_cpu.shell_dut.via1_wren
+tb_shell_cpu.shell_dut.via1_cb1_out
 @200
 -VIA
 @28
@@ -62,6 +68,11 @@ tb_shell_cpu.shell_dut.via1_c.timer_b_count[15:0]
 @28
 tb_shell_cpu.shell_dut.via1_c.irq_events[6:0]
 tb_shell_cpu.shell_dut.via1_c.irq_flags[6:0]
+tb_shell_cpu.shell_dut.via1_c.cb1_i
+tb_shell_cpu.shell_dut.via1_c.cb1_t
+tb_shell_cpu.shell_dut.via1_c.cb1_c
+tb_shell_cpu.shell_dut.via1_c.cb1_d1
+tb_shell_cpu.shell_dut.via1_c.cb1_d2
 @200
 -VIA SR
 @28
@@ -69,7 +80,15 @@ tb_shell_cpu.shell_dut.via1_c.ser.sr_is_output
 tb_shell_cpu.shell_dut.via1_c.ser.sr_disabled
 tb_shell_cpu.shell_dut.via1_c.ser.sr_running
 tb_shell_cpu.shell_dut.via1_c.ser.sr_shift
-@29
 tb_shell_cpu.shell_dut.via1_c.ser.sr_wr
+@200
+-PIA1
+@28
+tb_shell_cpu.shell_dut.pia1_c.cra[5:0]
+tb_shell_cpu.shell_dut.pia1_c.ddra_a
+tb_shell_cpu.shell_dut.pia1_c.porta_a
+tb_shell_cpu.shell_dut.pia1_c.porta[7:0]
+@29
+tb_shell_cpu.shell_dut.pia1_c.porta_dir[7:0]
 [pattern_trace] 1
 [pattern_trace] 0

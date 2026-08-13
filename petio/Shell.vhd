@@ -372,7 +372,7 @@ begin
 	
 	-- userport (inputs)
 	up(8) <= 'Z';
-	up(12) <= 'Z';
+	up(12) <= 'Z' when via1_cb1_dir = '0' else via1_cb1_out;
 	up(13) <= 'Z';
 
 	-- SPI (5V)
