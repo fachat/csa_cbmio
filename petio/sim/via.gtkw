@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
-[*] Fri Aug  7 21:25:49 2026
+[*] Sat Aug 15 21:08:15 2026
 [*]
 [dumpfile] "/home/fachat/Shared/csa_cbmio/petio/sim/via.vcd"
-[dumpfile_mtime] "Fri Aug  7 21:25:19 2026"
-[dumpfile_size] 101360
+[dumpfile_mtime] "Sat Aug 15 21:07:54 2026"
+[dumpfile_size] 39647
 [savefile] "/home/fachat/Shared/csa_cbmio/petio/sim/via.gtkw"
-[timestart] 91100000000
+[timestart] 27280000000
 [size] 1920 993
 [pos] -1 -1
-*-31.500000 102060000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-31.500000 33800000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_via6522.
 [treeopen] tb_via6522.dut.
 [sst_width] 239
@@ -38,8 +38,15 @@ tb_via6522.dut.timer_a_latch[15:0]
 tb_via6522.dut.timer_a_count[15:0]
 @28
 tb_via6522.dut.tmr_a.timer_a_reload
-tb_via6522.dut.tmr_a.timer_a_reload_d
 tb_via6522.dut.tmr_a.timer_a_toggle
+tb_via6522.dut.tmr_a.timer_a_underflow_next
+tb_via6522.dut.tmr_a.timer_a_underflow_next_d
+@29
+tb_via6522.dut.tmr_a.timer_a_underflow_next_d2
+@28
+tb_via6522.dut.tmr_a.timer_a_active_ff
+tb_via6522.dut.tmr_a.timer_a_active_underflow
+tb_via6522.dut.tmr_a.timer_a_write_t1c_h
 @200
 -Timer B
 @22
@@ -47,7 +54,6 @@ tb_via6522.dut.tmr_b.timer_b_input_latch[7:0]
 @28
 tb_via6522.dut.tmr_b.timer_b_write_t2c_h
 @22
-tb_via6522.dut.timer_b_latch[15:0]
 tb_via6522.dut.timer_b_count[15:0]
 @28
 tb_via6522.dut.tmr_b.timer_b_reload
@@ -59,16 +65,12 @@ tb_via6522.dut.tmr_b.timer_b_oneshot_trig
 -
 @22
 tb_via6522.dut.shift_reg[7:0]
-@28
-tb_via6522.dut.shift_active
 @420
 tb_via6522.dut.ser.bit_cnt
 @28
 tb_via6522.dut.ser.shift_pulse
 tb_via6522.dut.ser.trigger_serial
-@29
 tb_via6522.dut.ser.trigger_serial_d
-@28
 tb_via6522.dut.cb2_o
 tb_via6522.dut.cb1_o
 [pattern_trace] 1

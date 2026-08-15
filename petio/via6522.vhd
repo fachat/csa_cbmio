@@ -94,7 +94,7 @@ architecture viasim of via6522 is
     signal irq_out       : std_logic;
     
     signal timer_a_latch : std_logic_vector(15 downto 0) := latch_reset_pattern;
-    signal timer_b_latch : std_logic_vector(15 downto 0) := latch_reset_pattern;
+    signal timer_b_latch : std_logic_vector(7 downto 0) := latch_reset_pattern(7 downto 0);
     signal timer_a_count : std_logic_vector(15 downto 0) := latch_reset_pattern;
     signal timer_b_count : std_logic_vector(15 downto 0) := latch_reset_pattern;
     signal timer_a_out   : std_logic;
@@ -185,8 +185,8 @@ begin
     cb2_event <= (cb2_d1 xor cb2_d2) and (cb2_d2 xor cb2_edge_select);
 
 	 -- CB1 pos/neg edge detector, used in shift register
-	 cb1_pos <= '1' when (cb1_d1 = '0' and cb1_d2 = '1') else '0';
-	 cb1_neg <= '1' when (cb1_d1 = '1' and cb1_d2 = '0') else '0';
+	 cb1_pos <= '1' when (cb1_d1 = '1' and cb1_d2 = '0') else '0';
+	 cb1_neg <= '1' when (cb1_d1 = '0' and cb1_d2 = '1') else '0';
 	 
     ca2_t <= ca2_is_output;
     cb2_t_int <= cb2_is_output when serport_en='0' else shift_dir;
@@ -221,7 +221,10 @@ begin
 
     process(phi2, ren, wen, irq_events, addr, pio_i, acr, irb, ira, 
 				timer_a_out, timer_a_count, timer_a_latch, timer_b_count, timer_b_latch,
-				shift_reg, pcr, irq_out, irq_mask, irq_flags, irq_clr_strobe, reset)
+				shift_reg, pcr, irq_out, irq_mask, irq_flags, irq_clr_strobe, reset,
+				cb1_i, ca1_i, cb2_i, ca2_i, cb1_o_int,
+				ca1_d1, ca1_d2, cb1_d1, cb1_d2, ca2_d1, ca2_d2, cb2_d1, cb2_d2,
+				port_a_i, port_b_i, pa_latch_en, ca1_edge_select)
     begin
 			if (falling_edge(phi2)) then 
             if reset='1' then
@@ -242,8 +245,8 @@ begin
 					-- CA1/CA2/CB1/CB2 edge detect flipflops
 					ca1_c <= To_X01(ca1_i);
 					ca2_c <= To_X01(ca2_i);
-					if (acr(4) = '1') then
-						-- shift register output
+					if (cb1_t_int = '1') then
+						-- shift register output and internal clock
 						cb1_c <= cb1_o_int;
 					else
 						cb1_c <= To_X01(cb1_i);
@@ -331,7 +334,7 @@ begin
                 cb2_handshake_o <= '1';
                 cb2_pulse_o     <= '1';
                 timer_a_latch  <= latch_reset_pattern;
-                timer_b_latch  <= latch_reset_pattern;
+                timer_b_latch  <= latch_reset_pattern(7 downto 0);
 					 
 				elsif wen='1' then
             -- Writes --
@@ -515,12 +518,19 @@ begin
     tmr_a: block
 		  signal timer_a_input_latch   : std_logic_vector(7 downto 0);
 		  signal timer_a_write_t1c_h   : std_logic;	-- half cycle after actual write
+        signal timer_a_underflow_next : std_logic;
+		  signal timer_a_underflow_next_d: std_logic;
+		  signal timer_a_underflow_next_d2: std_logic;
+		  signal timer_a_active_ff      : std_logic;
+		  signal timer_a_active_underflow: std_logic;
+		  signal timer_a_active_underflow_d: std_logic;		  
         signal timer_a_reload        : std_logic;
-        signal timer_a_reload_d      : std_logic;
         signal timer_a_toggle        : std_logic;
         signal timer_a_may_interrupt : std_logic;
     begin
-        process(phi2, reset, data_in, write_t1c_h, timer_a_reload, timer_a_reload_d, timer_a_count, timer_a_write_t1c_h)
+        process(phi2, reset, data_in, write_t1c_h, timer_a_reload, timer_a_count, timer_a_write_t1c_h,
+				timer_a_underflow_next, timer_a_underflow_next_d, timer_a_underflow_next_d2,
+				timer_a_active_ff, timer_a_active_underflow, timer_a_active_underflow_d, acr)
         begin
 				-- note must be at falling edge, as write_t1c_l & data_in are directly coming from the CPU
 				if (falling_edge(phi2)) then
@@ -553,7 +563,7 @@ begin
                     timer_a_may_interrupt <= '1';
                     timer_a_count  <= timer_a_input_latch & timer_a_latch(7 downto 0);
 
-                elsif timer_a_reload_d = '1' then
+                elsif timer_a_reload = '1' then
 						  -- reload the timer
                     timer_a_count  <= timer_a_latch;
                     timer_a_may_interrupt <= timer_a_may_interrupt and tmr_a_freerun;
@@ -568,23 +578,38 @@ begin
 					 else
 						  timer_a_event <= '0';
 					 end if;					 
+					 
+					 --timer_a_reload_d <= timer_a_reload and not(timer_a_write_t1c_h);
+					 timer_a_underflow_next_d <= timer_a_underflow_next;
             end if;
                 
             if falling_edge(phi2) then
                 if reset='1' then
-                    timer_a_reload <= '0';
+                    timer_a_underflow_next <= '0';
 					 else
-                    timer_a_reload <= '0';
-                    if timer_a_count = X"0000" then
+                    timer_a_underflow_next <= '0';
+                    if timer_a_count = X"0000" and write_t1c_h = '0' then
                         -- generate an event if we were triggered
-                        timer_a_reload <= '1';
+                        timer_a_underflow_next <= '1';
                     end if;
 					 end if;
 					 
-					 timer_a_reload_d <= timer_a_reload and not(timer_a_write_t1c_h);
+					 --timer_a_reload_d2 <= timer_a_reload_d;
 					 
+					 timer_a_active_underflow_d <= timer_a_active_underflow;
+					 timer_a_underflow_next_d2 <= timer_a_underflow_next_d;
             end if;
 				
+				if (timer_a_write_t1c_h = '1') then
+					timer_a_active_ff <= '1';
+				elsif (reset = '1' or (timer_a_active_underflow_d = '1' and acr(6) = '0')) then
+					timer_a_active_ff <= '0';
+				end if;
+				
+				-- should feed into PB7 output toggle
+				timer_a_active_underflow <= timer_a_active_ff and timer_a_underflow_next;
+				
+				timer_a_reload <= timer_a_underflow_next_d2 and not(timer_a_write_t1c_h);
         end process;
 
         timer_a_out   <= timer_a_toggle;
@@ -597,6 +622,7 @@ begin
 		  signal timer_b_write_t2c_h   : std_logic;	-- half cycle after actual write
         signal timer_b_reload        : std_logic;
         signal timer_b_reload_d      : std_logic;
+        signal timer_b_reload_d2     : std_logic;
         signal timer_b_oneshot_trig  : std_logic;
         signal timer_b_timeout       : std_logic;
         signal pb6_c, pb6_d          : std_logic;
@@ -640,7 +666,7 @@ begin
                         end if;
                     end if;
 					 end if;
-					 timer_b_reload_d <= timer_b_reload and not(timer_b_write_t2c_h);					 
+					 timer_b_reload_d2 <= timer_b_reload_d;
             end if;
 				
             if (falling_edge(phi2)) then
@@ -669,7 +695,7 @@ begin
                     timer_b_oneshot_trig <= '1';
 
                 elsif timer_b_decrement = '1' then
-                    if timer_b_reload_d = '1' then
+                    if timer_b_reload_d2 = '1' then
 								if ((shift_mode_control = "001" 
 									or shift_mode_control = "101"
 									or shift_mode_control = "100")
@@ -690,6 +716,7 @@ begin
 								timer_b_count <= timer_b_count - X"0001";
 							end if;
                 end if;
+					 timer_b_reload_d <= timer_b_reload and not(timer_b_write_t2c_h);					 
             end if;
         end process;
 
@@ -771,14 +798,21 @@ begin
 				end if;
 			end if;		
 
-			--sr_running needs to be available at falling edge already after ifr2 has been set on rising edge
---			if (falling_edge(phi2)) then
+--			--sr_running needs to be available at falling edge already after ifr2 has been set on rising edge
+----			if (falling_edge(phi2)) then
+--				if (sr_wr = '1' or sr_rd = '1') then
+--					sr_running <= '1';
+--				elsif (ifr2 = '1' or sr_disabled = '1') then
+--					sr_running <= '0';
+--				end if;
+----			end if;
+			if (ifr2 = '1' or sr_disabled = '1') then
+				sr_running <= '0';
+			elsif (falling_edge(phi2)) then
 				if (sr_wr = '1' or sr_rd = '1') then
 					sr_running <= '1';
-				elsif (ifr2 = '1' or sr_disabled = '1') then
-					sr_running <= '0';
 				end if;
---			end if;
+			end if;
 			
 			if (falling_edge(phi2)) then
 				if (ifr2 = '1') then
@@ -839,127 +873,10 @@ begin
 			end if;			
 		end process;
 
---        process(shift_active, timer_b_tick, shift_clk_sel, shift_clock, shift_clock_d, shift_timer_tick)
---        begin
---            case shift_clk_sel is
---            when "10" =>
---                shift_pulse <= '1';
---                
---            when "00"|"01" =>
---                shift_pulse <= shift_timer_tick;
---            
---            when others =>
---                shift_pulse <= shift_clock and not shift_clock_d;
---            end case;
---
---            if shift_mode_control = "000" then
---					 if shift_active = '0' then
---                -- Mode 0 still loads the shift register to external pulse (MMBEEB SD-Card interface uses this)
---                    shift_pulse <= shift_clock and not shift_clock_d;
---                end if;
---            end if;
---
---        end process;
-
-
---        process(phi2, reset)
---        begin
---					 if (rising_edge(phi2)) then
---					  
---                    if shift_active='0' then
---                        if shift_mode_control = "000" then
---                            shift_clock <= cb1_d1;
---                        else
---                            shift_clock <= '1';
---                        end if;
---                    elsif shift_clk_sel = "11" then
---                        shift_clock <= cb1_d1;
---                    elsif shift_pulse = '1' then
---                        shift_clock <= not shift_clock;
---                    end if;
---
---                    shift_clock_d <= shift_clock;
---
---                end if;
---
---                if (falling_edge(phi2)) then
---                    shift_timer_tick <= timer_b_tick;
---                end if;
---
---                if reset = '1' then
---                    shift_clock <= '1';
---                    shift_clock_d <= '1';
---                end if;
---        end process;
-
---        cb1_t_int <= '0' when shift_clk_sel="11" else serport_en;
-
---        serport_en <= shift_dir or shift_clk_sel(1) or shift_clk_sel(0);
         trigger_serial <= '1' when (ren='1' or wen='1') and addr=x"A" else '0';
         shift_tick_r <= not shift_clock_d and shift_clock;
         shift_tick_f <= shift_clock_d and not shift_clock;
 
---		  -- writing to the shift register (Reg 10)
---        process(phi2, reset)
---        begin
---            if (falling_edge(phi2)) then
---                if reset = '1' then
---                    shift_reg <= X"FF";
---                else
---                    if wen = '1' and addr = X"A" then
---                        shift_reg <= data_in;
---                    elsif shift_dir='1' and shift_tick_f = '1' then -- output
---                        shift_reg <= shift_reg(6 downto 0) & shift_reg(7);
---                    elsif shift_dir='0' and shift_tick_r = '1' then -- input
---                        shift_reg <= shift_reg(6 downto 0) & cb2_d1;
---                    end if;
---                end if;
---            end if;
---        end process;        
-
---		  s_ev: process(phi2)
---		  begin
---				if (rising_edge(phi2)) then
---					serial_event <= '0';
---					if (shift_tick_r = '1' and shift_active = '0' and serport_en = '1') then
---						serial_event <= '1';
---					end if;
---				end if;
---        end process;
-
---        process(phi2, reset)
---        begin
---            if (falling_edge(phi2)) then
---                if reset='1' then
---                    shift_active <= '0';
---                    bit_cnt      <= 0;
---                else
---						  if (trigger_serial = '1' and shift_mode_control = "101") then
---								trigger_serial_d <= '1';
---						  end if;
---                    if shift_active = '0' and shift_mode_control /= "000" then
---								-- accessing shift register
---                        if ((trigger_serial_d = '1' and shift_mode_control = "101" and shift_pulse = '1')
---									or (trigger_serial = '1' and shift_mode_control /= "101")
---									) then
---                            bit_cnt      <= 7;
---                            shift_active <= '1';
---									 trigger_serial_d <= '0';
---                        end if;
---                    else -- we're active
---                        if shift_clk_sel = "00" then
---                            shift_active <= shift_dir; -- when '1' we're active, but for mode 000 we go inactive.
---                        elsif shift_pulse = '1' and shift_clock = '1' then
---                            if bit_cnt = 0 then
---                                shift_active <= '0';
---                            else
---                                bit_cnt <= bit_cnt - 1;
---                            end if;
---                        end if;                            
---                    end if;
---                end if;
---            end if;
---        end process;                
     end block ser;
 end viasim;
 

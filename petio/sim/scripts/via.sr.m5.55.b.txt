@@ -1,0 +1,35 @@
+# cycle op addr data
+#0 W SR_INIT 85	# $55 to init var SR
+#6 W 8 32	# $32 to init var T2L
+#12 W 9 2	# $02 to init var T2H
+23 R 11		# read ACR
+29 W 11 0	# write ACR (set to 0)
+35 W 10 0	# write 0 to SR
+39 R 12		# read PCR
+45 W 12 0	# write PCR
+58 W 8 32	# Write T2L from init
+65 W 9 2	# Write T2H from init
+69 R 11		# Read ACR
+77 W 11 20	# Write ACR to set to shift out under T2 %xxx101xx
+81 R 13		# Read IFR 
+92 W 10 85	# write to SR from init; trigger shift
+# sample loop
+98 R 15		# mock read PA_NH instead of PIA1 PA7 which would be CB1
+104 R 15	# read actual byte (bit 7 is loopback CB2)
+#
+121 R 15
+127 R 15
+# 
+144 R 15
+150 R 15
+#
+167 R 15
+173 R 15
+#
+190 R 15
+196 R 15
+#
+#
+# 
+1000 N #
+

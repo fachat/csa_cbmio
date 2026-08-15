@@ -43,6 +43,10 @@ entity Shell is
 		irq: out std_logic;
 		nbe: out std_logic;
 		
+		-- Test fixture toggle
+		-- used in test bench only, so defaults to off
+		test_enable: in std_logic := '0';
+		
 		-- SPI (5V)
 		spiiosel: out std_logic;
 		spimosi: out std_logic;
@@ -466,7 +470,7 @@ begin
 	ksel <= pia1_pa_out(3 downto 0);
 	pia1_pb_in <= kin;
 	
-	pia1_pa_in(7) <= up(10);
+	pia1_pa_in(7) <= up(10) when test_enable = '0' or via1_cb1_dir = '0' else via1_cb1_out;
 	up(10) <= pia1_pa_out(7) when pia1_pa_dir(7) = '1' else 'Z';
 	
 	pia1_pa_in(6) <= eoi;
@@ -476,8 +480,10 @@ begin
 
 	c1sw <= pia1_pa_out(4) when pia1_pa_dir(0) = '1' else 'Z';
 	
-	pia1_ca1_in <= c1rd;		-- cass#1 read
-	pia1_ca2_in <= 'X';		-- eoi out
+	-- cass#1 read
+	pia1_ca1_in <= c1rd when test_enable = '0' or via1_ca2_dir = '0' else via1_ca2_out;
+	-- eoi out
+	pia1_ca2_in <= 'X';
 	eoi_out <= pia1_ca2_out;
 	
 	pia1_cb1_in <= up(13);	-- vdrive
@@ -569,14 +575,20 @@ begin
 	
 	via1_din <= D_in;
 
-	via1_pa_in(3 downto 0) <= up(3 downto 0);
-	via1_pa_in(4) <= up(7);
-	via1_pa_in(5) <= up(6);
-	via1_pa_in(6) <= up(5);
+	via1_pa_in(0) <= up(0) when test_enable = '0' or via1_pa_dir(1) = '0' else via1_pa_out(1);
+	via1_pa_in(1) <= up(1) when test_enable = '0' or via1_pa_dir(0) = '0' else via1_pa_out(0);
+	via1_pa_in(2) <= up(2) when test_enable = '0' or via1_pa_dir(3) = '0' else via1_pa_out(3);
+	via1_pa_in(3) <= up(3) when test_enable = '0' or via1_pa_dir(2) = '0' else via1_pa_out(2);
+	via1_pa_in(4) <= up(7) when test_enable = '0' or via1_pb_dir(3) = '0' else via1_pb_out(3);
+	via1_pa_in(5) <= up(6) when test_enable = '0' or via1_pa_dir(6) = '0' else via1_pa_out(6);
+	via1_pa_in(6) <= up(5) when test_enable = '0' or via1_pa_dir(5) = '0' else via1_pa_out(5);
 	via1_pa_in(7) <= up(4);
 	
 	via1_pb_in(0) <= ndac and ndac_out;
-	via1_pb_in(3) <= cwr;
+	via1_pb_in(1) <= 'Z'; -- nrfd out
+	via1_pb_in(2) <= 'Z'; -- atn out
+	via1_pb_in(3) <= cwr when test_enable = '0' or via1_pa_dir(4) = '0' else via1_pa_out(4);
+	via1_pb_in(4) <= 'Z'; -- C2 MTR out
 	
 	up(0) <= via1_pa_out(0) when via1_pa_dir(0) = '1' else 'Z';
 	up(1) <= via1_pa_out(1) when via1_pa_dir(1) = '1' else 'Z';
@@ -598,15 +610,16 @@ begin
 	
 	-- graphic
 	up(11) <= via1_ca2_out when via1_ca2_dir = '1' else 'Z';
-
+	via1_ca2_in <= up(11);
+	
 	-- Userport CA1
 	via1_ca1_in <= up(8);
 	-- Cass#2 read
-	via1_cb1_in <= up(12);
+	via1_cb1_in <= up(12) when test_enable = '0' or pia1_pa_dir(7) = '0' else pia1_pa_out(7);
 	
 	-- shift register in/out
 	up(9) <= via1_cb2_out when via1_cb2_dir = '1' else 'Z';
-	via1_cb2_in <= up(9);
+	via1_cb2_in <= up(9) when test_enable = '0' or via1_pa_dir(7) = '0' else via1_pa_out(7);
 	
 	----------------------------------------------------
 

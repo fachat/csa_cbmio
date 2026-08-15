@@ -163,6 +163,33 @@ architecture tb of tb_shell_cpu is
   ---------------------------------------------------------------------------
   signal shell_A : std_logic_vector(11 downto 0);
 
+-- Reusable procedure template
+procedure connect_bidirectional_cable (
+    signal signal_A : inout std_logic;
+    signal signal_B : inout std_logic
+) is
+    variable A_active : boolean;
+    variable B_active : boolean;
+begin
+    -- Check if either side is actively driving (not tri-stated/idle)
+    A_active := (signal_A = '0' or signal_A = '1' or signal_A = 'X');
+    B_active := (signal_B = '0' or signal_B = '1' or signal_B = 'X');
+
+    -- Forward A to B if A is driving and B is listening
+    if A_active and not B_active then
+        signal_B <= signal_A;
+    else
+        signal_B <= 'Z'; -- Release the bus
+    end if;
+
+    -- Forward B to A if B is driving and A is listening
+    if B_active and not A_active then
+        signal_A <= signal_B;
+    else
+        signal_A <= 'Z'; -- Release the bus
+    end if;
+end procedure;
+  
 begin
 
   ---------------------------------------------------------------------------
@@ -301,6 +328,8 @@ begin
       irq      => shell_irq,
       nbe      => shell_nbe,
 
+      test_enable => '1',
+
       spiiosel => shell_spiiosel,
       spimosi  => shell_spimosi,
       spimiso  => shell_spimiso,
@@ -395,71 +424,5 @@ begin
       cpu_p    => cpu_p,
       opcode   => opcode
     );
-
-  ---------------------------------------------------------------------------
-  -- Cross-wire connections between exposed pins
-  --
-  -- Each pair shares a node signal.  The Shell drives the relevant shell_up
-  -- or shell_cwr bit to '0'/'1' when that pin is an output, or to 'Z' when
-  -- it is an input.  std_logic resolution on the node picks the active side;
-  -- the node value is fed back to both endpoints so each reads the other's
-  -- output.
-  --
-  -- Pin mapping inside Shell.vhd:
-  --   VIA1 PA0  -> up(0)    VIA1 PA1  -> up(1)
-  --   VIA1 PA2  -> up(2)    VIA1 PA3  -> up(3)
-  --   VIA1 PA4  -> up(7)    VIA1 PB3  -> cwr
-  --   VIA1 PA5  -> up(6)    VIA1 PA6  -> up(5)
-  --   PIA1 PA7  -> up(10)   VIA1 CB1  -> up(12)
-  --   PIA1 CA1  -> c1rd     VIA1 CA2  -> up(11)
-  ---------------------------------------------------------------------------
-
-  process -- (shell_up, node_pa0_pa1, node_pa2_pa3, shell_cwr, node_pa4_pb3, node_pa5_pa6)
-  begin
-
-  -- VIA1 PA0 <-> VIA1 PA1
-  node_pa0_pa1 <= 'H';
-  node_pa0_pa1 <= shell_up(0);   -- PA0 output drives node
-  node_pa0_pa1 <= shell_up(1);   -- PA1 output drives node (resolved)
-  shell_up(0)  <= node_pa0_pa1;  -- PA0 input reads node
-  shell_up(1)  <= node_pa0_pa1;  -- PA1 input reads node
-
-  -- VIA1 PA2 <-> VIA1 PA3
-  node_pa2_pa3 <= 'H';
-  node_pa2_pa3 <= shell_up(2);
-  node_pa2_pa3 <= shell_up(3);
-  shell_up(2)  <= node_pa2_pa3;
-  shell_up(3)  <= node_pa2_pa3;
-
-  -- VIA1 PA4 <-> VIA1 PB3
-  node_pa4_pb3 <= 'H';
-  node_pa4_pb3 <= shell_up(7);
-  node_pa4_pb3 <= shell_cwr;
-  shell_up(7)  <= node_pa4_pb3;
-  shell_cwr    <= node_pa4_pb3;
-
-  -- VIA1 PA5 <-> VIA1 PA6
-  node_pa5_pa6 <= 'H';
-  node_pa5_pa6 <= shell_up(6);
-  node_pa5_pa6 <= shell_up(5);
-  shell_up(6)  <= node_pa5_pa6;
-  shell_up(5)  <= node_pa5_pa6;
-
-  -- PIA1 PA7 <-> VIA1 CB1
-  node_pa7_cb1 <= to_01(shell_up(10) and shell_up(12), 'H');
-  shell_up(10) <= to_01(node_pa7_cb1, '1');
-  shell_up(12) <= to_01(node_pa7_cb1, '1');
-
-  -- PIA1 CA1 <-> VIA1 CA2
-  -- PIA1 CA1 is always an input in the PIA6520; VIA1 CA2 can be output
-  -- (drives up(11) when ca2_dir='1', otherwise 'Z').
-  -- to_01 maps driven '0'/'1' through unchanged; all other states
-  -- (Z, U, X, W, L, H, -) default to the pull-up value '1'.
-  shell_c1rd <= to_01(shell_up(11), '1');
-
-  wait for 2 ns;
-
-  wait;
-  end process;
 
 end architecture;
