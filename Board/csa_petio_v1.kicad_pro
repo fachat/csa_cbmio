@@ -543,13 +543,14 @@
         "priority": 2147483647,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 0.2,
+        "tuning_profile": "",
         "via_diameter": 0.6,
         "via_drill": 0.3,
         "wire_width": 6
       }
     ],
     "meta": {
-      "version": 4
+      "version": 5
     },
     "net_colors": null,
     "netclass_assignments": null,
@@ -692,16 +693,16 @@
       {
         "filename": "csa_petio_v1.kicad_sch",
         "name": "csa_petio_v1",
-        "uuid": "00000000-0000-0000-0000-000000000000"
+        "uuid": "e52c695d-6540-4a56-9880-06c7d9f215a5"
       }
     ],
-    "used_designators": "",
+    "used_designators": "C171-172,#V56,#V58-59,P3,P8,J3,X1,R47-48,R68-72,R82,#GND30,#GND44-45,#GND47,#GND159-160,Q4,U14,U24-25",
     "variants": []
   },
   "sheets": [
     [
       "e52c695d-6540-4a56-9880-06c7d9f215a5",
-      "Root"
+      "csa_petio_v1"
     ],
     [
       "67fa4363-94f9-4272-9424-80003c5e48fd",
