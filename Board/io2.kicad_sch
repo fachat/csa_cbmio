@@ -10099,9 +10099,9 @@
 		)
 		(uuid "44a250a3-61f9-498d-a5e9-bf307a9e293b")
 	)
-	(text "Note:\n- FPGA has do to internal pull-ups\n- 7516x are LS type which should have internal\n  pull-ups. Optional external pull ups can be used\n- Par ATNA handling is still missing, need one\n  more I/O pins for Parallel ATNA. Serial can be done\n  inside the FPGA"
+	(text "Note:\n- FPGA has do to internal pull-ups\n- Par ATNA handling is still missing, need one\n  more I/O pins for Parallel ATNA. Serial can be done\n  inside the FPGA"
 		(exclude_from_sim no)
-		(at 198.12 219.71 0)
+		(at 205.74 213.36 0)
 		(effects
 			(font
 				(size 2 2)
@@ -12695,7 +12695,7 @@
 	)
 	(wire
 		(pts
-			(xy 218.44 27.94) (xy 218.44 30.48)
+			(xy 191.77 27.94) (xy 191.77 30.48)
 		)
 		(stroke
 			(width 0)
@@ -15455,7 +15455,7 @@
 	)
 	(wire
 		(pts
-			(xy 218.44 57.15) (xy 218.44 55.88)
+			(xy 191.77 57.15) (xy 191.77 55.88)
 		)
 		(stroke
 			(width 0)
@@ -19717,7 +19717,7 @@
 	)
 	(symbol
 		(lib_id "cbm_ultipet_v1-eagle-import:GND")
-		(at 218.44 59.69 0)
+		(at 191.77 59.69 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -19725,7 +19725,7 @@
 		(dnp no)
 		(uuid "78004132-c44a-496e-9d71-ffacef7b84cb")
 		(property "Reference" "#GND025"
-			(at 218.44 59.69 0)
+			(at 191.77 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19734,7 +19734,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 215.9 62.23 0)
+			(at 189.23 62.23 0)
 			(effects
 				(font
 					(size 1.778 1.5113)
@@ -19743,7 +19743,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 218.44 59.69 0)
+			(at 191.77 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19752,7 +19752,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 218.44 59.69 0)
+			(at 191.77 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19761,7 +19761,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 218.44 59.69 0)
+			(at 191.77 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19881,7 +19881,7 @@
 	)
 	(symbol
 		(lib_id "csa_petio_v1-eagle-import:VCC")
-		(at 218.44 25.4 0)
+		(at 191.77 25.4 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -19889,7 +19889,7 @@
 		(dnp no)
 		(uuid "78ea4117-5c11-4be1-87bb-6f8011c87be4")
 		(property "Reference" "#V07"
-			(at 218.44 25.4 0)
+			(at 191.77 25.4 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19898,7 +19898,7 @@
 			)
 		)
 		(property "Value" "VCC"
-			(at 216.535 22.225 0)
+			(at 189.865 22.225 0)
 			(effects
 				(font
 					(size 1.778 1.5113)
@@ -19907,7 +19907,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 218.44 25.4 0)
+			(at 191.77 25.4 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19916,7 +19916,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 218.44 25.4 0)
+			(at 191.77 25.4 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19925,7 +19925,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 218.44 25.4 0)
+			(at 191.77 25.4 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20634,7 +20634,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74LS06")
-		(at 218.44 43.18 0)
+		(at 191.77 43.18 0)
 		(unit 7)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -20643,7 +20643,7 @@
 		(fields_autoplaced yes)
 		(uuid "8bc4293e-4a63-4dd6-ad6b-12f9f89c6a1f")
 		(property "Reference" "U10"
-			(at 224.79 41.9099 0)
+			(at 198.12 41.9099 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20652,7 +20652,7 @@
 			)
 		)
 		(property "Value" "74LS06"
-			(at 224.79 44.4499 0)
+			(at 198.12 44.4499 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20661,7 +20661,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SO-14_3.9x8.65mm_P1.27mm"
-			(at 218.44 43.18 0)
+			(at 191.77 43.18 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20670,7 +20670,7 @@
 			)
 		)
 		(property "Datasheet" "http://www.ti.com/lit/gpn/sn74LS06"
-			(at 218.44 43.18 0)
+			(at 191.77 43.18 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20679,7 +20679,7 @@
 			)
 		)
 		(property "Description" "Inverter Open Collect"
-			(at 218.44 43.18 0)
+			(at 191.77 43.18 0)
 			(effects
 				(font
 					(size 1.27 1.27)
