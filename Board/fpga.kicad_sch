@@ -4947,7 +4947,7 @@
 		)
 		(uuid "bf0b3c40-1e61-402c-a265-7638a2726720")
 	)
-	(text "CSA-CBMIO-V1.0B-20260321"
+	(text "CSA-CBMIO-V1.1A-20260824"
 		(exclude_from_sim no)
 		(at 209.296 186.436 0)
 		(effects
@@ -5229,6 +5229,12 @@
 		(uuid "76034404-daf1-4f41-b2a0-e962b9df67bb")
 	)
 	(junction
+		(at 201.93 158.75)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "79a7686e-46d7-4f67-975b-da2d4093b46d")
+	)
+	(junction
 		(at 248.92 143.51)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5311,6 +5317,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "a4d73bc9-2e8e-444d-8b06-4dda3a93f46a")
+	)
+	(junction
+		(at 201.93 151.13)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "a88b43f1-e579-4567-91a0-ce37e7984f10")
 	)
 	(junction
 		(at 110.49 171.45)
@@ -6123,6 +6135,16 @@
 			(type default)
 		)
 		(uuid "4ada7a1b-0474-480d-934f-1a1a65c41d0c")
+	)
+	(wire
+		(pts
+			(xy 201.93 151.13) (xy 213.36 151.13)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4e8b2da4-7e9f-4be1-9cd2-029e591f6fe5")
 	)
 	(wire
 		(pts
@@ -7193,6 +7215,16 @@
 			(type default)
 		)
 		(uuid "c38983cd-4942-4dca-b07d-3abafd7329cf")
+	)
+	(wire
+		(pts
+			(xy 201.93 158.75) (xy 213.36 158.75)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c3f35be0-c01c-415b-bc32-c86766ea5d31")
 	)
 	(wire
 		(pts
@@ -12845,6 +12877,88 @@
 			(project "csa_petio_v1"
 				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/68abe788-b880-40e7-9e78-97f20b071325"
 					(reference "#GND015")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 213.36 154.94 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ae1b807b-d6c3-4892-b126-8cae44570eae")
+		(property "Reference" "C41"
+			(at 217.17 153.6699 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100n"
+			(at 217.17 156.2099 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 214.3252 158.75 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 213.36 154.94 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 213.36 154.94 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "2"
+			(uuid "3b2f1502-1a5f-44fa-bd1a-5535fd72ac38")
+		)
+		(pin "1"
+			(uuid "bb8a5df3-d615-46eb-b412-7d89394ddee0")
+		)
+		(instances
+			(project "csa_petio_v1"
+				(path "/e52c695d-6540-4a56-9880-06c7d9f215a5/68abe788-b880-40e7-9e78-97f20b071325"
+					(reference "C41")
 					(unit 1)
 				)
 			)

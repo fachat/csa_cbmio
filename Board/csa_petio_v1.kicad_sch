@@ -5,8 +5,44 @@
 	(uuid "e52c695d-6540-4a56-9880-06c7d9f215a5")
 	(paper "User" 520.243 335.763)
 	(lib_symbols)
+	(text "CBM I/O Board with FPGA"
+		(exclude_from_sim no)
+		(at 72.39 49.53 0)
+		(effects
+			(font
+				(size 3.81 3.81)
+				(thickness 0.508)
+				(bold yes)
+			)
+		)
+		(uuid "6ba97838-558a-4735-ac97-64fd0f6c9310")
+	)
+	(text "CSA-CBMIO-V1.1A"
+		(exclude_from_sim no)
+		(at 414.02 302.26 0)
+		(effects
+			(font
+				(size 3.81 3.2385)
+			)
+			(justify left bottom)
+		)
+		(uuid "792c7348-b9d8-4cbd-9cab-c011cbc6a287")
+	)
+	(text "This board implements the I/O for either a Commodore PET, a \nCommodore B-Series, or the Ulti-PET using a single FPGA.\n\nThe I/O can be addressed/used via the CS/A Bus and the /IOSEL\nsignal (if activated at the right address for the specific\nmodel)"
+		(exclude_from_sim no)
+		(at 34.29 80.01 0)
+		(effects
+			(font
+				(size 2.54 2.54)
+				(thickness 0.254)
+				(bold yes)
+			)
+			(justify left)
+		)
+		(uuid "c796f5bb-23f1-4dbd-bd9d-290080a16f87")
+	)
 	(sheet
-		(at 129.54 44.45)
+		(at 130.81 297.18)
 		(size 15.24 8.89)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -22,7 +58,7 @@
 		)
 		(uuid "5a5ee5d6-5c57-47d8-89f1-607b8332e7b6")
 		(property "Sheetname" "IO1"
-			(at 129.54 43.7384 0)
+			(at 130.81 296.4684 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -33,7 +69,7 @@
 			)
 		)
 		(property "Sheetfile" "io1.kicad_sch"
-			(at 129.54 53.9246 0)
+			(at 130.81 306.6546 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -52,7 +88,7 @@
 		)
 	)
 	(sheet
-		(at 53.975 42.545)
+		(at 55.245 295.275)
 		(size 12.7 10.795)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -68,7 +104,7 @@
 		)
 		(uuid "67fa4363-94f9-4272-9424-80003c5e48fd")
 		(property "Sheetname" "Bus"
-			(at 53.975 41.8334 0)
+			(at 55.245 294.5634 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -79,7 +115,7 @@
 			)
 		)
 		(property "Sheetfile" "bus.kicad_sch"
-			(at 53.975 53.9246 0)
+			(at 55.245 306.6546 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -98,7 +134,7 @@
 		)
 	)
 	(sheet
-		(at 92.71 43.815)
+		(at 93.98 296.545)
 		(size 12.7 11.43)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -114,7 +150,7 @@
 		)
 		(uuid "68abe788-b880-40e7-9e78-97f20b071325")
 		(property "Sheetname" "FPGA"
-			(at 92.71 43.1034 0)
+			(at 93.98 295.8334 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -125,7 +161,7 @@
 			)
 		)
 		(property "Sheetfile" "fpga.kicad_sch"
-			(at 92.71 55.8296 0)
+			(at 93.98 308.5596 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -144,7 +180,7 @@
 		)
 	)
 	(sheet
-		(at 164.465 44.45)
+		(at 165.735 297.18)
 		(size 12.7 11.43)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -160,7 +196,7 @@
 		)
 		(uuid "70ccb61c-5015-4d74-a36e-b1514308c68b")
 		(property "Sheetname" "IO2"
-			(at 164.465 43.7384 0)
+			(at 165.735 296.4684 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -171,7 +207,7 @@
 			)
 		)
 		(property "Sheetfile" "io2.kicad_sch"
-			(at 164.465 56.4646 0)
+			(at 165.735 309.1946 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -190,7 +226,7 @@
 		)
 	)
 	(sheet
-		(at 199.39 41.91)
+		(at 200.66 294.64)
 		(size 12.7 10.795)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -206,7 +242,7 @@
 		)
 		(uuid "7c8914b4-a2ef-4231-b3f7-1105ec77241e")
 		(property "Sheetname" "Userport"
-			(at 199.39 41.1984 0)
+			(at 200.66 293.9284 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -217,7 +253,7 @@
 			)
 		)
 		(property "Sheetfile" "userport.kicad_sch"
-			(at 199.39 53.2896 0)
+			(at 200.66 306.0196 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects

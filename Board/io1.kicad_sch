@@ -6297,7 +6297,7 @@
 	)
 	(wire
 		(pts
-			(xy 193.04 180.34) (xy 195.58 180.34)
+			(xy 193.04 180.34) (xy 194.31 180.34)
 		)
 		(stroke
 			(width 0)
@@ -7777,16 +7777,6 @@
 	)
 	(wire
 		(pts
-			(xy 195.58 180.34) (xy 195.58 179.705)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d6592e88-8a05-407e-b14c-daccf8250b27")
-	)
-	(wire
-		(pts
 			(xy 86.36 124.46) (xy 91.44 124.46)
 		)
 		(stroke
@@ -7934,16 +7924,6 @@
 			(type default)
 		)
 		(uuid "e5eb2b00-0256-44d6-998b-299ebf7143a4")
-	)
-	(wire
-		(pts
-			(xy 195.58 179.705) (xy 194.31 179.705)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e7526443-5c57-4d64-9f14-c86ae453aab6")
 	)
 	(wire
 		(pts
@@ -9135,7 +9115,7 @@
 	)
 	(global_label "UP13"
 		(shape output)
-		(at 194.31 179.705 0)
+		(at 194.31 180.34 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -9145,7 +9125,7 @@
 		)
 		(uuid "7e64e68d-91a4-4e03-995b-1191ab12a6f9")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 202.3147 179.705 0)
+			(at 202.3147 180.34 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
