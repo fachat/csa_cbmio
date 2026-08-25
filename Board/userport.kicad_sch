@@ -10183,7 +10183,7 @@
 			)
 		)
 	)
-	(global_label "UP4"
+	(global_label "PUP4"
 		(shape bidirectional)
 		(at 223.52 67.31 0)
 		(fields_autoplaced yes)
@@ -10195,7 +10195,7 @@
 		)
 		(uuid "8026d1da-91b7-4ee3-93a3-98ff961eb127")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 231.268 67.31 0)
+			(at 232.5126 67.31 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10519,7 +10519,7 @@
 			)
 		)
 	)
-	(global_label "UP6"
+	(global_label "PUP6"
 		(shape bidirectional)
 		(at 223.52 72.39 0)
 		(fields_autoplaced yes)
@@ -10531,7 +10531,7 @@
 		)
 		(uuid "b677bbc7-9fdd-408d-b1de-0917d1ae033c")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 231.268 72.39 0)
+			(at 232.5126 72.39 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10591,7 +10591,7 @@
 			)
 		)
 	)
-	(global_label "UP7"
+	(global_label "PUP7"
 		(shape bidirectional)
 		(at 223.52 74.93 0)
 		(fields_autoplaced yes)
@@ -10603,7 +10603,7 @@
 		)
 		(uuid "cdcc6058-4050-437b-861b-96506e03a65d")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 231.268 74.93 0)
+			(at 232.5126 74.93 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10639,7 +10639,7 @@
 			)
 		)
 	)
-	(global_label "UP5"
+	(global_label "PUP5"
 		(shape bidirectional)
 		(at 223.52 69.85 0)
 		(fields_autoplaced yes)
@@ -10651,7 +10651,7 @@
 		)
 		(uuid "d9c21fce-5226-42c4-8e3c-b4f65e166f67")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 231.268 69.85 0)
+			(at 232.5126 69.85 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11020,6 +11020,17 @@
 			)
 		)
 		(property "Description" ""
+			(at 200.66 72.39 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C189688"
 			(at 200.66 72.39 0)
 			(hide yes)
 			(show_name no)
@@ -12174,7 +12185,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "52e971ca-3f59-4565-ab93-b5b201814d60")
+		(uuid "52e971ca-3f59-4565-ab93-b5b201814d61")
 		(property "Reference" "U14"
 			(at 243.84 200.66 0)
 			(show_name no)
@@ -12229,46 +12240,46 @@
 			)
 		)
 		(pin "5"
-			(uuid "e1de913f-1466-4457-862a-9967ab91d692")
+			(uuid "e1de913f-1466-4457-862a-9967ab91d693")
 		)
 		(pin "4"
-			(uuid "fad27cad-70ec-4cdd-b73f-ac249cb908da")
+			(uuid "fad27cad-70ec-4cdd-b73f-ac249cb908db")
 		)
 		(pin "13"
-			(uuid "afc5580b-e1a1-4cf5-bf8e-d352b65d7847")
+			(uuid "afc5580b-e1a1-4cf5-bf8e-d352b65d7848")
 		)
 		(pin "14"
-			(uuid "08b54273-2120-49a2-8420-aebd30b4efda")
+			(uuid "08b54273-2120-49a2-8420-aebd30b4efdb")
 		)
 		(pin "10"
-			(uuid "21587201-c528-4d74-bd8d-4102c2a24aa1")
+			(uuid "21587201-c528-4d74-bd8d-4102c2a24aa2")
 		)
 		(pin "12"
-			(uuid "90d08365-6ef6-4a61-8f72-f1566ba28212")
+			(uuid "90d08365-6ef6-4a61-8f72-f1566ba28213")
 		)
 		(pin "11"
-			(uuid "0d63adeb-6ce0-447e-92d2-c959c00e6840")
+			(uuid "0d63adeb-6ce0-447e-92d2-c959c00e6841")
 		)
 		(pin "8"
-			(uuid "c960106d-152e-4919-8a44-581121145203")
+			(uuid "c960106d-152e-4919-8a44-581121145204")
 		)
 		(pin "7"
-			(uuid "ac37041d-c7d5-42a0-b60a-829037b76274")
+			(uuid "ac37041d-c7d5-42a0-b60a-829037b76275")
 		)
 		(pin "6"
-			(uuid "c8972005-1c8c-410c-aeb0-111b418f677b")
+			(uuid "c8972005-1c8c-410c-aeb0-111b418f677c")
 		)
 		(pin "9"
-			(uuid "e0e0fbdb-b39a-4a75-9902-ede3b40ded8a")
+			(uuid "e0e0fbdb-b39a-4a75-9902-ede3b40ded8b")
 		)
 		(pin "1"
-			(uuid "9a2452d3-4e40-44af-b7b1-cdc127981059")
+			(uuid "9a2452d3-4e40-44af-b7b1-cdc12798105a")
 		)
 		(pin "2"
-			(uuid "a5714577-f425-43fc-ae25-96e51dda8a41")
+			(uuid "a5714577-f425-43fc-ae25-96e51dda8a42")
 		)
 		(pin "3"
-			(uuid "641e4679-6ecf-4440-b3ac-aa0b7592f8d7")
+			(uuid "641e4679-6ecf-4440-b3ac-aa0b7592f8d8")
 		)
 		(instances
 			(project "csa_petio_v1"
@@ -14838,6 +14849,17 @@
 			)
 		)
 		(property "Description" ""
+			(at 283.21 96.52 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C189688"
 			(at 283.21 96.52 0)
 			(hide yes)
 			(show_name no)
