@@ -76,7 +76,36 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        [
+          "invalid_outline|68530350|55003600|f2522717-8bc6-4f67-bf6b-d1e4a2f76a02|ab47dba2-ddcf-46cf-9a10-dc3dc8954ffe",
+          ""
+        ],
+        [
+          "lib_footprint_issues|130217000|77114400|d212d942-02b1-4393-b267-9259dc3f7750|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "lib_footprint_issues|145203000|77114400|b4b31065-2466-4141-a46a-2840e9db9aa0|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "lib_footprint_issues|174244000|149162100|6871cea1-e5d9-425c-9024-bef30ebcd2f2|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "malformed_courtyard|68559600|153504900|006852cf-00df-42ee-9ba7-c00db4873140|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "malformed_courtyard|68559600|56502300|006852cf-00df-42ee-9ba7-c00db4873140|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "starved_thermal|224028000|70231400|fb576f14-4cc0-4c90-8eee-9b1115d585ad|9ec28abf-5011-40df-843a-ab5358dab653|B.Cu",
+          ""
+        ]
+      ],
       "meta": {
         "filename": "board_design_settings.json",
         "version": 2
