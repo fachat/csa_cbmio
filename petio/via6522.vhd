@@ -528,7 +528,8 @@ begin
         signal timer_a_toggle        : std_logic;
         signal timer_a_may_interrupt : std_logic;
     begin
-        process(phi2, reset, data_in, write_t1c_h, timer_a_reload, timer_a_count, timer_a_write_t1c_h,
+        process(phi2, reset, data_in, write_t1c_h, timer_a_input_latch, 
+				timer_a_reload, timer_a_latch, timer_a_count, timer_a_write_t1c_h,
 				timer_a_underflow_next, timer_a_underflow_next_d, timer_a_underflow_next_d2,
 				timer_a_active_ff, timer_a_active_underflow, timer_a_active_underflow_d, acr)
         begin

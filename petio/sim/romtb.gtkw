@@ -1,20 +1,20 @@
 [*]
 [*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
-[*] Sat Aug 15 22:44:07 2026
+[*] Mon Sep  7 23:04:31 2026
 [*]
 [dumpfile] "/home/fachat/Shared/csa_cbmio/petio/sim/shell_cpu.vcd"
-[dumpfile_mtime] "Sat Aug 15 22:28:09 2026"
-[dumpfile_size] 472658
+[dumpfile_mtime] "Mon Sep  7 22:06:51 2026"
+[dumpfile_size] 2101387
 [savefile] "/home/fachat/Shared/csa_cbmio/petio/sim/romtb.gtkw"
-[timestart] 195920000000
+[timestart] 136410000000
 [size] 1920 993
 [pos] -1 -1
-*-30.834156 199021000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-31.734156 157713000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_shell_cpu.
 [treeopen] tb_shell_cpu.shell_dut.
 [treeopen] tb_shell_cpu.shell_dut.via1_c.
-[sst_width] 239
-[signals_width] 312
+[sst_width] 288
+[signals_width] 230
 [sst_expanded] 1
 [sst_vpaned_height] 296
 @200
@@ -50,9 +50,7 @@ tb_shell_cpu.shell_dut.via1_sel
 tb_shell_cpu.shell_dut.via1_rden
 tb_shell_cpu.shell_dut.via1_wren
 tb_shell_cpu.shell_dut.via1_cb1_dir
-@29
 tb_shell_cpu.shell_dut.via1_cb1_in
-@28
 tb_shell_cpu.shell_dut.via1_cb1_out
 tb_shell_cpu.shell_dut.via1_cb2_dir
 tb_shell_cpu.shell_dut.via1_cb2_in
@@ -75,6 +73,15 @@ tb_shell_cpu.shell_dut.via1_c.pcr[7:0]
 tb_shell_cpu.shell_dut.via1_c.timer_b_tick
 @22
 tb_shell_cpu.shell_dut.via1_c.timer_b_count[15:0]
+tb_shell_cpu.shell_dut.via1_c.timer_a_count[15:0]
+@28
+tb_shell_cpu.shell_dut.via1_c.tmr_a.timer_a_underflow_next
+tb_shell_cpu.shell_dut.via1_c.tmr_a.timer_a_underflow_next_d
+tb_shell_cpu.shell_dut.via1_c.tmr_a.timer_a_underflow_next_d2
+tb_shell_cpu.shell_dut.via1_c.tmr_a.timer_a_active_underflow
+tb_shell_cpu.shell_dut.via1_c.tmr_a.timer_a_active_ff
+@29
+tb_shell_cpu.shell_dut.via1_c.tmr_a.timer_a_reload
 @28
 tb_shell_cpu.shell_dut.via1_c.irq_events[6:0]
 tb_shell_cpu.shell_dut.via1_c.irq_flags[6:0]
