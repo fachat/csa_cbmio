@@ -5,7 +5,6 @@ use UNISIM.VComponents.all;
 
 architecture spartan6 of qclk_pll is
 
-    signal phi2_ibuf    : std_logic;
     signal clk16_raw    : std_logic;
     signal clk16        : std_logic;
     signal qclk_raw     : std_logic;
@@ -15,12 +14,6 @@ architecture spartan6 of qclk_pll is
     signal dcm2_status  : std_logic_vector(1 downto 0);
 
 begin
-
-    phi2_bufg: IBUFG
-        port map (
-            I => phi2,
-            O => phi2_ibuf
-        );
 
     dcm_16x: DCM_CLKGEN
         generic map (
@@ -39,7 +32,7 @@ begin
             LOCKED     => dcm1_locked,
             PROGDONE   => open,
             STATUS     => dcm1_status,
-            CLKIN      => phi2_ibuf,
+            CLKIN      => phi2,
             FREEZEDCM  => '0',
             PROGCLK    => '0',
             PROGDATA   => '0',
