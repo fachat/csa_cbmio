@@ -18,7 +18,7 @@ pia:
 	$(GHDL) -r $(GHDLFLAGS) tb_pia6520 -gscript_file=$(if $(SCRIPT),$(SCRIPT),scripts/pia_script.txt) --vcd=pia.vcd
 
 uart:
-	$(GHDL) -a $(GHDLFLAGS) uart_top_sim.vhd ../uart_shell.vhd reg_script_pkg.vhd tb_uart_shell.vhd
+	$(GHDL) -a $(GHDLFLAGS) ../qclk_pll.vhd qclk_pll_sim.vhd uart_top_sim.vhd ../uart_shell.vhd reg_script_pkg.vhd tb_uart_shell.vhd
 	$(GHDL) -e $(GHDLFLAGS) tb_uart_shell
 	$(GHDL) -r $(GHDLFLAGS) tb_uart_shell -gscript_file=$(if $(SCRIPT),$(SCRIPT),scripts/uart_script.txt) --vcd=uart.vcd
 
@@ -27,6 +27,8 @@ clean:
 
 shell_cpu:
 	$(GHDL) -a $(GHDLFLAGS) \
+		../qclk_pll.vhd \
+		qclk_pll_sim.vhd \
 		../select.vhd \
 		../pia6520.vhd \
 		../via6522.vhd \

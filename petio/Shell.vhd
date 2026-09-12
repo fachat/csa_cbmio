@@ -120,6 +120,9 @@ architecture Behavioral of Shell is
 	signal res: std_logic;
 	
 	signal int_out: std_logic;
+	signal qclk: std_logic;
+	signal qclk_locked: std_logic;
+	signal uart_nres: std_logic;
 
 	-- IEEE488 signals output from PET (depends on direction)
 	signal ieee_is_out: std_logic;	-- 1 when sending from host (us) to device (on bus)
@@ -319,6 +322,7 @@ architecture Behavioral of Shell is
 
 	component uart_shell is
     Port ( phi2 : in  STD_LOGIC;
+           qclk : in  STD_LOGIC;
            rwb : in  STD_LOGIC;
            nres : in  STD_LOGIC;
 			  sel : in STD_LOGIC;
@@ -334,6 +338,13 @@ architecture Behavioral of Shell is
            dtr : out  STD_LOGIC;
            ri : in  STD_LOGIC;
            dcd : in  STD_LOGIC);
+	end component;
+
+	component qclk_pll is
+    Port ( phi2 : in  STD_LOGIC;
+           nres : in  STD_LOGIC;
+           qclk : out  STD_LOGIC;
+           locked : out  STD_LOGIC);
 	end component;
 	
 	-- test timer (50Hz)
@@ -359,6 +370,7 @@ begin
 		or int_out;
 	
 	res <= not(nres);
+	uart_nres <= nres and qclk_locked;
 	
 	D_in <= D;
 	D <= (others => 'Z') when rwb = '0'
@@ -438,7 +450,17 @@ begin
 	end block fake_int;
 	
 	----------------------------------------------------
-	
+
+	qclk_c: qclk_pll
+		port map (
+			phi2 => phi2,
+			nres => nres,
+			qclk => qclk,
+			locked => qclk_locked
+		);
+
+	----------------------------------------------------
+
 	pia1_c: pia6520
 	   Port map (
 			nres,
@@ -695,8 +717,9 @@ begin
 	uart1: uart_shell 
     Port map ( 
 				phi2,
+				qclk,
 				rwb,
-				nres,
+				uart_nres,
 				uart1_sel,
 				A(2 downto 0),
 				uart1_din,
@@ -717,8 +740,9 @@ begin
 	uart2: uart_shell 
     Port map ( 
 				phi2,
+				qclk,
 				rwb,
-				nres,
+				uart_nres,
 				uart2_sel,
 				A(2 downto 0),
 				uart2_din,
@@ -768,4 +792,3 @@ begin
 	nbe <= nbe_out;
 	
 end Behavioral;
-

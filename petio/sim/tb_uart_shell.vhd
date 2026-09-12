@@ -13,6 +13,7 @@ end entity;
 
 architecture tb of tb_uart_shell is
   signal phi2 : std_logic := '0';
+  signal qclk : std_logic := '0';
   signal rwb  : std_logic := '1';
   signal nres : std_logic := '0';
   signal sel  : std_logic := '0';
@@ -33,6 +34,7 @@ begin
   dut: entity work.uart_shell
     port map (
       phi2 => phi2,
+      qclk => qclk,
       rwb => rwb,
       nres => nres,
       sel => sel,
@@ -59,6 +61,8 @@ begin
       wait for 5 ns;
     end loop;
   end process;
+
+  qclk <= phi2;
 
   rst_p: process
   begin
