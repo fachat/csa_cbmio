@@ -356,11 +356,26 @@ architecture Behavioral of Shell is
 	-- which I/O page to use (either 8 or 9)
 	signal iopage: std_logic;
 	
+	-- divider for qclk
+	signal qclk_cnt: std_logic_vector(7 downto 0);
+	signal qclk_div: std_logic;
+	
 begin
 
+	
 	rtx <= '1' when via1_sel ='1' and A(3 downto 0) = X"6" else '0';
-	rrts <= nbe_out; --D_in(2);
+	rrts <= qclk_div; --nbe_out; --D_in(2);
 	iopage <= rcts;
+	
+	qclk_div_p: process(qclk, qclk_cnt)
+	begin
+		if (nres = '0') then
+			qclk_cnt <= (others => '0');
+		elsif (falling_edge(qclk)) then
+				qclk_div <= not(qclk_div);
+		end if;
+	end process;
+	
 	
 	irq <= pia1_irq 
 		or pia2_irq 
