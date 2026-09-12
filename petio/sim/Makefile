@@ -33,6 +33,7 @@ shell_cpu:
 		../pia6520.vhd \
 		../via6522.vhd \
 		../ieeedir.vhd \
+		uart_top_sim.vhd \
 		../uart_shell.vhd \
 		../Shell.vhd \
 		cpu6502.vhd \
