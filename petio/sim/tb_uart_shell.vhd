@@ -62,7 +62,15 @@ begin
     end loop;
   end process;
 
-  qclk <= phi2;
+  qclk_p: process
+  begin
+    loop
+      qclk <= '0';
+      wait for 1 ns;
+      qclk <= '1';
+      wait for 1 ns;
+    end loop;
+  end process;
 
   rst_p: process
   begin
