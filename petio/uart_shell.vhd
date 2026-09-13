@@ -110,7 +110,7 @@ begin
 		);
 
 	cyc <= phi2;
-	we <= not(rwb);
+	we <= not(rwb) and phi2;
 	stb <= sel;
 	
 end Behavioral;
