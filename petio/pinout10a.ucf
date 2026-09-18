@@ -5,7 +5,7 @@
 # phi2 is on a GCLK pin!
 # required due to UART's use with too many non-clock resources
 net phi2 			loc=p23 | iostandard=lvttl | CLOCK_DEDICATED_ROUTE=false;
-PIN "phi2_IBUFG_BUFG.O" CLOCK_DEDICATED_ROUTE = FALSE;
+#PIN "phi2_IBUFG_BUFG.O" CLOCK_DEDICATED_ROUTE = FALSE;
 
 net rwb				loc=p2 | iostandard=lvcmos33;
 net niosel			loc=p5 | iostandard=lvcmos33;

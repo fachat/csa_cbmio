@@ -695,10 +695,13 @@ begin
 					timer_b_prev <= timer_b_count;
             end if;        
 				
-				if (timer_b_tick = '1') then
-					timer_b_next <= timer_b_count - 1;
-				else
-					timer_b_next <= timer_b_count;
+				-- timer_b_next used in rising edge
+				if (falling_edge(phi2)) then
+					if (timer_b_tick = '1') then
+						timer_b_next <= timer_b_count - 1;
+					else
+						timer_b_next <= timer_b_count;
+					end if;
 				end if;
 
 				-- when do we update the timer values (low/high byte)?
@@ -737,6 +740,7 @@ begin
 					timer_b_l_load <= '0';
 				end if;
 				
+				-- actually update the counter
             if (rising_edge(phi2)) then
 				
 					if (timer_b_l_load = '1') then
