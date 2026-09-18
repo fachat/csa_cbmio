@@ -367,10 +367,10 @@ begin
 	rrts <= qclk_div; --nbe_out; --D_in(2);
 	iopage <= rcts;
 	
-	qclk_div_p: process(qclk, qclk_cnt)
+	qclk_div_p: process(qclk, qclk_cnt, nres)
 	begin
 		if (nres = '0') then
-			qclk_cnt <= (others => '0');
+--			qclk_cnt <= (others => '0');
 		elsif (falling_edge(qclk)) then
 				qclk_div <= not(qclk_div);
 		end if;
@@ -695,6 +695,9 @@ begin
 			via2_irq
 		);
 		
+	via2_ca1_in <= '1';
+	via2_ca2_in <= '1';
+	
 	via2_wren <= '1' when via2_sel = '1' and rwb = '0' else '0';
 	via2_rden <= '1' when via2_sel = '1' and rwb = '1' else '0';
 	
