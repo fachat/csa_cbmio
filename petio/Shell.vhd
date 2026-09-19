@@ -118,8 +118,12 @@ architecture Behavioral of Shell is
 		
 	signal nbe_out: std_logic;
 	signal res: std_logic;
+	signal phi2_int: std_logic;
 	
 	signal int_out: std_logic;
+	signal qclk: std_logic;
+	signal qclk_locked: std_logic;
+	signal uart_nres: std_logic;
 
 	-- IEEE488 signals output from PET (depends on direction)
 	signal ieee_is_out: std_logic;	-- 1 when sending from host (us) to device (on bus)
@@ -319,6 +323,7 @@ architecture Behavioral of Shell is
 
 	component uart_shell is
     Port ( phi2 : in  STD_LOGIC;
+           qclk : in  STD_LOGIC;
            rwb : in  STD_LOGIC;
            nres : in  STD_LOGIC;
 			  sel : in STD_LOGIC;
@@ -335,6 +340,13 @@ architecture Behavioral of Shell is
            ri : in  STD_LOGIC;
            dcd : in  STD_LOGIC);
 	end component;
+
+	component qclk_pll is
+    Port ( phi2 : in  STD_LOGIC;
+           nres : in  STD_LOGIC;
+           qclk : out  STD_LOGIC;
+           locked : out  STD_LOGIC);
+	end component;
 	
 	-- test timer (50Hz)
 	signal test_counter: std_logic_vector(15 downto 0);
@@ -345,11 +357,32 @@ architecture Behavioral of Shell is
 	-- which I/O page to use (either 8 or 9)
 	signal iopage: std_logic;
 	
+	-- divider for qclk
+	signal qclk_cnt: std_logic_vector(7 downto 0);
+	signal qclk_div: std_logic;
+	
 begin
 
+	phi2_p: process(nres, qclk, phi2)
+	begin
+		--if (falling_edge(qclk)) then
+			phi2_int <= phi2;
+		--end if;
+	end process;
+	
 	rtx <= '1' when via1_sel ='1' and A(3 downto 0) = X"6" else '0';
-	rrts <= nbe_out; --D_in(2);
+	rrts <= qclk_div; --nbe_out; --D_in(2);
 	iopage <= rcts;
+	
+	qclk_div_p: process(qclk, qclk_cnt, nres)
+	begin
+		if (nres = '0') then
+--			qclk_cnt <= (others => '0');
+		elsif (falling_edge(qclk)) then
+				qclk_div <= not(qclk_div);
+		end if;
+	end process;
+	
 	
 	irq <= pia1_irq 
 		or pia2_irq 
@@ -359,6 +392,7 @@ begin
 		or int_out;
 	
 	res <= not(nres);
+	uart_nres <= nres and qclk_locked;
 	
 	D_in <= D;
 	D <= (others => 'Z') when rwb = '0'
@@ -416,9 +450,9 @@ begin
 	fake_int: block
 		signal int_cnt: std_logic_vector(15 downto 0);
 	begin
-	  int_p: process(phi2, nres)
+	  int_p: process(phi2_int, nres)
 	  begin
-		if  (falling_edge(phi2)) then
+		if  (falling_edge(phi2_int)) then
 			if (nres = '0') then
 				int_cnt <= (others => '0');
 			elsif (int_cnt > 20000) then
@@ -427,7 +461,7 @@ begin
 				int_cnt <= int_cnt + 1;
 			end if;
 		end if;
-		if (rising_edge(phi2)) then
+		if (rising_edge(phi2_int)) then
 			if (int_cnt < 100) then
 				int_out <= '1';
 			else
@@ -438,11 +472,21 @@ begin
 	end block fake_int;
 	
 	----------------------------------------------------
-	
+
+	qclk_c: qclk_pll
+		port map (
+			phi2 => phi2_int,
+			nres => nres,
+			qclk => qclk,
+			locked => qclk_locked
+		);
+
+	----------------------------------------------------
+
 	pia1_c: pia6520
 	   Port map (
 			nres,
-         phi2,
+         phi2_int,
          rwb,
          pia1_sel,
          pia1_irq,
@@ -495,7 +539,7 @@ begin
 	pia2_c: pia6520
 	   Port map (
 			nres,
-         phi2,
+         phi2_int,
          rwb,
          pia2_sel,
          pia2_irq,
@@ -537,7 +581,7 @@ begin
 
 	via1_c: via6522
 	   Port map (
-         phi2,
+         phi2_int,
 			res,
 			A(3 downto 0),
 			via1_wren,
@@ -625,7 +669,7 @@ begin
 
 	via2_c: via6522
 	   Port map (
-         phi2,
+         phi2_int,
 			res,
 			A(3 downto 0),
 			via2_wren,
@@ -658,6 +702,9 @@ begin
 			via2_irq
 		);
 		
+	via2_ca1_in <= '1';
+	via2_ca2_in <= '1';
+	
 	via2_wren <= '1' when via2_sel = '1' and rwb = '0' else '0';
 	via2_rden <= '1' when via2_sel = '1' and rwb = '1' else '0';
 	
@@ -692,47 +739,54 @@ begin
 
 	----------------------------------------------------
 	
-	uart1: uart_shell 
-    Port map ( 
-				phi2,
-				rwb,
-				nres,
-				uart1_sel,
-				A(2 downto 0),
-				uart1_din,
-				uart1_dout,
-				uart1_irq,
-				lrx,
-				ltx,
-				lcts,
-				lrts,
-				ldsr,
-				ldtr,
-				lri,
-				ldcd
-	);
+--	uart1: uart_shell 
+--    Port map ( 
+--				phi2_int,
+--				qclk,
+--				rwb,
+--				uart_nres,
+--				uart1_sel,
+--				A(2 downto 0),
+--				uart1_din,
+--				uart1_dout,
+--				uart1_irq,
+--				lrx,
+--				ltx,
+--				lcts,
+--				lrts,
+--				ldsr,
+--				ldtr,
+--				lri,
+--				ldcd
+--	);
 
 	uart1_din <= D_in;
 
-	uart2: uart_shell 
-    Port map ( 
-				phi2,
-				rwb,
-				nres,
-				uart2_sel,
-				A(2 downto 0),
-				uart2_din,
-				uart2_dout,
-				uart2_irq,
-				rrx,
-				ign_rtx,
-				rcts,
-				ign_rrts,
-				rdsr,
-				rdtr,
-				'0',
-				'0'
-	);
+--	uart2: uart_shell 
+--    Port map ( 
+--				phi2_int,
+--				qclk,
+--				rwb,
+--				uart_nres,
+--				uart2_sel,
+--				A(2 downto 0),
+--				uart2_din,
+--				uart2_dout,
+--				uart2_irq,
+--				rrx,
+--				ign_rtx,
+--				rcts,
+--				ign_rrts,
+--				rdsr,
+--				rdtr,
+--				'0',
+--				'0'
+--	);
+
+	ltx <= '1';
+	ldtr <= '1';
+	rdtr <= '1';
+	lrts <= '1';
 
 	uart2_din <= D_in;
 	
@@ -740,7 +794,7 @@ begin
 
 	ieeedir_c: ieeedir
 	port map(
-		phi2,
+		phi2_int,
 		nres,
 		not(dio),
 		atn,
@@ -768,4 +822,3 @@ begin
 	nbe <= nbe_out;
 	
 end Behavioral;
-

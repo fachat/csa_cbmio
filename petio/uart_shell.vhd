@@ -31,6 +31,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity uart_shell is
     Port ( phi2 : in  STD_LOGIC;
+           qclk : in  STD_LOGIC;
            rwb : in  STD_LOGIC;
            nres : in  STD_LOGIC;
 			  sel : in STD_LOGIC;
@@ -89,7 +90,7 @@ begin
 
 	uart_c: uart_top
 		port map (
-			phi2,			-- TODO 1.8432 MHz
+			qclk,
 			not(nres),
 			addr,
 			din,
@@ -109,8 +110,7 @@ begin
 		);
 
 	cyc <= phi2;
-	we <= not(rwb);
+	we <= not(rwb) and phi2;
 	stb <= sel;
 	
 end Behavioral;
-
