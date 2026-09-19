@@ -12,7 +12,13 @@ entity tb_via6522 is
 end entity;
 
 architecture tb of tb_via6522 is
+  constant PHI2X8_HALF : time := 62.5 ns;
+
   signal phi2     : std_logic := '0';
+  signal phi2x8   : std_logic := '1';
+  signal phi2falling_en : std_logic := '1';
+  signal phi2rising_en  : std_logic := '0';
+  signal phi2_phase     : integer range 0 to 7 := 0;
   signal reset    : std_logic := '1';
   signal addr     : std_logic_vector(3 downto 0) := (others => '0');
   signal wen      : std_logic := '0';
@@ -42,6 +48,9 @@ begin
   dut: entity work.via6522
     port map (
       phi2 => phi2,
+      phi2x8 => phi2x8,
+      phi2falling_en => phi2falling_en,
+      phi2rising_en => phi2rising_en,
       reset => reset,
       addr => addr,
       wen => wen,
@@ -76,6 +85,34 @@ begin
       wait for 500 ns;
     end loop;
   end process;
+
+  clk8_p: process
+  begin
+    wait until reset = '0';
+    wait until falling_edge(phi2);
+    loop
+      phi2x8 <= '0';
+      wait for PHI2X8_HALF;
+      phi2x8 <= '1';
+      wait for PHI2X8_HALF;
+    end loop;
+  end process;
+
+  phase_p: process(phi2x8, reset)
+  begin
+    if (reset = '1') then
+      phi2_phase <= 0;
+    elsif (falling_edge(phi2x8)) then
+      if (phi2_phase = 7) then
+        phi2_phase <= 0;
+      else
+        phi2_phase <= phi2_phase + 1;
+      end if;
+    end if;
+  end process;
+
+  phi2falling_en <= '1' when phi2_phase = 0 else '0';
+  phi2rising_en <= '1' when phi2_phase = 4 else '0';
 
   rst_p: process
   begin

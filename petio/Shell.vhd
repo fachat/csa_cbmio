@@ -123,6 +123,9 @@ architecture Behavioral of Shell is
 	signal int_out: std_logic;
 	signal qclk: std_logic;
 	signal qclk_locked: std_logic;
+	signal phi2x8: std_logic;
+	signal phi2falling_en: std_logic;
+	signal phi2rising_en: std_logic;
 	signal uart_nres: std_logic;
 
 	-- IEEE488 signals output from PET (depends on direction)
@@ -272,6 +275,9 @@ architecture Behavioral of Shell is
 	component via6522 is
 		port (
 			phi2        : in  std_logic;
+			phi2x8      : in  std_logic;
+			phi2falling_en : in  std_logic;
+			phi2rising_en  : in  std_logic;
 			reset       : in  std_logic;
     
 			addr        : in  std_logic_vector(3 downto 0);
@@ -345,6 +351,9 @@ architecture Behavioral of Shell is
     Port ( phi2 : in  STD_LOGIC;
            nres : in  STD_LOGIC;
            qclk : out  STD_LOGIC;
+           phi2x8 : out  STD_LOGIC;
+           phi2falling_en : out  STD_LOGIC;
+           phi2rising_en : out  STD_LOGIC;
            locked : out  STD_LOGIC);
 	end component;
 	
@@ -478,6 +487,9 @@ begin
 			phi2 => phi2_int,
 			nres => nres,
 			qclk => qclk,
+			phi2x8 => phi2x8,
+			phi2falling_en => phi2falling_en,
+			phi2rising_en => phi2rising_en,
 			locked => qclk_locked
 		);
 
@@ -582,6 +594,9 @@ begin
 	via1_c: via6522
 	   Port map (
          phi2_int,
+			phi2x8,
+			phi2falling_en,
+			phi2rising_en,
 			res,
 			A(3 downto 0),
 			via1_wren,
@@ -670,6 +685,9 @@ begin
 	via2_c: via6522
 	   Port map (
          phi2_int,
+			phi2x8,
+			phi2falling_en,
+			phi2rising_en,
 			res,
 			A(3 downto 0),
 			via2_wren,
