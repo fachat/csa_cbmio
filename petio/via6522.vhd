@@ -99,6 +99,7 @@ architecture viasim of via6522 is
     signal timer_b_count : std_logic_vector(15 downto 0) := latch_reset_pattern;
     signal timer_a_out   : std_logic;
     signal timer_b_tick  : std_logic;
+    signal timer_b_sr_tick : std_logic := '0';
                          
     signal acr, pcr      : std_logic_vector(7 downto 0) := X"00";
     signal shift_reg     : std_logic_vector(7 downto 0) := X"00";
@@ -720,8 +721,10 @@ begin
 							and timer_b_l_load = '0'
 							) then
 						timer_b_l_update_flag <= '1';
+						timer_b_sr_tick <= '1';
 					else
-						timer_b_l_update_flag <= '1';
+						timer_b_l_update_flag <= '0';
+						timer_b_sr_tick <= '0';
 					end if;							
 				end if;
 				
@@ -812,7 +815,7 @@ begin
 		serport_en <= not(sr_disabled);
 		cb1_o_int <= sr_cb1_q;
 
-		sr_control: process(phi2, sr_uses_t2, sr_disabled, ifr2, sr_toggle_clk_output, timer_b_tick, sr_running, sr_wr, sr_rd)
+		sr_control: process(phi2, sr_uses_t2, sr_disabled, ifr2, sr_toggle_clk_output, timer_b_sr_tick, sr_running, sr_wr, sr_rd)
 		begin
 			if (falling_edge(phi2)) then
 				sr_toggle_clk_output <= '0';
@@ -822,7 +825,7 @@ begin
 					if (sr_uses_phi2 = '1') then
 						sr_toggle_clk_output <= '1';
 					elsif (sr_uses_t2 = '1') then
-						sr_toggle_clk_output <= timer_b_tick;
+						sr_toggle_clk_output <= timer_b_sr_tick;
 					end if;
 				end if;
 			end if;
@@ -915,4 +918,3 @@ begin
 
     end block ser;
 end viasim;
-
