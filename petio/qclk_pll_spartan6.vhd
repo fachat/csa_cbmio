@@ -113,9 +113,10 @@ begin
                 else
                     next_phase := phi2_phase + 1;
                 end if;
-            end if;
-
-            if (phi2_sync = '1' and phi2_sync_next = '0') then
+                if (phi2_sync = '1' and phi2_sync_next = '0') then
+                    next_phase := 0;
+                end if;
+            elsif (phi2_sync_next = '0') then
                 next_phase := 0;
                 phase_valid <= '1';
             end if;

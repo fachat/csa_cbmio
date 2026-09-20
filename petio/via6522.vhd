@@ -680,7 +680,7 @@ begin
 						t2_count(15 downto 8) <= t2_count_next(15 downto 8);
 					end if;
 
-					if (t2_count_next(15 downto 8) /= t2_count(15 downto 8) and w_t2c_h = '0') then
+					if (t2_count = x"0000" and t2_count_en = '1' and w_t2c_h = '0') then
 						t2h_ufl <= '1';
 					else
 						t2h_ufl <= '0';
