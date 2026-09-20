@@ -642,6 +642,7 @@ begin
 			t2l_ufl_now <= '1' when t2_count(7 downto 0) = x"00" and t2_cin = '1' and t2l_load = '0' else '0';
 
         process(phi2x8)
+				variable t2_run_next : std_logic;
         begin
         if falling_edge(phi2x8) then
 				if (reset = '1') then
@@ -691,6 +692,8 @@ begin
 					end if;
 
 					if (phi2rising_en = '1') then
+						t2_run_next := t2_run;
+
 						if (acr(5) = '0' or (t2_pb6_prev = '1' and t2_pb6_reg = '0')) then
 							t2_cin <= '1';
 						else
@@ -700,12 +703,13 @@ begin
 						t2l_ufl_prev  <= t2l_ufl_reg;
 
 						if (w_t2c_h = '1') then
-							t2_run <= '1';
+							t2_run_next := '1';
 						elsif (s_t2_prev = '1') then
-							t2_run <= '0';
+							t2_run_next := '0';
 						end if;
+						t2_run <= t2_run_next;
 
-						if (t2_run = '1' and t2h_ufl = '1') then
+						if (t2_run_next = '1' and t2h_ufl = '1') then
 							s_t2 <= '1';
 						else
 							s_t2 <= '0';
