@@ -89,8 +89,8 @@ begin
         );
 
     phi2x8 <= phi2x8_int;
-    phi2falling_en <= '1' when phase_valid = '1' and phi2_phase = 0 else '0';
-    phi2rising_en <= '1' when phase_valid = '1' and phi2_phase = 4 else '0';
+    phi2falling_en <= '1' when phase_valid = '1' and phi2_phase = 7 else '0';
+    phi2rising_en <= '1' when phase_valid = '1' and phi2_phase = 3 else '0';
 
     phase_p: process(phi2x8_int, nres)
     begin

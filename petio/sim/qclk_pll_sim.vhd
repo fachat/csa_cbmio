@@ -8,8 +8,8 @@ begin
 
     qclk <= phi2;
     phi2x8 <= phi2x8_i;
-    phi2falling_en <= '1' when phi2_phase = 0 else '0';
-    phi2rising_en <= '1' when phi2_phase = 4 else '0';
+    phi2falling_en <= '1' when phi2_phase = 7 else '0';
+    phi2rising_en <= '1' when phi2_phase = 3 else '0';
     locked <= nres;
 
     phi2x8_p: process

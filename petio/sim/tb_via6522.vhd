@@ -111,8 +111,8 @@ begin
     end if;
   end process;
 
-  phi2falling_en <= '1' when phi2_phase = 0 else '0';
-  phi2rising_en <= '1' when phi2_phase = 4 else '0';
+  phi2falling_en <= '1' when phi2_phase = 7 else '0';
+  phi2rising_en <= '1' when phi2_phase = 3 else '0';
 
   phase_check_p: process(phi2x8)
     variable fast_phase : integer range 0 to 7 := 0;
@@ -128,20 +128,22 @@ begin
           severity failure;
 
         if (phi2falling_en = '1') then
-          assert phi2 = '0'
-            report "phi2falling_en is not aligned to phi2 low phase"
+          assert phi2 = '1'
+            report "phi2falling_en is not aligned to phi2 high phase before falling edge"
             severity failure;
-          fast_phase := 0;
+          assert fast_phase = 7
+            report "phi2falling_en is not on the last phi2x8 step before phi2 falls"
+            severity failure;
         else
           fast_phase := (fast_phase + 1) mod 8;
         end if;
 
         if (phi2rising_en = '1') then
-          assert phi2 = '1'
-            report "phi2rising_en is not aligned to phi2 high phase"
+          assert phi2 = '0'
+            report "phi2rising_en is not aligned to phi2 low phase before rising edge"
             severity failure;
-          assert fast_phase = 4
-            report "phi2rising_en is not centered between phi2falling_en pulses"
+          assert fast_phase = 3
+            report "phi2rising_en is not on the last phi2x8 step before phi2 rises"
             severity failure;
         end if;
 
