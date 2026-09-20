@@ -591,7 +591,7 @@ begin
 
 	via1_c: via6522
 	   Port map (
-         phi2_int,
+         phi2,
 			phi2x8,
 			res,
 			A(3 downto 0),
@@ -680,7 +680,7 @@ begin
 
 	via2_c: via6522
 	   Port map (
-         phi2_int,
+         phi2,
 			phi2x8,
 			res,
 			A(3 downto 0),
