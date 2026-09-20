@@ -7,16 +7,7 @@
 net phi2 			loc=p23 | iostandard=lvttl;
 net phi2				BUFG=CLK | PERIOD=1000;
 
-net phi2 			CLOCK_DEDICATED_ROUTE=false;
-PIN "phi2_IBUFG_BUFG.O" CLOCK_DEDICATED_ROUTE = FALSE;
-#PIN "via2_c/tmr_b.t2_cin.CE" CLOCK_DEDICATED_ROUTE = FALSE;
-#PIN "via1_c/tmr_b.t2_cin.CE" CLOCK_DEDICATED_ROUTE = FALSE;
 INST "phi2_IBUFG_BUFG" LOC = BUFGMUX_X2Y10;
-
-INST "via1_c"	AREA_GROUP = "timer_logic";
-INST "via2_c"	AREA_GROUP = "timer_logic";
-
-AREA_GROUP "timer_logic" RANGE = CLOCKREGION_X0Y0;
 
 net rwb				loc=p2 | iostandard=lvcmos33;
 net niosel			loc=p5 | iostandard=lvcmos33;
@@ -145,6 +136,5 @@ net up<10>			loc=p138	 | iostandard=lvttl;
 net up<11>			loc=p137	 | iostandard=lvttl;
 net up<12>			loc=p62	 | iostandard=lvttl;
 net up<13>			loc=p69	 | iostandard=lvttl | pullup;
-
 
 

@@ -276,6 +276,8 @@ architecture Behavioral of Shell is
 		port (
 			phi2        : in  std_logic;
 			phi2x8      : in  std_logic;
+			phi2falling_en : in  std_logic;
+			phi2rising_en  : in  std_logic;
 			reset       : in  std_logic;
     
 			addr        : in  std_logic_vector(3 downto 0);
@@ -593,6 +595,8 @@ begin
 	   Port map (
          phi2,
 			phi2x8,
+			phi2falling_en,
+			phi2rising_en,
 			res,
 			A(3 downto 0),
 			via1_wren,
@@ -682,6 +686,8 @@ begin
 	   Port map (
          phi2,
 			phi2x8,
+			phi2falling_en,
+			phi2rising_en,
 			res,
 			A(3 downto 0),
 			via2_wren,
