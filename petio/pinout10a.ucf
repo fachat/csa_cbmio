@@ -5,9 +5,9 @@
 # phi2 is on a GCLK pin!
 # required due to UART's use with too many non-clock resources
 net phi2 			loc=p23 | iostandard=lvttl;
-net phi2				PERIOD=1000;
+net phi2				bufg=clk | PERIOD=1000;
 
-INST "phi2_bufg" LOC = BUFGMUX_X2Y10;
+#INST "phi2_bufg" LOC = BUFGMUX_X2Y10;
 
 net rwb				loc=p2 | iostandard=lvcmos33;
 net niosel			loc=p5 | iostandard=lvcmos33;
