@@ -624,7 +624,7 @@ begin
 		  signal w_t2c_h   			 	 : std_logic;	-- half cycle after actual write
         signal t2_pb6_reg, t2_pb6_prev : std_logic;
 		  signal t2_cin					 : std_logic;
-		  signal t2l_ufl_now, t2l_ufl_prev, t2l_ufl_reg	 			 : std_logic;
+		  signal t2l_ufl_now	 			 : std_logic;
 		  signal t2h_ufl		 : std_logic;
 		  signal t2l_load					 : std_logic;
 		  signal t2_run					 : std_logic;
@@ -637,83 +637,81 @@ begin
 		timer_b_sr_tick <= t2l_ufl_now;
 
 			--w_t2c_h <= '1' when wen = '1' and addr = 9 else '0';
-			t2l_load <= '1' when (t2l_ufl_prev = '1' and (shift_mode_control = "100" or shift_mode_control(1 downto 0) = "01")) or w_t2c_h = '1' else '0';
+			t2l_load <= '1' when (t2l_ufl_now = '1' and (shift_mode_control = "100" or shift_mode_control(1 downto 0) = "01")) or w_t2c_h = '1' else '0';
 			t2_count_next <= (t2_count - 1) when t2_cin = '1' else t2_count;
-			t2l_ufl_now <= '1' when t2_count(7 downto 0) = x"00" and t2_cin = '1' and t2l_load = '0' else '0';
+			t2l_ufl_now <= '1' when t2_count(7 downto 0) = x"00" and t2_cin = '1' and w_t2c_h = '0' else '0';
 
         process(phi2x8)
-				variable t2_run_next : std_logic;
         begin
-        if falling_edge(phi2x8) then
+        if (falling_edge(phi2x8) and phi2falling_en = '1') then
 				if (reset = '1') then
 					t2_count <= latch_reset_pattern;
 					w_t2c_h <= '0';
 					t2_pb6_reg <= '1';
 					t2_pb6_prev <= '1';
-					t2_cin <= '0';
-					t2l_ufl_prev <= '0';
-					t2l_ufl_reg <= '0';
 					t2h_ufl <= '0';
-					t2_run <= '0';
-					s_t2 <= '0';
 					s_t2_prev <= '0';
 				else
-					if (phi2falling_en = '1') then
-						t2_pb6_reg  <= To_X01(port_b_i(6));
-						t2_pb6_prev <= t2_pb6_reg;
+					t2_pb6_reg  <= To_X01(port_b_i(6));
+					t2_pb6_prev <= t2_pb6_reg;
 
-						if (write_t2c_h = '1') then
-							w_t2c_h <= '1';
-						else
-							w_t2c_h <= '0';
-						end if;
-
-						if (t2l_load = '1') then
-							t2_count(7 downto 0) <= t2l_latch;
-						else
-							t2_count(7 downto 0) <= t2_count_next(7 downto 0);
-						end if;
-
-						if (w_t2c_h = '1') then
-							t2_count(15 downto 8) <= last_data;
-						else
-							t2_count(15 downto 8) <= t2_count_next(15 downto 8);
-						end if;
-
-						if (t2_count_next(15 downto 8) /= t2_count(15 downto 8) and w_t2c_h = '0') then
-							t2h_ufl <= '1';
-						else
-							t2h_ufl <= '0';
-						end if;
-
-						t2l_ufl_reg <= t2l_ufl_now;
-
-						s_t2_prev <= s_t2;
+					if (write_t2c_h = '1') then
+						w_t2c_h <= '1';
+					else
+						w_t2c_h <= '0';
 					end if;
 
-					if (phi2rising_en = '1') then
-						t2_run_next := t2_run;
+					if (t2l_load = '1') then
+						t2_count(7 downto 0) <= t2l_latch;
+					else
+						t2_count(7 downto 0) <= t2_count_next(7 downto 0);
+					end if;
 
-						if (acr(5) = '0' or (t2_pb6_prev = '1' and t2_pb6_reg = '0')) then
-							t2_cin <= '1';
-						else
-							t2_cin <= '0';
-						end if;
+					if (w_t2c_h = '1') then
+						t2_count(15 downto 8) <= last_data;
+					else
+						t2_count(15 downto 8) <= t2_count_next(15 downto 8);
+					end if;
 
-						t2l_ufl_prev  <= t2l_ufl_reg;
+					if (t2_count_next(15 downto 8) /= t2_count(15 downto 8) and w_t2c_h = '0') then
+						t2h_ufl <= '1';
+					else
+						t2h_ufl <= '0';
+					end if;
 
-						if (w_t2c_h = '1') then
-							t2_run_next := '1';
-						elsif (s_t2_prev = '1') then
-							t2_run_next := '0';
-						end if;
-						t2_run <= t2_run_next;
+					s_t2_prev <= s_t2;
+				end if;
+			end if;
+		end process;
 
-						if (t2_run_next = '1' and t2h_ufl = '1') then
-							s_t2 <= '1';
-						else
-							s_t2 <= '0';
-						end if;
+        process(phi2x8)
+				variable t2_run_next : std_logic;
+        begin
+        if (falling_edge(phi2x8) and phi2rising_en = '1') then
+				if (reset = '1') then
+					t2_cin <= '0';
+					t2_run <= '0';
+					s_t2 <= '0';
+				else
+					t2_run_next := t2_run;
+
+					if (acr(5) = '0' or (t2_pb6_prev = '1' and t2_pb6_reg = '0')) then
+						t2_cin <= '1';
+					else
+						t2_cin <= '0';
+					end if;
+
+					if (w_t2c_h = '1') then
+						t2_run_next := '1';
+					elsif (s_t2_prev = '1') then
+						t2_run_next := '0';
+					end if;
+					t2_run <= t2_run_next;
+
+					if (t2_run_next = '1' and t2h_ufl = '1') then
+						s_t2 <= '1';
+					else
+						s_t2 <= '0';
 					end if;
 				end if;
 			end if;
