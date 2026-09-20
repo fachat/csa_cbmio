@@ -638,7 +638,7 @@ begin
 		timer_b_sr_tick <= t2l_ufl_reg;
 
 			--w_t2c_h <= '1' when wen = '1' and addr = 9 else '0';
-			t2l_load <= '1' when (t2l_ufl_prev = '1' and (acr(4 downto 2) = "100" or acr(3 downto 2) = "01")) or w_t2c_h = '1' else '0';
+			t2l_load <= '1' when (t2l_ufl_prev = '1' and (shift_mode_control = "100" or shift_mode_control(1 downto 0) = "01")) or w_t2c_h = '1' else '0';
 			t2_count_next <= (t2_count_prev - 1) when t2_cin = '1' else t2_count_prev;
 
         process(phi2x8)
@@ -723,124 +723,6 @@ begin
 				end if;
 			end if;
 		end process;
-			
---				-- "the pulse must be low on the leading edge of phi2"
---            if (falling_edge(phi2x8) and phi2rising_en = '1') then
---                pb6_reg <= To_X01(port_b_i(6));
---                pb6_prev <= pb6_reg;
---            end if;
---            timer_b_pb6_edge <= pb6_prev and not(pb6_reg);
---				
---				if (acr(5) = '0' or timer_b_pb6_edge = '1') then
---					timer_b_tick <= '1';
---				else
---					timer_b_tick <= '0';
---				end if;
---				
---				-- register the write, including the data, so that it can be used in the cycle after the CPU actually writes it
---				if (falling_edge(phi2x8) and phi2falling_en = '1') then
---					 if (write_t2c_h = '1') then
---						 timer_b_write_t2c_h <= '1';
---					 else
---						 timer_b_write_t2c_h <= '0';
---					 end if;
---				end if;
---				timer_b_input_latch <= last_data;
---				
---				-- running flag and irq event
---				if (falling_edge(phi2x8) and phi2rising_en = '1') then
---					if (timer_b_write_t2c_h = '1') then
---						timer_b_running <= '1';
---					elsif (reset = '1' or timer_b_event_prev = '1') then
---						timer_b_running <= '0';
---					end if;
---				end if;
---				
---				if (falling_edge(phi2x8) and phi2falling_en = '1') then
---					if (timer_b_running = '1' and timer_b_h_update_flag = '1') then
---						timer_b_event <= '1';
---					else
---						timer_b_event <= '0';
---					end if;
---				end if;
---				
---				if (falling_edge(phi2x8) and phi2rising_en = '1') then
---					timer_b_event_prev <= timer_b_event;
---				end if;
---				
---				-- next value determination
---            if (falling_edge(phi2x8) and phi2falling_en = '1') then
---					timer_b_prev <= timer_b_count;
---            end if;        
---				
---				-- timer_b_next used in rising edge
---				if (falling_edge(phi2x8) and phi2falling_en = '1') then
---					if (timer_b_tick = '1') then
---						timer_b_next <= timer_b_count - 1;
---					else
---						timer_b_next <= timer_b_count;
---					end if;
---				end if;
---
---				-- when do we update the timer values (low/high byte)?
---				if (falling_edge(phi2x8) and phi2rising_en = '1') then
---					if (timer_b_prev = x"0000"
---							and timer_b_tick = '1'
---							and timer_b_write_t2c_h = '0' 
---							) then
---						timer_b_h_update_flag <= '1';
---					else
---						timer_b_h_update_flag <= '0';
---					end if;
---					
---					if (timer_b_prev(7 downto 0) = x"00"
---							and timer_b_tick = '1'
---							and timer_b_l_load = '0'
---							) then
---						timer_b_l_update_flag <= '1';
---						timer_b_sr_tick <= '1';
---					else
---						timer_b_l_update_flag <= '0';
---						timer_b_sr_tick <= '0';
---					end if;							
---				end if;
---				
---				if (falling_edge(phi2x8) and phi2falling_en = '1') then
---					timer_b_l_update_flag_prev <= timer_b_l_update_flag;
---				end if;
---
---				if ((timer_b_l_update_flag_prev = '1'
---						and (shift_mode_control = "100"	-- free running
---							or shift_mode_control(1 downto 0) = "01") -- use T2 in or out
---					 ) or 
---						timer_b_write_t2c_h = '1'
---					 ) then
---					timer_b_l_load <= '1';
---				else
---					timer_b_l_load <= '0';
---				end if;
---				
---				-- actually update the counter
---            if (falling_edge(phi2x8) and phi2rising_en = '1') then
---				
---					if (timer_b_l_load = '1') then
---						timer_b_count(7 downto 0) <= timer_b_latch;
---					else
---						timer_b_count(7 downto 0) <= timer_b_next(7 downto 0);
---					end if;
---					
---					if (timer_b_write_t2c_h = '1') then
---						timer_b_count(15 downto 8) <= timer_b_input_latch;
---					else
---						timer_b_count(15 downto 8) <= timer_b_next(15 downto 8);
---					end if;
---					
---               if reset='1' then
---						timer_b_count  <= latch_reset_pattern;
---					end if;
---            end if;
---        end process;
-
     end block tmr_b;
     
     ser: block
