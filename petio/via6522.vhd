@@ -625,7 +625,7 @@ begin
 		  signal w_t2c_h   			 	 : std_logic;	-- half cycle after actual write
         signal t2_pb6_reg, t2_pb6_prev, t2_pb6_last : std_logic;
 		  signal t2_cin					 : std_logic;
-		  signal t2l_ufl_prev, t2l_ufl_reg	 			 : std_logic;
+		  signal t2l_ufl_now, t2l_ufl_prev, t2l_ufl_reg	 			 : std_logic;
 		  signal t2h_ufl		 : std_logic;
 		  signal t2l_load					 : std_logic;
 		  signal t2_run					 : std_logic;
@@ -635,11 +635,12 @@ begin
 		timer_b_event <= s_t2;
 		timer_b_count <= t2_count;
 		t2l_latch <= timer_b_latch;
-		timer_b_sr_tick <= t2l_ufl_reg;
+		timer_b_sr_tick <= t2l_ufl_now;
 
 			--w_t2c_h <= '1' when wen = '1' and addr = 9 else '0';
 			t2l_load <= '1' when (t2l_ufl_prev = '1' and (shift_mode_control = "100" or shift_mode_control(1 downto 0) = "01")) or w_t2c_h = '1' else '0';
 			t2_count_next <= (t2_count_prev - 1) when t2_cin = '1' else t2_count_prev;
+			t2l_ufl_now <= '1' when t2_count_prev(7 downto 0) = x"00" and t2_cin = '1' and t2l_load = '0' else '0';
 
         process(phi2x8)
         begin
@@ -687,11 +688,7 @@ begin
 							t2h_ufl <= '0';
 						end if;
 
-						if (t2_count_prev(7 downto 0) = x"00" and t2_cin = '1' and t2l_load = '0') then
-							t2l_ufl_reg <= '1';
-						else
-							t2l_ufl_reg <= '0';
-						end if;
+						t2l_ufl_reg <= t2l_ufl_now;
 
 						s_t2_prev <= s_t2;
 					end if;

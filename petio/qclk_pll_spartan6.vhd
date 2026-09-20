@@ -14,9 +14,10 @@ architecture spartan6 of qclk_pll is
     signal dcm2_locked  : std_logic;
     signal dcm1_status  : std_logic_vector(1 downto 0);
     signal dcm2_status  : std_logic_vector(1 downto 0);
-    signal phi2_phase   : integer range 0 to 7 := 0;
-    signal phi2_prev    : std_logic := '1';
-    signal phase_valid  : std_logic := '0';
+    signal phi2_phase      : integer range 0 to 7 := 0;
+    signal phi2_sync       : std_logic := '1';
+    signal phi2_sync_prev  : std_logic := '1';
+    signal phase_valid     : std_logic := '0';
 
 begin
 
@@ -89,9 +90,7 @@ begin
         );
 
     phi2x8 <= phi2x8_int;
-    phi2falling_en <= '1' when ((phase_valid = '1' and phi2_phase = 0)
-                            or (phase_valid = '0' and phi2_prev = '1' and phi2 = '0'))
-                    else '0';
+    phi2falling_en <= '1' when phase_valid = '1' and phi2_phase = 0 else '0';
     phi2rising_en <= '1' when phase_valid = '1' and phi2_phase = 4 else '0';
 
     phase_p: process(phi2x8_int, nres)
@@ -99,10 +98,13 @@ begin
     begin
         if (nres = '0' or dcm1_locked = '0') then
             phi2_phase <= 0;
-            phi2_prev <= '1';
+            phi2_sync <= '1';
+            phi2_sync_prev <= '1';
             phase_valid <= '0';
         elsif (falling_edge(phi2x8_int)) then
             next_phase := phi2_phase;
+            phi2_sync <= phi2;
+            phi2_sync_prev <= phi2_sync;
 
             if (phase_valid = '1') then
                 if (phi2_phase = 7) then
@@ -112,13 +114,12 @@ begin
                 end if;
             end if;
 
-            if (phi2_prev = '1' and phi2 = '0') then
+            if (phi2_sync_prev = '1' and phi2_sync = '0') then
                 next_phase := 1;
                 phase_valid <= '1';
             end if;
 
             phi2_phase <= next_phase;
-            phi2_prev <= phi2;
         end if;
     end process;
 
