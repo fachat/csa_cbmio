@@ -115,7 +115,7 @@ begin
             end if;
 
             if (phi2_sync_prev = '1' and phi2_sync = '0') then
-                next_phase := 1;
+                next_phase := 0;
                 phase_valid <= '1';
             end if;
 

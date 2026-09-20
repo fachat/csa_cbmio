@@ -619,11 +619,10 @@ begin
     -- Timer B
     tmr_b: block
 		  signal t2_count					 : std_logic_vector(15 downto 0);
-		  signal t2_count_prev			 : std_logic_vector(15 downto 0);
 		  signal t2_count_next			 : std_logic_vector(15 downto 0);
 		  signal t2l_latch			    : std_logic_vector(7 downto 0);
 		  signal w_t2c_h   			 	 : std_logic;	-- half cycle after actual write
-        signal t2_pb6_reg, t2_pb6_prev, t2_pb6_last : std_logic;
+        signal t2_pb6_reg, t2_pb6_prev : std_logic;
 		  signal t2_cin					 : std_logic;
 		  signal t2l_ufl_now, t2l_ufl_prev, t2l_ufl_reg	 			 : std_logic;
 		  signal t2h_ufl		 : std_logic;
@@ -639,19 +638,17 @@ begin
 
 			--w_t2c_h <= '1' when wen = '1' and addr = 9 else '0';
 			t2l_load <= '1' when (t2l_ufl_prev = '1' and (shift_mode_control = "100" or shift_mode_control(1 downto 0) = "01")) or w_t2c_h = '1' else '0';
-			t2_count_next <= (t2_count_prev - 1) when t2_cin = '1' else t2_count_prev;
-			t2l_ufl_now <= '1' when t2_count_prev(7 downto 0) = x"00" and t2_cin = '1' and t2l_load = '0' else '0';
+			t2_count_next <= (t2_count - 1) when t2_cin = '1' else t2_count;
+			t2l_ufl_now <= '1' when t2_count(7 downto 0) = x"00" and t2_cin = '1' and t2l_load = '0' else '0';
 
         process(phi2x8)
         begin
         if falling_edge(phi2x8) then
 				if (reset = '1') then
 					t2_count <= latch_reset_pattern;
-					t2_count_prev <= latch_reset_pattern;
 					w_t2c_h <= '0';
 					t2_pb6_reg <= '1';
 					t2_pb6_prev <= '1';
-					t2_pb6_last <= '1';
 					t2_cin <= '0';
 					t2l_ufl_prev <= '0';
 					t2l_ufl_reg <= '0';
@@ -662,7 +659,7 @@ begin
 				else
 					if (phi2falling_en = '1') then
 						t2_pb6_reg  <= To_X01(port_b_i(6));
-						t2_pb6_prev <= t2_pb6_last;
+						t2_pb6_prev <= t2_pb6_reg;
 
 						if (write_t2c_h = '1') then
 							w_t2c_h <= '1';
@@ -682,7 +679,7 @@ begin
 							t2_count(15 downto 8) <= t2_count_next(15 downto 8);
 						end if;
 
-						if (t2_count_prev = x"0000" and t2_cin = '1' and w_t2c_h = '0') then
+						if (t2_count = x"0000" and t2_cin = '1' and w_t2c_h = '0') then
 							t2h_ufl <= '1';
 						else
 							t2h_ufl <= '0';
@@ -694,15 +691,12 @@ begin
 					end if;
 
 					if (phi2rising_en = '1') then
-						t2_pb6_last <= t2_pb6_reg;
-
-						if (acr(5) = '0' or (t2_pb6_prev = '1' and t2_pb6_last = '0')) then
+						if (acr(5) = '0' or (t2_pb6_prev = '1' and t2_pb6_reg = '0')) then
 							t2_cin <= '1';
 						else
 							t2_cin <= '0';
 						end if;
 
-						t2_count_prev <= t2_count;
 						t2l_ufl_prev  <= t2l_ufl_reg;
 
 						if (w_t2c_h = '1') then
