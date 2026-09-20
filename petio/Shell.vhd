@@ -28,8 +28,8 @@ use ieee.numeric_std.all;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
+library UNISIM;
+use UNISIM.VComponents.all;
 
 entity Shell is
 	Port (
@@ -372,12 +372,11 @@ architecture Behavioral of Shell is
 	
 begin
 
-	phi2_p: process(nres, qclk, phi2)
-	begin
-		--if (falling_edge(qclk)) then
-			phi2_int <= phi2;
-		--end if;
-	end process;
+	phi2_bufg: BUFG
+		port map (
+			I => phi2,
+			O => phi2_int
+		);
 	
 	rtx <= '1' when via1_sel ='1' and A(3 downto 0) = X"6" else '0';
 	rrts <= qclk_div; --nbe_out; --D_in(2);
@@ -484,7 +483,7 @@ begin
 
 	qclk_c: qclk_pll
 		port map (
-			phi2 => phi2_int,
+			phi2 => phi2,
 			nres => nres,
 			qclk => qclk,
 			phi2x8 => phi2x8,
