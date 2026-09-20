@@ -622,7 +622,7 @@ begin
 		  signal t2_count_next			 : std_logic_vector(15 downto 0);
 		  signal t2l_latch			    : std_logic_vector(7 downto 0);
 		  signal w_t2c_h   			 	 : std_logic;	-- half cycle after actual write
-        signal t2_pb6_reg, t2_pb6_prev : std_logic;
+        signal t2_pb6_reg, t2_pb6_fall : std_logic;
 		  signal t2_cin					 : std_logic;
 		  signal t2l_ufl_now	 			 : std_logic;
 		  signal t2h_ufl		 : std_logic;
@@ -642,18 +642,24 @@ begin
 			t2l_ufl_now <= '1' when t2_count(7 downto 0) = x"00" and t2_cin = '1' and w_t2c_h = '0' else '0';
 
         process(phi2x8)
+				variable pb6_sampled : std_logic;
         begin
         if (falling_edge(phi2x8) and phi2falling_en = '1') then
 				if (reset = '1') then
 					t2_count <= latch_reset_pattern;
 					w_t2c_h <= '0';
 					t2_pb6_reg <= '1';
-					t2_pb6_prev <= '1';
+					t2_pb6_fall <= '0';
 					t2h_ufl <= '0';
 					s_t2_prev <= '0';
 				else
-					t2_pb6_reg  <= To_X01(port_b_i(6));
-					t2_pb6_prev <= t2_pb6_reg;
+					pb6_sampled := To_X01(port_b_i(6));
+					if (t2_pb6_reg = '1' and pb6_sampled = '0') then
+						t2_pb6_fall <= '1';
+					else
+						t2_pb6_fall <= '0';
+					end if;
+					t2_pb6_reg <= pb6_sampled;
 
 					if (write_t2c_h = '1') then
 						w_t2c_h <= '1';
@@ -695,7 +701,7 @@ begin
 				else
 					t2_run_next := t2_run;
 
-					if (acr(5) = '0' or (t2_pb6_prev = '1' and t2_pb6_reg = '0')) then
+					if (acr(5) = '0' or t2_pb6_fall = '1') then
 						t2_cin <= '1';
 					else
 						t2_cin <= '0';
