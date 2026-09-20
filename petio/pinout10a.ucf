@@ -12,7 +12,7 @@ PIN "via1_c/tmr_b.t2_cin.CE" CLOCK_DEDICATED_ROUTE = FALSE;
 INST "via1_c"	AREA_GROUP = "timer_logic";
 INST "via2_c"	AREA_GROUP = "timer_logic";
 
-AREA_GROUP "timer_logic" RANGE = CLOCKREGION_X0Y0;
+AREA_GROUP "timer_logic" RANGE = CLOCKREGION_X0Y1;
 
 net rwb				loc=p2 | iostandard=lvcmos33;
 net niosel			loc=p5 | iostandard=lvcmos33;

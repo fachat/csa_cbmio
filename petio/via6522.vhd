@@ -25,9 +25,6 @@ use ieee.std_logic_unsigned.all;
 
 entity via6522 is
 port (
---    clock       : in  std_logic;
---    rising      : in  std_logic;
---    falling     : in  std_logic;
 		phi2			 : in  std_logic;
 		phi2x8      : in  std_logic;
 		reset       : in  std_logic;
@@ -37,8 +34,6 @@ port (
     ren         : in  std_logic;
     data_in     : in  std_logic_vector(7 downto 0);
     data_out    : out std_logic_vector(7 downto 0);
-
---    phi2_ref    : out std_logic;
 
     -- pio --
     port_a_o    : out std_logic_vector(7 downto 0);
@@ -639,8 +634,8 @@ begin
 		timer_b_count <= t2_count;
 		t2l_latch <= timer_b_latch;
 		timer_b_sr_tick <= t2l_ufl;
-		
-			w_t2c_h <= '1' when wen = '1' and addr = 9 else '0';
+
+			--w_t2c_h <= '1' when wen = '1' and addr = 9 else '0';
 			t2l_load <= '1' when (t2l_ufl_prev = '1' and (acr(4 downto 2) = "100" or acr(3 downto 2) = "01")) or w_t2c_h = '1' else '0';
 			t2_count_next <= (t2_count_prev - 1) when t2_cin = '1' else t2_count_prev;
 
@@ -649,6 +644,11 @@ begin
 
 			
         if falling_edge(phi2x8) then
+		  
+				if (phi2 = '1') then
+					w_t2c_h <= write_t2c_h;
+				end if;
+				
             if phi2 = '0' then
                 t2_pb6_reg  <= To_X01(port_b_i(6));
                 t2_pb6_prev <= t2_pb6_last;
@@ -666,7 +666,7 @@ begin
                 end if;
 
                 if w_t2c_h = '1' then
-                    t2_count(15 downto 8) <= data_in;
+                    t2_count(15 downto 8) <= last_data;
                 else
                     t2_count(15 downto 8) <= t2_count_next(15 downto 8);
                 end if;
