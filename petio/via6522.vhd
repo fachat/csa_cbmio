@@ -623,7 +623,7 @@ begin
 		  signal t2l_latch			    : std_logic_vector(7 downto 0);
 		  signal w_t2c_h   			 	 : std_logic;	-- half cycle after actual write
         signal t2_pb6_reg, t2_pb6_fall : std_logic;
-		  signal t2_cin					 : std_logic;
+		  signal t2_count_en				 : std_logic;
 		  signal t2l_ufl_now	 			 : std_logic;
 		  signal t2h_ufl		 : std_logic;
 		  signal t2l_load					 : std_logic;
@@ -637,9 +637,10 @@ begin
 		timer_b_sr_tick <= t2l_ufl_now;
 
 			--w_t2c_h <= '1' when wen = '1' and addr = 9 else '0';
+			t2_count_en <= '1' when acr(5) = '0' or t2_pb6_fall = '1' else '0';
 			t2l_load <= '1' when (t2l_ufl_now = '1' and (shift_mode_control = "100" or shift_mode_control(1 downto 0) = "01")) or w_t2c_h = '1' else '0';
-			t2_count_next <= (t2_count - 1) when t2_cin = '1' else t2_count;
-			t2l_ufl_now <= '1' when t2_count(7 downto 0) = x"00" and t2_cin = '1' and w_t2c_h = '0' else '0';
+			t2_count_next <= (t2_count - 1) when t2_count_en = '1' else t2_count;
+			t2l_ufl_now <= '1' when t2_count(7 downto 0) = x"00" and t2_count_en = '1' and w_t2c_h = '0' else '0';
 
         process(phi2x8)
 				variable pb6_sampled : std_logic;
@@ -695,17 +696,10 @@ begin
         begin
         if (falling_edge(phi2x8) and phi2rising_en = '1') then
 				if (reset = '1') then
-					t2_cin <= '0';
 					t2_run <= '0';
 					s_t2 <= '0';
 				else
 					t2_run_next := t2_run;
-
-					if (acr(5) = '0' or t2_pb6_fall = '1') then
-						t2_cin <= '1';
-					else
-						t2_cin <= '0';
-					end if;
 
 					if (w_t2c_h = '1') then
 						t2_run_next := '1';
