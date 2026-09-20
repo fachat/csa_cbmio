@@ -16,7 +16,6 @@ architecture spartan6 of qclk_pll is
     signal dcm2_status  : std_logic_vector(1 downto 0);
     signal phi2_phase      : integer range 0 to 7 := 0;
     signal phi2_sync       : std_logic := '1';
-    signal phi2_sync_prev  : std_logic := '1';
     signal phase_valid     : std_logic := '0';
 
 begin
@@ -95,16 +94,15 @@ begin
 
     phase_p: process(phi2x8_int, nres)
         variable next_phase : integer range 0 to 7;
+        variable phi2_sampled : std_logic;
     begin
         if (nres = '0' or dcm1_locked = '0') then
             phi2_phase <= 0;
             phi2_sync <= '1';
-            phi2_sync_prev <= '1';
             phase_valid <= '0';
         elsif (falling_edge(phi2x8_int)) then
             next_phase := phi2_phase;
-            phi2_sync <= phi2;
-            phi2_sync_prev <= phi2_sync;
+            phi2_sampled := phi2;
 
             if (phase_valid = '1') then
                 if (phi2_phase = 7) then
@@ -114,12 +112,13 @@ begin
                 end if;
             end if;
 
-            if (phi2_sync_prev = '1' and phi2_sync = '0') then
+            if (phi2_sync = '1' and phi2_sampled = '0') then
                 next_phase := 0;
                 phase_valid <= '1';
             end if;
 
             phi2_phase <= next_phase;
+            phi2_sync <= phi2_sampled;
         end if;
     end process;
 

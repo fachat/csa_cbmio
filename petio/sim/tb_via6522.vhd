@@ -114,6 +114,48 @@ begin
   phi2falling_en <= '1' when phi2_phase = 0 else '0';
   phi2rising_en <= '1' when phi2_phase = 4 else '0';
 
+  phase_check_p: process(phi2x8)
+    variable fast_phase : integer range 0 to 7 := 0;
+    variable cb1_prev   : std_logic := '1';
+  begin
+    if (falling_edge(phi2x8)) then
+      if (reset = '1') then
+        fast_phase := 0;
+        cb1_prev := cb1_o;
+      else
+        assert not (phi2falling_en = '1' and phi2rising_en = '1')
+          report "phi2falling_en and phi2rising_en overlap"
+          severity failure;
+
+        if (phi2falling_en = '1') then
+          assert phi2 = '0'
+            report "phi2falling_en is not aligned to phi2 low phase"
+            severity failure;
+          fast_phase := 0;
+        else
+          fast_phase := (fast_phase + 1) mod 8;
+        end if;
+
+        if (phi2rising_en = '1') then
+          assert phi2 = '1'
+            report "phi2rising_en is not aligned to phi2 high phase"
+            severity failure;
+          assert fast_phase = 4
+            report "phi2rising_en is not centered between phi2falling_en pulses"
+            severity failure;
+        end if;
+
+        if (cb1_o /= cb1_prev) then
+          assert phi2falling_en = '1'
+            report "CB1 changed outside the intended phi2 falling phase"
+            severity failure;
+        end if;
+
+        cb1_prev := cb1_o;
+      end if;
+    end if;
+  end process;
+
   rst_p: process
   begin
     wait for 35 ns;
