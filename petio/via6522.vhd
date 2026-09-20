@@ -14,8 +14,8 @@
 -- taken from https://github.com/Rhialto/MegaPET/blob/rhialto/CORE/PET2001_MiSTer/rtl/via6522.vhd
 -- on 20260318
 --
--- Note: this variant uses an external phi2x8 clock with phase-qualified
--- clock-enable signals that model the original phi2 falling/rising timing.
+-- Note: due to the different setup, no fast clock with clock-enable signals
+-- are available, only phi2 directly. The design has been adapted accordingly
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -28,11 +28,9 @@ port (
 --    clock       : in  std_logic;
 --    rising      : in  std_logic;
 --    falling     : in  std_logic;
-	 phi2			 : in  std_logic;
-    phi2x8      : in  std_logic;
-    phi2falling_en : in  std_logic;
-    phi2rising_en  : in  std_logic;
-    reset       : in  std_logic;
+		phi2			 : in  std_logic;
+		phi2x8      : in  std_logic;
+		reset       : in  std_logic;
     
     addr        : in  std_logic_vector(3 downto 0);
     wen         : in  std_logic;
@@ -223,14 +221,14 @@ begin
     end process;
 
 
-    process(phi2x8, ren, wen, irq_events, addr, pio_i, acr, irb, ira, 
+    process(phi2, ren, wen, irq_events, addr, pio_i, acr, irb, ira, 
 				timer_a_out, timer_a_count, timer_a_latch, timer_b_count, timer_b_latch,
 				shift_reg, pcr, irq_out, irq_mask, irq_flags, irq_clr_strobe, reset,
 				cb1_i, ca1_i, cb2_i, ca2_i, cb1_o_int,
 				ca1_d1, ca1_d2, cb1_d1, cb1_d2, ca2_d1, ca2_d2, cb2_d1, cb2_d2,
 				port_a_i, port_b_i, pa_latch_en, ca1_edge_select)
     begin
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then 
+			if (falling_edge(phi2)) then 
             if reset='1' then
                 -- Reset avoids packing into shift register
                 ca1_c  <= '1';
@@ -273,7 +271,7 @@ begin
 				end if;
 			end if;
 			
-			if (falling_edge(phi2x8) and phi2rising_en = '1') then 
+			if (rising_edge(phi2)) then 
             -- input latch emulation
             if pa_latch_en = '0' or ca1_irq_flag = '0' then
                 ira <= port_a_c;
@@ -285,7 +283,7 @@ begin
 			end if;
 
           -- CA2 logic
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
             if ca1_i = ca1_edge_select then
                 ca2_handshake_o <= '1';
             elsif (ren = '1' or wen = '1') and addr = X"1" then
@@ -293,7 +291,7 @@ begin
             end if;
 			end if;
 			
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
             if (ren = '1' or wen = '1') and addr = X"1" then
                 ca2_pulse_o <= '0';
             else            
@@ -302,7 +300,7 @@ begin
          end if;
 
             -- CB2 logic
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
             if cb1_i = cb1_edge_select then
                 cb2_handshake_o <= '1';
             elsif (ren = '1' or wen = '1') and addr = X"0" then
@@ -310,7 +308,7 @@ begin
             end if;
 			end if;
 
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
             if (ren = '1' or wen = '1') and addr = X"0" then
                 cb2_pulse_o <= '0';
             else            
@@ -318,7 +316,7 @@ begin
             end if;
          end if;
 
-			if (falling_edge(phi2x8) and phi2rising_en = '1') then 
+			if (rising_edge(phi2)) then 
 				if (reset = '1') then
 					irq_flags <= (others => '0');
 				else
@@ -327,7 +325,7 @@ begin
 				end if;
 			end if;
 			
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
             if reset='1' then
                 pio_i         <= pio_default;
                 irq_mask      <= (others => '0');
@@ -445,7 +443,7 @@ begin
                 null;
             end case;
 			
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
 				ca1_clr_strobe <= '0';
 				ca2_clr_strobe <= '0';
 				cb1_clr_strobe <= '0';
@@ -532,13 +530,13 @@ begin
         signal timer_a_toggle        : std_logic;
         signal timer_a_may_interrupt : std_logic;
     begin
-        process(phi2x8, reset, data_in, write_t1c_h, timer_a_input_latch, 
+        process(phi2, reset, data_in, write_t1c_h, timer_a_input_latch, 
 				timer_a_reload, timer_a_latch, timer_a_count, timer_a_write_t1c_h,
 				timer_a_underflow_next, timer_a_underflow_next_d, timer_a_underflow_next_d2,
 				timer_a_active_ff, timer_a_active_underflow, timer_a_active_underflow_d, acr)
         begin
 				-- note must be at falling edge, as write_t1c_l & data_in are directly coming from the CPU
-				if (falling_edge(phi2x8) and phi2falling_en = '1') then
+				if (falling_edge(phi2)) then
                 if reset='1' then
                     timer_a_toggle <= '1';
 					 elsif write_t1c_h = '1' then
@@ -556,7 +554,7 @@ begin
 					 end if;
 				end if;
 				
-				if (falling_edge(phi2x8) and phi2rising_en = '1') then
+				if (rising_edge(phi2)) then
 				
                 -- always count, or load
                 if reset='1' then
@@ -588,7 +586,7 @@ begin
 					 timer_a_underflow_next_d <= timer_a_underflow_next;
             end if;
                 
-            if falling_edge(phi2x8) and phi2falling_en = '1' then
+            if falling_edge(phi2) then
                 if reset='1' then
                     timer_a_underflow_next <= '0';
 					 else
@@ -623,149 +621,217 @@ begin
     
     -- Timer B
     tmr_b: block
-		  signal timer_b_prev			 : std_logic_vector(15 downto 0);
-		  signal timer_b_next			 : std_logic_vector(15 downto 0);
-		  signal timer_b_input_latch   : std_logic_vector(7 downto 0);
-		  signal timer_b_write_t2c_h   : std_logic;	-- half cycle after actual write
---		  signal timer_b_update_l		 : std_logic;
---		  signal timer_b_update_h 		 : std_logic;
-		  signal timer_b_pb6_edge		 : std_logic;
-        signal pb6_reg, pb6_prev     : std_logic;
---		  signal timer_b_tick			 : std_logic;
-		  signal timer_b_l_update_flag	 : std_logic;
-		  signal timer_b_l_update_flag_prev	 : std_logic;
-		  signal timer_b_h_update_flag	 : std_logic;
-		  signal timer_b_l_load			 : std_logic;
-		  signal timer_b_running		 : std_logic;
-		  signal timer_b_event_prev	 : std_logic;
---		  
---        signal timer_b_reload        : std_logic;
---        signal timer_b_reload_d      : std_logic;
---        signal timer_b_reload_d2     : std_logic;
---        signal timer_b_oneshot_trig  : std_logic;
---        signal timer_b_timeout       : std_logic;
---		  signal timer_b_decrement		 : std_logic;
+		  signal t2_count					 : std_logic_vector(15 downto 0);
+		  signal t2_count_prev			 : std_logic_vector(15 downto 0);
+		  signal t2_count_next			 : std_logic_vector(15 downto 0);
+		  signal t2l_latch			    : std_logic_vector(7 downto 0);
+		  signal w_t2c_h   			 	 : std_logic;	-- half cycle after actual write
+        signal t2_pb6_reg, t2_pb6_prev, t2_pb6_last : std_logic;
+		  signal t2_cin					 : std_logic;
+		  signal t2l_ufl, 	t2l_ufl_prev, t2l_ufl_reg	 			 : std_logic;
+		  signal t2h_ufl, t2_ufl_reg		 : std_logic;
+		  signal t2l_load					 : std_logic;
+		  signal t2_run					 : std_logic;
+		  signal s_t2, s_t2_prev		 : std_logic;
     begin
-        process(phi2x8, write_t2c_h, timer_b_latch, data_in, reset, timer_b_input_latch, timer_b_write_t2c_h, pb6_reg, pb6_prev, acr,
-				last_data, timer_b_tick, timer_b_count, timer_b_l_update_flag_prev, timer_b_pb6_edge)
+	 
+		timer_b_event <= s_t2;
+		timer_b_count <= t2_count;
+		t2l_latch <= timer_b_latch;
+		timer_b_sr_tick <= t2l_ufl;
+		
+			w_t2c_h <= '1' when wen = '1' and addr = 9 else '0';
+			t2l_load <= '1' when (t2l_ufl_prev = '1' and (acr(4 downto 2) = "100" or acr(3 downto 2) = "01")) or w_t2c_h = '1' else '0';
+			t2_count_next <= (t2_count_prev - 1) when t2_cin = '1' else t2_count_prev;
+
+        process(phi2x8, phi2, reset)
         begin
 
-				-- "the pulse must be low on the leading edge of phi2"
-            if (falling_edge(phi2x8) and phi2rising_en = '1') then
-                pb6_reg <= To_X01(port_b_i(6));
-                pb6_prev <= pb6_reg;
+			
+        if falling_edge(phi2x8) then
+            if phi2 = '0' then
+                t2_pb6_reg  <= To_X01(port_b_i(6));
+                t2_pb6_prev <= t2_pb6_last;
             end if;
-            timer_b_pb6_edge <= pb6_prev and not(pb6_reg);
-				
-				if (acr(5) = '0' or timer_b_pb6_edge = '1') then
-					timer_b_tick <= '1';
-				else
-					timer_b_tick <= '0';
-				end if;
-				
-				-- register the write, including the data, so that it can be used in the cycle after the CPU actually writes it
-				if (falling_edge(phi2x8) and phi2falling_en = '1') then
-					 if (write_t2c_h = '1') then
-						 timer_b_write_t2c_h <= '1';
-					 else
-						 timer_b_write_t2c_h <= '0';
-					 end if;
-				end if;
-				timer_b_input_latch <= last_data;
-				
-				-- running flag and irq event
-				if (falling_edge(phi2x8) and phi2rising_en = '1') then
-					if (timer_b_write_t2c_h = '1') then
-						timer_b_running <= '1';
-					elsif (reset = '1' or timer_b_event_prev = '1') then
-						timer_b_running <= '0';
-					end if;
-				end if;
-				
-				if (falling_edge(phi2x8) and phi2falling_en = '1') then
-					if (timer_b_running = '1' and timer_b_h_update_flag = '1') then
-						timer_b_event <= '1';
-					else
-						timer_b_event <= '0';
-					end if;
-				end if;
-				
-				if (falling_edge(phi2x8) and phi2rising_en = '1') then
-					timer_b_event_prev <= timer_b_event;
-				end if;
-				
-				-- next value determination
-            if (falling_edge(phi2x8) and phi2falling_en = '1') then
-					timer_b_prev <= timer_b_count;
-            end if;        
-				
-				-- timer_b_next used in rising edge
-				if (falling_edge(phi2x8) and phi2falling_en = '1') then
-					if (timer_b_tick = '1') then
-						timer_b_next <= timer_b_count - 1;
-					else
-						timer_b_next <= timer_b_count;
-					end if;
-				end if;
 
-				-- when do we update the timer values (low/high byte)?
-				if (falling_edge(phi2x8) and phi2rising_en = '1') then
-					if (timer_b_prev = x"0000"
-							and timer_b_tick = '1'
-							and timer_b_write_t2c_h = '0' 
-							) then
-						timer_b_h_update_flag <= '1';
-					else
-						timer_b_h_update_flag <= '0';
-					end if;
-					
-					if (timer_b_prev(7 downto 0) = x"00"
-							and timer_b_tick = '1'
-							and timer_b_l_load = '0'
-							) then
-						timer_b_l_update_flag <= '1';
-						timer_b_sr_tick <= '1';
-					else
-						timer_b_l_update_flag <= '0';
-						timer_b_sr_tick <= '0';
-					end if;							
-				end if;
-				
-				if (falling_edge(phi2x8) and phi2falling_en = '1') then
-					timer_b_l_update_flag_prev <= timer_b_l_update_flag;
-				end if;
-
-				if ((timer_b_l_update_flag_prev = '1'
-						and (shift_mode_control = "100"	-- free running
-							or shift_mode_control(1 downto 0) = "01") -- use T2 in or out
-					 ) or 
-						timer_b_write_t2c_h = '1'
-					 ) then
-					timer_b_l_load <= '1';
-				else
-					timer_b_l_load <= '0';
-				end if;
-				
-				-- actually update the counter
-            if (falling_edge(phi2x8) and phi2rising_en = '1') then
-				
-					if (timer_b_l_load = '1') then
-						timer_b_count(7 downto 0) <= timer_b_latch;
-					else
-						timer_b_count(7 downto 0) <= timer_b_next(7 downto 0);
-					end if;
-					
-					if (timer_b_write_t2c_h = '1') then
-						timer_b_count(15 downto 8) <= timer_b_input_latch;
-					else
-						timer_b_count(15 downto 8) <= timer_b_next(15 downto 8);
-					end if;
-					
-               if reset='1' then
-						timer_b_count  <= latch_reset_pattern;
-					end if;
+            if phi2 = '1' then
+                t2_pb6_last <= t2_pb6_reg;
             end if;
-        end process;
+
+            if phi2 = '0' then
+                if t2l_load = '1' then
+                    t2_count(7 downto 0) <= t2l_latch;
+                else
+                    t2_count(7 downto 0) <= t2_count_next(7 downto 0);
+                end if;
+
+                if w_t2c_h = '1' then
+                    t2_count(15 downto 8) <= data_in;
+                else
+                    t2_count(15 downto 8) <= t2_count_next(15 downto 8);
+                end if;
+
+                if t2_count_prev = x"0000" and t2_cin = '1' and w_t2c_h = '0' then
+                    t2h_ufl <= '1';
+                else
+                    t2h_ufl <= '0';
+                end if;
+
+                if t2_count_prev(7 downto 0) = x"00" and t2_cin = '1' and t2l_load = '0' then
+                    t2l_ufl_reg <= '1';
+                else
+                    t2l_ufl_reg <= '0';
+                end if;
+            end if;
+
+            if phi2 = '1' then
+                if acr(5) = '0' or (t2_pb6_prev = '1' and t2_pb6_last = '0') then
+                    t2_cin <= '1';
+                else
+                    t2_cin <= '0';
+                end if;
+
+                t2_count_prev <= t2_count;
+                t2l_ufl_prev  <= t2l_ufl_reg;
+            end if;
+				
+            if w_t2c_h = '1' then
+                t2_run <= '1';
+            elsif reset = '1' or s_t2_prev = '1' then
+                t2_run <= '0';
+            end if;
+
+            if phi2 = '1' then
+                if t2_run = '1' and t2h_ufl = '1' then
+                    s_t2 <= '1';
+                else
+                    s_t2 <= '0';
+                end if;
+            end if;
+
+            if phi2 = '0' then
+                s_t2_prev <= s_t2;
+            end if;
+
+        end if;
+    end process;
+			
+--				-- "the pulse must be low on the leading edge of phi2"
+--            if (rising_edge(phi2)) then
+--                pb6_reg <= To_X01(port_b_i(6));
+--                pb6_prev <= pb6_reg;
+--            end if;
+--            timer_b_pb6_edge <= pb6_prev and not(pb6_reg);
+--				
+--				if (acr(5) = '0' or timer_b_pb6_edge = '1') then
+--					timer_b_tick <= '1';
+--				else
+--					timer_b_tick <= '0';
+--				end if;
+--				
+--				-- register the write, including the data, so that it can be used in the cycle after the CPU actually writes it
+--				if (falling_edge(phi2)) then
+--					 if (write_t2c_h = '1') then
+--						 timer_b_write_t2c_h <= '1';
+--					 else
+--						 timer_b_write_t2c_h <= '0';
+--					 end if;
+--				end if;
+--				timer_b_input_latch <= last_data;
+--				
+--				-- running flag and irq event
+--				if (rising_edge(phi2)) then
+--					if (timer_b_write_t2c_h = '1') then
+--						timer_b_running <= '1';
+--					elsif (reset = '1' or timer_b_event_prev = '1') then
+--						timer_b_running <= '0';
+--					end if;
+--				end if;
+--				
+--				if (falling_edge(phi2)) then
+--					if (timer_b_running = '1' and timer_b_h_update_flag = '1') then
+--						timer_b_event <= '1';
+--					else
+--						timer_b_event <= '0';
+--					end if;
+--				end if;
+--				
+--				if (rising_edge(phi2)) then
+--					timer_b_event_prev <= timer_b_event;
+--				end if;
+--				
+--				-- next value determination
+--            if (falling_edge(phi2)) then
+--					timer_b_prev <= timer_b_count;
+--            end if;        
+--				
+--				-- timer_b_next used in rising edge
+--				if (falling_edge(phi2)) then
+--					if (timer_b_tick = '1') then
+--						timer_b_next <= timer_b_count - 1;
+--					else
+--						timer_b_next <= timer_b_count;
+--					end if;
+--				end if;
+--
+--				-- when do we update the timer values (low/high byte)?
+--				if (rising_edge(phi2)) then
+--					if (timer_b_prev = x"0000"
+--							and timer_b_tick = '1'
+--							and timer_b_write_t2c_h = '0' 
+--							) then
+--						timer_b_h_update_flag <= '1';
+--					else
+--						timer_b_h_update_flag <= '0';
+--					end if;
+--					
+--					if (timer_b_prev(7 downto 0) = x"00"
+--							and timer_b_tick = '1'
+--							and timer_b_l_load = '0'
+--							) then
+--						timer_b_l_update_flag <= '1';
+--						timer_b_sr_tick <= '1';
+--					else
+--						timer_b_l_update_flag <= '0';
+--						timer_b_sr_tick <= '0';
+--					end if;							
+--				end if;
+--				
+--				if (falling_edge(phi2)) then
+--					timer_b_l_update_flag_prev <= timer_b_l_update_flag;
+--				end if;
+--
+--				if ((timer_b_l_update_flag_prev = '1'
+--						and (shift_mode_control = "100"	-- free running
+--							or shift_mode_control(1 downto 0) = "01") -- use T2 in or out
+--					 ) or 
+--						timer_b_write_t2c_h = '1'
+--					 ) then
+--					timer_b_l_load <= '1';
+--				else
+--					timer_b_l_load <= '0';
+--				end if;
+--				
+--				-- actually update the counter
+--            if (rising_edge(phi2)) then
+--				
+--					if (timer_b_l_load = '1') then
+--						timer_b_count(7 downto 0) <= timer_b_latch;
+--					else
+--						timer_b_count(7 downto 0) <= timer_b_next(7 downto 0);
+--					end if;
+--					
+--					if (timer_b_write_t2c_h = '1') then
+--						timer_b_count(15 downto 8) <= timer_b_input_latch;
+--					else
+--						timer_b_count(15 downto 8) <= timer_b_next(15 downto 8);
+--					end if;
+--					
+--               if reset='1' then
+--						timer_b_count  <= latch_reset_pattern;
+--					end if;
+--            end if;
+--        end process;
 
     end block tmr_b;
     
@@ -818,9 +884,9 @@ begin
 		serport_en <= not(sr_disabled);
 		cb1_o_int <= sr_cb1_q;
 
-		sr_control: process(phi2x8, sr_uses_t2, sr_disabled, ifr2, sr_toggle_clk_output, timer_b_sr_tick, sr_running, sr_wr, sr_rd)
+		sr_control: process(phi2, sr_uses_t2, sr_disabled, ifr2, sr_toggle_clk_output, timer_b_sr_tick, sr_running, sr_wr, sr_rd)
 		begin
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
 				sr_toggle_clk_output <= '0';
 				if (sr_disabled = '0'
 					and ifr2 = '0'
@@ -833,11 +899,11 @@ begin
 				end if;
 			end if;
 			
-			if (falling_edge(phi2x8) and phi2rising_en = '1') then
+			if (rising_edge(phi2)) then
 				sr_toggle_clk_output_d <= sr_toggle_clk_output;
 			end if;
 			
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
 				if (sr_running = '0') then
 					sr_cb1_q <= '1';
 				elsif (sr_toggle_clk_output_d = '1') then
@@ -846,7 +912,7 @@ begin
 			end if;		
 
 			--sr_running needs to be available at falling edge already after ifr2 has been set on rising edge
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
 				if (sr_wr = '1' or sr_rd = '1') then
 					sr_running <= '1';
 				elsif (ifr2 = '1' or sr_disabled = '1') then
@@ -854,7 +920,7 @@ begin
 				end if;
 			end if;
 			
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
 				if (ifr2 = '1') then
 					sr_shift <= '0';
 				elsif (sr_wr = '1') then
@@ -868,7 +934,7 @@ begin
 				end if;
 			end if;
 			
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
 				if (sr_running = '0') then
 					sr_bit_cnt <= 8;
 				elsif (sr_shift = '1' and sr_bit_cnt /= 0) then
@@ -893,9 +959,9 @@ begin
 				
 		end process;
 
-		sr: process(phi2x8, reset, data_in, shift_reg, cb2_d1)
+		sr: process(phi2, reset, data_in, shift_reg, cb2_d1)
 		begin
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
 				if reset = '1' then
 					shift_reg <= X"FF";
 				else
