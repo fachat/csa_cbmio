@@ -280,7 +280,7 @@ begin
 
     process(phi2x8)
     begin
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then 
+			if (falling_edge(phi2)) then 
             if reset='1' then
                 -- Reset avoids packing into shift register
                 ca1_c  <= '1';
@@ -323,7 +323,7 @@ begin
 				end if;
 			end if;
 			
-			if (falling_edge(phi2x8) and phi2rising_en = '1') then 
+			if (rising_edge(phi2)) then 
             -- input latch emulation
             if pa_latch_en = '0' or ca1_irq_flag = '0' then
                 ira <= port_a_c;
@@ -335,7 +335,7 @@ begin
 			end if;
 
           -- CA2 logic
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
             if ca1_i = ca1_edge_select then
                 ca2_handshake_o <= '1';
             elsif (ren = '1' or wen = '1') and addr = X"1" then
@@ -343,7 +343,7 @@ begin
             end if;
 			end if;
 			
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
             if (ren = '1' or wen = '1') and addr = X"1" then
                 ca2_pulse_o <= '0';
             else            
@@ -352,7 +352,7 @@ begin
          end if;
 
             -- CB2 logic
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
             if cb1_i = cb1_edge_select then
                 cb2_handshake_o <= '1';
             elsif (ren = '1' or wen = '1') and addr = X"0" then
@@ -360,7 +360,7 @@ begin
             end if;
 			end if;
 
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
             if (ren = '1' or wen = '1') and addr = X"0" then
                 cb2_pulse_o <= '0';
             else            
@@ -368,7 +368,7 @@ begin
             end if;
          end if;
 
-			if (falling_edge(phi2x8) and phi2rising_en = '1') then 
+			if (rising_edge(phi2)) then 
 				if (reset = '1') then
 					irq_flags <= (others => '0');
 				else
@@ -377,7 +377,7 @@ begin
 				end if;
 			end if;
 			
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
             if reset='1' then
                 pio_i         <= pio_default;
                 irq_mask      <= (others => '0');
@@ -495,7 +495,7 @@ begin
                 null;
             end case;
 			
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			if (falling_edge(phi2)) then
 				ca1_clr_strobe <= '0';
 				ca2_clr_strobe <= '0';
 				cb1_clr_strobe <= '0';

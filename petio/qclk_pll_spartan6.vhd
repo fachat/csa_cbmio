@@ -14,9 +14,6 @@ architecture spartan6 of qclk_pll is
     signal dcm2_locked  : std_logic;
     signal dcm1_status  : std_logic_vector(1 downto 0);
     signal dcm2_status  : std_logic_vector(1 downto 0);
-    signal phi2_phase      : integer range 0 to 7 := 0;
-    signal phi2_prev       : std_logic := '1';
-    signal phase_valid     : std_logic := '0';
 
 begin
 
@@ -89,32 +86,8 @@ begin
         );
 
     phi2x8 <= phi2x8_int;
-    phi2falling_en <= '1' when phase_valid = '1' and phi2_phase = 7 else '0';
-    phi2rising_en <= '1' when phase_valid = '1' and phi2_phase = 3 else '0';
-
-    phase_p: process(phi2x8_int, nres)
-    begin
-        if (nres = '0' or dcm1_locked = '0') then
-            phi2_phase <= 0;
-            phi2_prev <= '1';
-            phase_valid <= '0';
-        elsif (falling_edge(phi2x8_int)) then
-            if (phi2_prev = '1' and phi2 = '0') then
-                phi2_phase <= 0;
-                phase_valid <= '1';
-            elsif (phi2_prev = '0' and phi2 = '1') then
-                phi2_phase <= 4;
-                phase_valid <= '1';
-            elsif (phase_valid = '1') then
-                if (phi2_phase = 7) then
-                    phi2_phase <= 0;
-                else
-                    phi2_phase <= phi2_phase + 1;
-                end if;
-            end if;
-            phi2_prev <= phi2;
-        end if;
-    end process;
+    phi2falling_en <= '1' when phi2 = '1' else '0'; 
+    phi2rising_en <= '1' when phi2 = '0' else '0';
 
     locked <= dcm1_locked and dcm2_locked;
 
