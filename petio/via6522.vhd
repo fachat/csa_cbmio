@@ -278,12 +278,7 @@ begin
     end process;
 
 
-    process(phi2x8, ren, wen, irq_events, addr, pio_i, acr, irb, ira, 
-				timer_a_out, timer_a_count, timer_a_latch, timer_b_count, timer_b_latch,
-				shift_reg, pcr, irq_out, irq_mask, irq_flags, irq_clr_strobe, reset,
-				cb1_i, ca1_i, cb2_i, ca2_i, cb1_o_int,
-				ca1_d1, ca1_d2, cb1_d1, cb1_d2, ca2_d1, ca2_d2, cb2_d1, cb2_d2,
-				port_a_i, port_b_i, pa_latch_en, ca1_edge_select)
+    process(phi2x8)
     begin
 			if (falling_edge(phi2x8) and phi2falling_en = '1') then 
             if reset='1' then

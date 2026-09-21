@@ -47,10 +47,7 @@ begin
     timer_a_out <= timer_a_out_i;
     timer_a_event <= timer_a_event_i;
 
-    process(phi2x8, reset, data_in, write_t1c_h, timer_a_input_latch,
-            timer_a_reload, timer_a_latch, timer_a_count_i, timer_a_write_t1c_h,
-            timer_a_underflow_next, timer_a_underflow_next_d, timer_a_underflow_next_d2,
-            timer_a_active_ff, timer_a_active_underflow, timer_a_active_underflow_d, acr)
+    process(phi2x8)
     begin
         if (falling_edge(phi2x8) and phi2falling_en = '1') then
             if reset='1' then

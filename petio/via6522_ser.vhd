@@ -78,7 +78,7 @@ begin
     serport_en_i <= not(sr_disabled);
     cb1_o_int_i <= sr_cb1_q;
 
-    sr_control: process(phi2x8, sr_uses_t2, sr_disabled, irq_flag2, sr_toggle_clk_output, timer_b_sr_tick, sr_running, sr_wr, sr_rd)
+    sr_control: process(phi2x8)
     begin
         if (falling_edge(phi2x8) and phi2falling_en = '1') then
             sr_toggle_clk_output <= '0';
@@ -146,7 +146,7 @@ begin
         end if;
     end process;
 
-    sr: process(phi2x8, reset, data_in, shift_reg_i, cb2_d1)
+    sr: process(phi2x8)
     begin
         if (falling_edge(phi2x8) and phi2falling_en = '1') then
             if reset = '1' then
