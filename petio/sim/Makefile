@@ -7,7 +7,7 @@ VIEWER ?= gtkwave
 all: via pia uart
 
 via:
-	$(GHDL) -a $(GHDLFLAGS) ../via6522.vhd reg_script_pkg.vhd tb_via6522.vhd
+	$(GHDL) -a $(GHDLFLAGS) ../via6522_tmr_a.vhd ../via6522_tmr_b.vhd ../via6522_ser.vhd ../via6522.vhd reg_script_pkg.vhd tb_via6522.vhd
 	$(GHDL) -e $(GHDLFLAGS) tb_via6522
 	$(GHDL) -r $(GHDLFLAGS) tb_via6522 -gscript_file=$(if $(SCRIPT),$(SCRIPT),scripts/via_script.txt) --vcd=via.vcd
 	$(VIEWER) via.vcd via.gtkw
@@ -31,6 +31,9 @@ shell_cpu:
 		qclk_pll_sim.vhd \
 		../select.vhd \
 		../pia6520.vhd \
+		../via6522_tmr_a.vhd \
+		../via6522_tmr_b.vhd \
+		../via6522_ser.vhd \
 		../via6522.vhd \
 		../ieeedir.vhd \
 		uart_top_sim.vhd \

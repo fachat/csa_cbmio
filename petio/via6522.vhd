@@ -96,7 +96,6 @@ architecture viasim of via6522 is
     signal timer_a_count : std_logic_vector(15 downto 0) := latch_reset_pattern;
     signal timer_b_count : std_logic_vector(15 downto 0) := latch_reset_pattern;
     signal timer_a_out   : std_logic;
-    signal timer_b_tick  : std_logic;
     signal timer_b_sr_tick : std_logic := '0';
                          
     signal acr, pcr      : std_logic_vector(7 downto 0) := X"00";
@@ -108,8 +107,10 @@ architecture viasim of via6522 is
     signal cb1_o_int     : std_logic;
     signal cb2_t_int     : std_logic;
     signal cb2_o_int     : std_logic;
-	 
-	 signal sr_uses_t2    : std_logic;
+
+    signal serial_event_sig : std_logic := '0';
+    signal timer_b_event_sig : std_logic := '0';
+    signal timer_a_event_sig : std_logic := '0';
 
     alias  ca2_event     : std_logic is irq_events(0);
     alias  ca1_event     : std_logic is irq_events(1);
@@ -170,6 +171,62 @@ architecture viasim of via6522 is
     signal ca2_pulse_o      : std_logic;
     signal cb2_handshake_o  : std_logic;
     signal cb2_pulse_o      : std_logic;
+
+    component via6522_tmr_a is
+    port (
+        phi2x8         : in  std_logic;
+        phi2falling_en : in  std_logic;
+        phi2rising_en  : in  std_logic;
+        reset          : in  std_logic;
+        acr            : in  std_logic_vector(7 downto 0);
+        data_in        : in  std_logic_vector(7 downto 0);
+        write_t1c_h    : in  std_logic;
+        timer_a_latch  : in  std_logic_vector(15 downto 0);
+        timer_a_count  : out std_logic_vector(15 downto 0);
+        timer_a_out    : out std_logic;
+        timer_a_event  : out std_logic);
+    end component;
+
+    component via6522_tmr_b is
+    port (
+        phi2x8          : in  std_logic;
+        phi2falling_en  : in  std_logic;
+        phi2rising_en   : in  std_logic;
+        reset           : in  std_logic;
+        acr             : in  std_logic_vector(7 downto 0);
+        port_b_i        : in  std_logic_vector(7 downto 0);
+        write_t2c_h     : in  std_logic;
+        last_data       : in  std_logic_vector(7 downto 0);
+        timer_b_latch   : in  std_logic_vector(7 downto 0);
+        timer_b_count   : out std_logic_vector(15 downto 0);
+        timer_b_event   : out std_logic;
+        timer_b_sr_tick : out std_logic);
+    end component;
+
+    component via6522_ser is
+    port (
+        phi2x8          : in  std_logic;
+        phi2falling_en  : in  std_logic;
+        phi2rising_en   : in  std_logic;
+        reset           : in  std_logic;
+        acr             : in  std_logic_vector(7 downto 0);
+        irq_flag2       : in  std_logic;
+        addr            : in  std_logic_vector(3 downto 0);
+        wen             : in  std_logic;
+        ren             : in  std_logic;
+        data_in         : in  std_logic_vector(7 downto 0);
+        cb1_pos         : in  std_logic;
+        cb1_neg         : in  std_logic;
+        cb2_d1          : in  std_logic;
+        timer_b_sr_tick : in  std_logic;
+        shift_reg       : out std_logic_vector(7 downto 0);
+        serial_event    : out std_logic;
+        serport_en      : out std_logic;
+        ser_cb2_o       : out std_logic;
+        cb1_t_int       : out std_logic;
+        cb1_o_int       : out std_logic);
+    end component;
+
 begin
     irq <= irq_out;
     
@@ -182,6 +239,9 @@ begin
     ca2_event <= (ca2_d1 xor ca2_d2) and (ca2_d2 xor ca2_edge_select);
     cb1_event <= (cb1_d1 xor cb1_d2) and (cb1_d2 xor cb1_edge_select);
     cb2_event <= (cb2_d1 xor cb2_d2) and (cb2_d2 xor cb2_edge_select);
+    serial_event <= serial_event_sig;
+    timer_b_event <= timer_b_event_sig;
+    timer_a_event <= timer_a_event_sig;
 
 	 -- CB1 pos/neg edge detector, used in shift register
 	 cb1_pos <= '1' when (cb1_d1 = '1' and cb1_d2 = '0') else '0';
@@ -514,359 +574,57 @@ begin
     
 
     -- Timer A
-    tmr_a: block
-		  signal timer_a_input_latch   : std_logic_vector(7 downto 0);
-		  signal timer_a_write_t1c_h   : std_logic;	-- half cycle after actual write
-        signal timer_a_underflow_next : std_logic;
-		  signal timer_a_underflow_next_d: std_logic;
-		  signal timer_a_underflow_next_d2: std_logic;
-		  signal timer_a_active_ff      : std_logic;
-		  signal timer_a_active_underflow: std_logic;
-		  signal timer_a_active_underflow_d: std_logic;		  
-        signal timer_a_reload        : std_logic;
-        signal timer_a_toggle        : std_logic;
-        signal timer_a_may_interrupt : std_logic;
-    begin
-        process(phi2x8, reset, data_in, write_t1c_h, timer_a_input_latch, 
-				timer_a_reload, timer_a_latch, timer_a_count, timer_a_write_t1c_h,
-				timer_a_underflow_next, timer_a_underflow_next_d, timer_a_underflow_next_d2,
-				timer_a_active_ff, timer_a_active_underflow, timer_a_active_underflow_d, acr)
-        begin
-				-- note must be at falling edge, as write_t1c_l & data_in are directly coming from the CPU
-				if (falling_edge(phi2x8) and phi2falling_en = '1') then
-                if reset='1' then
-                    timer_a_toggle <= '1';
-					 elsif write_t1c_h = '1' then
-                    timer_a_toggle <= not tmr_a_output_en;
-                elsif timer_a_event = '1' and tmr_a_output_en = '1' then
-                    timer_a_toggle <= not timer_a_toggle;
-                end if;
+    tmr_a: via6522_tmr_a
+    port map (
+        phi2x8 => phi2x8,
+        phi2falling_en => phi2falling_en,
+        phi2rising_en => phi2rising_en,
+        reset => reset,
+        acr => acr,
+        data_in => data_in,
+        write_t1c_h => write_t1c_h,
+        timer_a_latch => timer_a_latch,
+        timer_a_count => timer_a_count,
+        timer_a_out => timer_a_out,
+        timer_a_event => timer_a_event_sig);
 
-					 -- from 6522 dissection, data is latched at falling phi2, and only used in following half-cycle
-					 if (write_t1c_h = '1') then
-					     timer_a_input_latch <= data_in;
-					     timer_a_write_t1c_h <= '1';
-				    else
-					     timer_a_write_t1c_h <= '0';
-					 end if;
-				end if;
-				
-				if (falling_edge(phi2x8) and phi2rising_en = '1') then
-				
-                -- always count, or load
-                if reset='1' then
-                    timer_a_may_interrupt <= '0';
-                    timer_a_count  <= latch_reset_pattern;
-						  
-                elsif timer_a_write_t1c_h = '1' then
-						  -- write t1 counter high
-                    timer_a_may_interrupt <= '1';
-                    timer_a_count  <= timer_a_input_latch & timer_a_latch(7 downto 0);
-
-                elsif timer_a_reload = '1' then
-						  -- reload the timer
-                    timer_a_count  <= timer_a_latch;
-                    timer_a_may_interrupt <= timer_a_may_interrupt and tmr_a_freerun;
-						  
-                else
-                    --Timer coutinues to count in both free run and one shot.                        
-                    timer_a_count <= timer_a_count - X"0001";
-                end if;                    
-					 
-					 if (timer_a_reload = '1' and timer_a_may_interrupt = '1') then 
-						  timer_a_event <= '1';
-					 else
-						  timer_a_event <= '0';
-					 end if;					 
-					 
-					 --timer_a_reload_d <= timer_a_reload and not(timer_a_write_t1c_h);
-					 timer_a_underflow_next_d <= timer_a_underflow_next;
-            end if;
-                
-            if falling_edge(phi2x8) and phi2falling_en = '1' then
-                if reset='1' then
-                    timer_a_underflow_next <= '0';
-					 else
-                    timer_a_underflow_next <= '0';
-                    if timer_a_count = X"0000" and write_t1c_h = '0' then
-                        -- generate an event if we were triggered
-                        timer_a_underflow_next <= '1';
-                    end if;
-					 end if;
-					 
-					 --timer_a_reload_d2 <= timer_a_reload_d;
-					 
-					 timer_a_active_underflow_d <= timer_a_active_underflow;
-					 timer_a_underflow_next_d2 <= timer_a_underflow_next_d;
-            end if;
-				
-				if (timer_a_write_t1c_h = '1') then
-					timer_a_active_ff <= '1';
-				elsif (reset = '1' or (timer_a_active_underflow_d = '1' and acr(6) = '0')) then
-					timer_a_active_ff <= '0';
-				end if;
-				
-				-- should feed into PB7 output toggle
-				timer_a_active_underflow <= timer_a_active_ff and timer_a_underflow_next;
-				
-				timer_a_reload <= timer_a_underflow_next_d2 and not(timer_a_write_t1c_h);
-        end process;
-
-        timer_a_out   <= timer_a_toggle;
-		  
-    end block tmr_a;
-    
     -- Timer B
-    tmr_b: block
-		  signal t2_count					 : std_logic_vector(15 downto 0);
-		  signal t2_count_next			 : std_logic_vector(15 downto 0);
-		  signal t2l_latch			    : std_logic_vector(7 downto 0);
-		  signal w_t2c_h   			 	 : std_logic;	-- half cycle after actual write
-        signal t2_pb6_reg, t2_pb6_fall : std_logic;
-		  signal t2_count_en				 : std_logic;
-		  signal t2l_ufl_now	 			 : std_logic;
-		  signal t2h_ufl		 : std_logic;
-		  signal t2l_load					 : std_logic;
-		  signal t2_run					 : std_logic;
-		  signal s_t2, s_t2_prev		 : std_logic;
-    begin
-	 
-		timer_b_event <= s_t2;
-		timer_b_count <= t2_count;
-		t2l_latch <= timer_b_latch;
-		timer_b_sr_tick <= t2l_ufl_now;
+    tmr_b: via6522_tmr_b
+    port map (
+        phi2x8 => phi2x8,
+        phi2falling_en => phi2falling_en,
+        phi2rising_en => phi2rising_en,
+        reset => reset,
+        acr => acr,
+        port_b_i => port_b_i,
+        write_t2c_h => write_t2c_h,
+        last_data => last_data,
+        timer_b_latch => timer_b_latch,
+        timer_b_count => timer_b_count,
+        timer_b_event => timer_b_event_sig,
+        timer_b_sr_tick => timer_b_sr_tick);
 
-			--w_t2c_h <= '1' when wen = '1' and addr = 9 else '0';
-			t2_count_en <= '1' when acr(5) = '0' or t2_pb6_fall = '1' else '0';
-			t2l_load <= '1' when (t2l_ufl_now = '1' and (shift_mode_control = "100" or shift_mode_control(1 downto 0) = "01")) or w_t2c_h = '1' else '0';
-			t2_count_next <= (t2_count - 1) when t2_count_en = '1' else t2_count;
-			t2l_ufl_now <= '1' when t2_count(7 downto 0) = x"00" and t2_count_en = '1' and w_t2c_h = '0' else '0';
+    ser: via6522_ser
+    port map (
+        phi2x8 => phi2x8,
+        phi2falling_en => phi2falling_en,
+        phi2rising_en => phi2rising_en,
+        reset => reset,
+        acr => acr,
+        irq_flag2 => irq_flags(2),
+        addr => addr,
+        wen => wen,
+        ren => ren,
+        data_in => data_in,
+        cb1_pos => cb1_pos,
+        cb1_neg => cb1_neg,
+        cb2_d1 => cb2_d1,
+        timer_b_sr_tick => timer_b_sr_tick,
+        shift_reg => shift_reg,
+        serial_event => serial_event_sig,
+        serport_en => serport_en,
+        ser_cb2_o => ser_cb2_o,
+        cb1_t_int => cb1_t_int,
+        cb1_o_int => cb1_o_int);
 
-        process(phi2x8)
-				variable pb6_sampled : std_logic;
-        begin
-        if (falling_edge(phi2x8) and phi2falling_en = '1') then
-				if (reset = '1') then
-					t2_count <= latch_reset_pattern;
-					w_t2c_h <= '0';
-					t2_pb6_reg <= '1';
-					t2_pb6_fall <= '0';
-					t2h_ufl <= '0';
-					s_t2_prev <= '0';
-				else
-					pb6_sampled := To_X01(port_b_i(6));
-					if (t2_pb6_reg = '1' and pb6_sampled = '0') then
-						t2_pb6_fall <= '1';
-					else
-						t2_pb6_fall <= '0';
-					end if;
-					t2_pb6_reg <= pb6_sampled;
-
-					if (write_t2c_h = '1') then
-						w_t2c_h <= '1';
-					else
-						w_t2c_h <= '0';
-					end if;
-
-					if (t2l_load = '1') then
-						t2_count(7 downto 0) <= t2l_latch;
-					else
-						t2_count(7 downto 0) <= t2_count_next(7 downto 0);
-					end if;
-
-					if (w_t2c_h = '1') then
-						t2_count(15 downto 8) <= last_data;
-					else
-						t2_count(15 downto 8) <= t2_count_next(15 downto 8);
-					end if;
-
-					if (t2_count = x"0000" and t2_count_en = '1' and w_t2c_h = '0') then
-						t2h_ufl <= '1';
-					else
-						t2h_ufl <= '0';
-					end if;
-
-					s_t2_prev <= s_t2;
-				end if;
-			end if;
-		end process;
-
-        process(phi2x8)
-				variable t2_run_next : std_logic;
-        begin
-        if (falling_edge(phi2x8) and phi2rising_en = '1') then
-				if (reset = '1') then
-					t2_run <= '0';
-					s_t2 <= '0';
-				else
-					t2_run_next := t2_run;
-
-					if (w_t2c_h = '1') then
-						t2_run_next := '1';
-					elsif (s_t2_prev = '1') then
-						t2_run_next := '0';
-					end if;
-					t2_run <= t2_run_next;
-
-					if (t2_run_next = '1' and t2h_ufl = '1') then
-						s_t2 <= '1';
-					else
-						s_t2 <= '0';
-					end if;
-				end if;
-			end if;
-		end process;
-    end block tmr_b;
-    
-    ser: block
-		signal sr_running					: std_logic;
-		signal sr_shift					: std_logic;
-		
-		signal sr_uses_phi2				: std_logic;
-		signal sr_uses_ext_clk			: std_logic;
-		signal sr_disabled				: std_logic;
-		signal sr_is_output				: std_logic;
-		signal sr_free_running			: std_logic;
-		
-		signal sr_toggle_clk_output	: std_logic;
-		signal sr_toggle_clk_output_d	: std_logic;
-		signal sr_cb1_q					: std_logic;
-		
-		signal ifr2							: std_logic;
-		signal sr_wr						: std_logic;
-		signal sr_rd						: std_logic;
-		
-		signal sr_bit_cnt					: integer range 0 to 8;
-		signal sr_last_bit				: std_logic;
-		
-        signal trigger_serial: std_logic;
-        signal trigger_serial_d: std_logic;
-        signal shift_clock_d : std_logic;
-        signal shift_clock   : std_logic;
-        signal shift_tick_r  : std_logic;
-        signal shift_tick_f  : std_logic;
-        signal shift_timer_tick : std_logic;
-        signal bit_cnt       : integer range 0 to 7;
-        signal shift_pulse   : std_logic;
-    begin
-	 
-		sr_uses_t2 <= '1' when acr(4 downto 2) = "100" or acr(3 downto 2) = "01"
-							else '0';
-		sr_uses_phi2 <= not(acr(2)) and acr(3);
-		sr_uses_ext_clk <= acr(2) and acr(3);
-		sr_disabled <= not(acr(2)) and not(acr(3)) and not(acr(4));
-		sr_is_output <= acr(4);
-		sr_free_running <= acr(4) and not(acr(3)) and not(acr(2));
-		
-		ifr2 <= irq_flags(2);
-      sr_wr <= '1' when wen='1' and addr=x"A" else '0';
-      sr_rd <= '1' when ren='1' and addr=x"A" else '0';
-
-		-- input except when using as shift clock output
-		cb1_t_int <= '0' when sr_disabled = '1' or sr_uses_ext_clk = '1' else '1';
-		serport_en <= not(sr_disabled);
-		cb1_o_int <= sr_cb1_q;
-
-		sr_control: process(phi2x8, sr_uses_t2, sr_disabled, ifr2, sr_toggle_clk_output, timer_b_sr_tick, sr_running, sr_wr, sr_rd)
-		begin
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
-				sr_toggle_clk_output <= '0';
-				if (sr_disabled = '0'
-					and ifr2 = '0'
-					) then		
-					if (sr_uses_phi2 = '1') then
-						sr_toggle_clk_output <= '1';
-					elsif (sr_uses_t2 = '1') then
-						sr_toggle_clk_output <= timer_b_sr_tick;
-					end if;
-				end if;
-			end if;
-			
-			if (falling_edge(phi2x8) and phi2rising_en = '1') then
-				sr_toggle_clk_output_d <= sr_toggle_clk_output;
-			end if;
-			
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
-				if (sr_running = '0') then
-					sr_cb1_q <= '1';
-				elsif (sr_toggle_clk_output_d = '1') then
-					sr_cb1_q <= not(sr_cb1_q);
-				end if;
-			end if;		
-
-			--sr_running needs to be available at falling edge already after ifr2 has been set on rising edge
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
-				if (sr_wr = '1' or sr_rd = '1') then
-					sr_running <= '1';
-				elsif (ifr2 = '1' or sr_disabled = '1') then
-					sr_running <= '0';
-				end if;
-			end if;
-			
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
-				if (ifr2 = '1') then
-					sr_shift <= '0';
-				elsif (sr_wr = '1') then
-					sr_shift <= '0';
-				else
-					if (sr_is_output = '1') then
-						sr_shift <= cb1_neg;
-					else
-						sr_shift <= cb1_pos;
-					end if;
-				end if;
-			end if;
-			
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
-				if (sr_running = '0') then
-					sr_bit_cnt <= 8;
-				elsif (sr_shift = '1' and sr_bit_cnt /= 0) then
-					sr_bit_cnt <= sr_bit_cnt - 1;
-				end if;
-				
-				-- serial_event = s_ifr2, is set on falling edge
-				-- ifr2 is then set on rising edge
-				-- and evaluated for sr_running on falling edge
-				serial_event <= '0';
-				if (sr_bit_cnt = 0 and serial_event = '0') then
-					sr_last_bit <= '1';
-					if (sr_free_running = '0') then
-						if (sr_cb1_q = '1' or sr_uses_ext_clk = '1') then
-							serial_event <= '1';
-						end if;
-					end if;
-				else
-					sr_last_bit <= '0';
-				end if;
-			end if;
-				
-		end process;
-
-		sr: process(phi2x8, reset, data_in, shift_reg, cb2_d1)
-		begin
-			if (falling_edge(phi2x8) and phi2falling_en = '1') then
-				if reset = '1' then
-					shift_reg <= X"FF";
-				else
-					if wen = '1' and addr = X"A" then
-						shift_reg <= data_in;
-					elsif sr_shift = '1' then
-						if (sr_is_output = '1') then
-							shift_reg <= shift_reg(6 downto 0) & shift_reg(7);
-						else
-							shift_reg <= shift_reg(6 downto 0) & cb2_d1;
-						end if;
-					end if;
-				end if;
-				
-				-- SR_Out latch
-				ser_cb2_o <= shift_reg(7);
-			end if;			
-		end process;
-
-        trigger_serial <= '1' when (ren='1' or wen='1') and addr=x"A" else '0';
-        shift_tick_r <= not shift_clock_d and shift_clock;
-        shift_tick_f <= shift_clock_d and not shift_clock;
-
-    end block ser;
 end viasim;
