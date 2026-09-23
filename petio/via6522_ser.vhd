@@ -9,6 +9,7 @@ use ieee.std_logic_unsigned.all;
 
 entity via6522_ser is
 port (
+    phi2            : in  std_logic;
     phi2x8          : in  std_logic;
     phi2falling_en  : in  std_logic;
     phi2rising_en   : in  std_logic;
@@ -78,9 +79,13 @@ begin
     serport_en_i <= not(sr_disabled);
     cb1_o_int_i <= sr_cb1_q;
 
-    sr_control: process(phi2x8)
+    sr_control: process(phi2)
     begin
-        if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			-- sr_disabled is falling (but acr)
+			-- sr_uses_t2 is falling (but acr)
+			-- irq_flag2 is ???
+			--> sr_toggle_clk_output is falling
+        if (falling_edge(phi2)) then
             sr_toggle_clk_output <= '0';
             if (sr_disabled = '0' and irq_flag2 = '0') then
                 if (sr_uses_phi2 = '1') then
@@ -91,11 +96,16 @@ begin
             end if;
         end if;
 
-        if (falling_edge(phi2x8) and phi2rising_en = '1') then
+			-- sr_toggle_clk_output is falling
+			--> sr_toggle_clk_output_d is rising
+        if (rising_edge(phi2)) then
             sr_toggle_clk_output_d <= sr_toggle_clk_output;
         end if;
 
-        if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			-- sr_running is falling XXX!
+			-- sr_toggle_clk_output_d is rising
+			--> sr_cb1_q is falling
+        if (falling_edge(phi2)) then
             if (sr_running = '0') then
                 sr_cb1_q <= '1';
             elsif (sr_toggle_clk_output_d = '1') then
@@ -103,7 +113,12 @@ begin
             end if;
         end if;
 
-        if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			-- sr_disabled is falling but acr
+			-- sr_wr is valid at falling
+			-- sr_rd is valid at falling
+			-- irq_flag2 is ???
+			--> sr_running is falling
+        if (falling_edge(phi2)) then
             if (sr_wr = '1' or sr_rd = '1') then
                 sr_running <= '1';
             elsif (irq_flag2 = '1' or sr_disabled = '1') then
@@ -111,7 +126,10 @@ begin
             end if;
         end if;
 
-        if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			-- irq_flag2 is ???
+			-- sr_wr is valid at falling edge
+			--> sr_shift is falling
+        if (falling_edge(phi2)) then
             if (irq_flag2 = '1') then
                 sr_shift <= '0';
             elsif (sr_wr = '1') then
@@ -125,7 +143,14 @@ begin
             end if;
         end if;
 
-        if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			-- sr_running is falling XXX
+			-- sr_shift is falling XXX
+			-- sr_free_running is falling but acr
+			-- sr_bit_cnt is ???
+			--> serial_event_i is falling
+			--> sr_bit_cnt is falling
+			--> sr_last_bit is falling
+        if (falling_edge(phi2)) then
             if (sr_running = '0') then
                 sr_bit_cnt <= 8;
             elsif (sr_shift = '1' and sr_bit_cnt /= 0) then
@@ -146,9 +171,13 @@ begin
         end if;
     end process;
 
-    sr: process(phi2x8)
+    sr: process(phi2)
     begin
-        if (falling_edge(phi2x8) and phi2falling_en = '1') then
+			-- data_in is valid at falling
+			-- wen,addr is valid at falling
+			-- sr_is_output is falling but acr
+			--> shift_reg_i is falling
+        if (falling_edge(phi2)) then
             if reset = '1' then
                 shift_reg_i <= X"FF";
             else

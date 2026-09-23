@@ -119,6 +119,8 @@ architecture Behavioral of Shell is
 	signal nbe_out: std_logic;
 	signal res: std_logic;
 	signal phi2_int: std_logic;
+	signal phi2_clk: std_logic;
+	signal phi2_ibuf: std_logic;
 	
 	signal int_out: std_logic;
 	signal qclk: std_logic;
@@ -372,11 +374,20 @@ architecture Behavioral of Shell is
 	
 begin
 
-	phi2_bufg: BUFG
+	-- phi2 is a CLK signal
+	-- phi2_int isn't
+	phi2_ibufg: IBUFG
 		port map (
 			I => phi2,
-			O => phi2_int
+			O => phi2_ibuf
 		);
+	phi2_bufg: BUFG
+		port map (
+			I => phi2_ibuf,
+			O => phi2_clk
+		);
+	
+	phi2_int <= phi2_ibuf;
 	
 	rtx <= '1' when via1_sel ='1' and A(3 downto 0) = X"6" else '0';
 	rrts <= qclk_div; --nbe_out; --D_in(2);
@@ -483,7 +494,7 @@ begin
 
 	qclk_c: qclk_pll
 		port map (
-			phi2 => phi2,
+			phi2 => phi2_clk,
 			nres => nres,
 			qclk => qclk,
 			phi2x8 => phi2x8,
@@ -592,7 +603,7 @@ begin
 
 	via1_c: via6522
 	   Port map (
-         phi2_int,
+         phi2_clk,
 			phi2x8,
 			phi2falling_en,
 			phi2rising_en,
@@ -683,7 +694,7 @@ begin
 
 	via2_c: via6522
 	   Port map (
-         phi2_int,
+         phi2_clk,
 			phi2x8,
 			phi2falling_en,
 			phi2rising_en,

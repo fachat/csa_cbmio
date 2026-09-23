@@ -4,11 +4,11 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.std_logic_arith.all;
-use ieee.std_logic_unsigned.all;
+use ieee.numeric_std.all;
 
 entity via6522_tmr_a is
 port (
+    phi2           : in  std_logic;
     phi2x8         : in  std_logic;
     phi2falling_en : in  std_logic;
     phi2rising_en  : in  std_logic;
@@ -25,93 +25,96 @@ end via6522_tmr_a;
 architecture rtl of via6522_tmr_a is
     constant latch_reset_pattern : std_logic_vector(15 downto 0) := X"5550";
 
-    alias tmr_a_output_en : std_logic is acr(7);
-    alias tmr_a_freerun   : std_logic is acr(6);
-
-    signal timer_a_count_i              : std_logic_vector(15 downto 0) := latch_reset_pattern;
-    signal timer_a_out_i                : std_logic := '1';
-    signal timer_a_event_i              : std_logic := '0';
-    signal timer_a_input_latch          : std_logic_vector(7 downto 0);
-    signal timer_a_write_t1c_h          : std_logic;
-    signal timer_a_underflow_next       : std_logic;
-    signal timer_a_underflow_next_d     : std_logic;
-    signal timer_a_underflow_next_d2    : std_logic;
-    signal timer_a_active_ff            : std_logic;
-    signal timer_a_active_underflow     : std_logic;
-    signal timer_a_active_underflow_d   : std_logic;
-    signal timer_a_reload               : std_logic;
-    signal timer_a_toggle               : std_logic;
-    signal timer_a_may_interrupt        : std_logic;
+	signal t1_count		: std_logic_vector(15 downto 0);
+	signal t1_count_prev	: std_logic_vector(15 downto 0);
+	signal t1_latch		: std_logic_vector(15 downto 0);
+	
+	signal t1_load   		: std_logic;
+	signal t1_ufl   		: std_logic;
+	signal t1_ufl_prev		: std_logic;
+	signal t1_run			: std_logic;
+	signal w_t1c_h			: std_logic;
+	signal s_t1				: std_logic;
+	signal s_t1_prev		: std_logic;
+	signal t1_pb7			: std_logic;
+	signal t1_pb7_reg		: std_logic;
+	signal t1_pb7_prev	: std_logic;
+	
 begin
-    timer_a_count <= timer_a_count_i;
-    timer_a_out <= timer_a_out_i;
-    timer_a_event <= timer_a_event_i;
 
-    process(phi2x8)
+	t1_latch <= timer_a_latch;
+	timer_a_count <= t1_count;
+	timer_a_event <= s_t1;
+	
+    --w_t1l_h <= '1' when we = '1' and addr = ADDR_T1L_H else '0';
+    t1_load <= '1' when t1_ufl_prev = '1' or w_t1c_h = '1' else '0';
+
+    process (phi2)
     begin
-        if (falling_edge(phi2x8) and phi2falling_en = '1') then
-            if reset='1' then
-                timer_a_toggle <= '1';
-            elsif write_t1c_h = '1' then
-                timer_a_toggle <= not tmr_a_output_en;
-            elsif timer_a_event_i = '1' and tmr_a_output_en = '1' then
-                timer_a_toggle <= not timer_a_toggle;
-            end if;
-
-            if (write_t1c_h = '1') then
-                timer_a_input_latch <= data_in;
-                timer_a_write_t1c_h <= '1';
-            else
-                timer_a_write_t1c_h <= '0';
-            end if;
-        end if;
-
-        if (falling_edge(phi2x8) and phi2rising_en = '1') then
-            if reset='1' then
-                timer_a_may_interrupt <= '0';
-                timer_a_count_i <= latch_reset_pattern;
-            elsif timer_a_write_t1c_h = '1' then
-                timer_a_may_interrupt <= '1';
-                timer_a_count_i <= timer_a_input_latch & timer_a_latch(7 downto 0);
-            elsif timer_a_reload = '1' then
-                timer_a_count_i <= timer_a_latch;
-                timer_a_may_interrupt <= timer_a_may_interrupt and tmr_a_freerun;
-            else
-                timer_a_count_i <= timer_a_count_i - X"0001";
-            end if;
-
-            if (timer_a_reload = '1' and timer_a_may_interrupt = '1') then
-                timer_a_event_i <= '1';
-            else
-                timer_a_event_i <= '0';
-            end if;
-
-            timer_a_underflow_next_d <= timer_a_underflow_next;
-        end if;
-
-        if falling_edge(phi2x8) and phi2falling_en = '1' then
-            if reset='1' then
-                timer_a_underflow_next <= '0';
-            else
-                timer_a_underflow_next <= '0';
-                if timer_a_count_i = X"0000" and write_t1c_h = '0' then
-                    timer_a_underflow_next <= '1';
+        if rising_edge(phi2) then
+                if t1_load = '1' then
+                    t1_count <= t1_latch;
+                else
+                    t1_count <= std_logic_vector(unsigned(t1_count_prev) - 1);
                 end if;
+
+                if t1_count_prev = x"0000" and w_t1c_h = '0' then
+                    t1_ufl <= '1';
+                else
+                    t1_ufl <= '0';
+                end if;
+        end if;
+
+        if falling_edge(phi2) then
+                t1_count_prev <= t1_count;
+                t1_ufl_prev   <= t1_ufl;
+        end if;
+
+        if falling_edge(phi2) then
+				w_t1c_h <= write_t1c_h;
+			end if;
+
+        if rising_edge(phi2) then
+            if w_t1c_h = '1' then
+                t1_run <= '1';
+            elsif reset = '1' or (s_t1 = '1' and acr(6) = '0') then
+                t1_run <= '0';
+            end if;
+		  end if;
+
+--				-- w_t1c_h is set at falling, s_t1_prev is set a rising
+--            if w_t1c_h = '1' then
+--                t1_run <= '1';
+--            elsif reset = '1' or (s_t1_prev = '1' and acr(6) = '0') then
+--                t1_run <= '0';
+--            end if;
+
+        if falling_edge(phi2) then
+                if t1_run = '1' and t1_ufl = '1' then
+                    s_t1 <= '1';
+                else
+                    s_t1 <= '0';
+                end if;
+        end if;
+
+        if rising_edge(phi2) then
+                s_t1_prev   <= s_t1;
+                t1_pb7_prev <= t1_pb7_reg;
+        end if;
+
+            if w_t1c_h = '1' then
+                t1_pb7_reg <= '0';
+            elsif acr(7) = '0' then
+                t1_pb7_reg <= '1';
+            elsif phi2 = '1' and t1_run = '1' and t1_ufl = '1' then
+                t1_pb7_reg <= not t1_pb7_prev;
             end if;
 
-            timer_a_active_underflow_d <= timer_a_active_underflow;
-            timer_a_underflow_next_d2 <= timer_a_underflow_next_d;
-        end if;
-
-        if (timer_a_write_t1c_h = '1') then
-            timer_a_active_ff <= '1';
-        elsif (reset = '1' or (timer_a_active_underflow_d = '1' and acr(6) = '0')) then
-            timer_a_active_ff <= '0';
-        end if;
-
-        timer_a_active_underflow <= timer_a_active_ff and timer_a_underflow_next;
-        timer_a_reload <= timer_a_underflow_next_d2 and not(timer_a_write_t1c_h);
     end process;
+	 
+    --tflag_s_t1 <= s_t1;
+    --tflag_r_t1 <= '1' when (rd = '1' and addr = ADDR_T1C_L) or w_t1c_h = '1' or w_t1l_h = '1' else '0';
 
-    timer_a_out_i <= timer_a_toggle;
+    t1_pb7     <= t1_pb7_reg;
+
 end rtl;
