@@ -125,6 +125,10 @@ architecture Behavioral of Shell is
 	signal int_out: std_logic;
 	signal qclk: std_logic;
 	signal qclk_locked: std_logic;
+	signal clk200_raw: std_logic;
+	signal clk200: std_logic;
+	signal clk200_locked: std_logic;
+	signal clk200_status: std_logic_vector(1 downto 0);
 	signal phi2x8: std_logic;
 	signal phi2falling_en: std_logic;
 	signal phi2rising_en: std_logic;
@@ -371,6 +375,9 @@ architecture Behavioral of Shell is
 	-- divider for qclk
 	signal qclk_cnt: std_logic_vector(7 downto 0);
 	signal qclk_div: std_logic;
+
+	attribute keep : string;
+	attribute keep of clk200 : signal is "true";
 	
 begin
 
@@ -385,6 +392,37 @@ begin
 		port map (
 			I => phi2_ibuf,
 			O => phi2_clk
+		);
+
+	clk200_gen: DCM_CLKGEN
+		generic map (
+			CLKFXDV_DIVIDE => 2,
+			CLKFX_DIVIDE => 1,
+			CLKFX_MD_MAX => 0.0,
+			CLKFX_MULTIPLY => 200,
+			CLKIN_PERIOD => 1000.0,
+			SPREAD_SPECTRUM => "NONE",
+			STARTUP_WAIT => FALSE
+		)
+		port map (
+			CLKFX => clk200_raw,
+			CLKFX180 => open,
+			CLKFXDV => open,
+			LOCKED => clk200_locked,
+			PROGDONE => open,
+			STATUS => clk200_status,
+			CLKIN => phi2_clk,
+			FREEZEDCM => '0',
+			PROGCLK => '0',
+			PROGDATA => '0',
+			PROGEN => '0',
+			RST => not nres
+		);
+
+	clk200_bufg: BUFG
+		port map (
+			I => clk200_raw,
+			O => clk200
 		);
 	
 	phi2_int <= phi2_ibuf;
