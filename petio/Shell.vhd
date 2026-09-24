@@ -389,6 +389,9 @@ begin
 	
 	phi2_int <= phi2_ibuf;
 	
+--	phi2_int <= phi2;
+--	phi2_clk <= phi2;
+	
 	rtx <= '1' when via1_sel ='1' and A(3 downto 0) = X"6" else '0';
 	rrts <= qclk_div; --nbe_out; --D_in(2);
 	iopage <= rcts;

@@ -144,6 +144,7 @@ begin
 				t2_cin <= '0';
 				t2_count_prev <= latch_reset_pattern;
 				t2l_ufl_prev <= '0';
+--				t2l_load <= '0';
 			else
             if (acr(5) = '0' or t2_pb6_fall = '1') then
                 t2_cin <= '1';
@@ -153,6 +154,16 @@ begin
 					 t2_count_next <= t2_count;
             end if;
 
+--				if (write_t2c_h = '1'
+--						or (t2l_ufl_reg = '1' 
+--							and (shift_mode_control = "100" or shift_mode_control(1 downto 0) = "01")
+--						)
+--					) then
+--					t2l_load <= '1';
+--				else
+--					t2l_load <= '0';
+--				end if;
+				
             t2_count_prev <= t2_count;
             t2l_ufl_prev  <= t2l_ufl_reg;
 			end if;

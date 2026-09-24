@@ -1,32 +1,41 @@
 v 4
-file . "tb_shell_cpu.vhd" "1dfc44467fcda013b0dcab021e16b4ef8fb7ccb8" "20260912225851.477":
-  entity tb_shell_cpu at 23( 1097) + 0 on 29;
-  architecture tb of tb_shell_cpu at 37( 1408) + 0 on 30;
-file . "cpu6502.vhd" "0ff458491eea89e8af2aefe0d4497b392bafac1a" "20260912225851.475":
-  entity cpu6502 at 6( 251) + 0 on 27;
-  architecture behavioral of cpu6502 at 31( 990) + 0 on 28;
-file . "../Shell.vhd" "1559c92febdbeb6a1727a954aa7287c98a01c24f" "20260912225851.472":
-  entity shell at 20( 465) + 0 on 25;
-  architecture behavioral of shell at 114( 2541) + 0 on 26;
-file . "../uart_shell.vhd" "8fab7a021fab28e58d07deb3c8f790586f9e59fb" "20260912225851.470":
-  entity uart_shell at 20( 470) + 0 on 23;
-  architecture behavioral of uart_shell at 52( 1449) + 0 on 24;
-file . "uart_top_sim.vhd" "51ec19494b641e92a7ea963e0a4d7f5bcc7d35c4" "20260912225851.470":
-  entity uart_top at 1( 0) + 0 on 21;
-  architecture sim of uart_top at 31( 684) + 0 on 22;
-file . "../ieeedir.vhd" "96169ac9eb514e1b7d39f7d8f146b95211e01045" "20260912225851.468":
-  entity ieeedir at 20( 467) + 0 on 19;
-  architecture behavioral of ieeedir at 47( 1285) + 0 on 20;
-file . "../via6522.vhd" "06da98ff7e152e18b7119596da19b2590681f55a" "20260912225851.468":
-  entity via6522 at 21( 1269) + 0 on 17;
-  architecture viasim of via6522 at 70( 2580) + 0 on 18;
-file . "../pia6520.vhd" "f21e74ccf40442213e78f13a3954e59c53c587f3" "20260912225851.465":
-  entity pia6520 at 20( 467) + 0 on 15;
-  architecture behavioral of pia6520 at 57( 1729) + 0 on 16;
-file . "../select.vhd" "9573f062241488ce5de5ffd41d23a241a2dc9062" "20260912225851.464":
-  entity ioselect at 20( 466) + 0 on 13;
-  architecture behavioral of ioselect at 46( 1209) + 0 on 14;
-file . "qclk_pll_sim.vhd" "0c47d1a027c0f59d0ccfa60e8d221e79da624a44" "20260912225851.463":
-  architecture sim of qclk_pll at 1( 0) + 0 on 12;
-file . "../qclk_pll.vhd" "40dc2e8946b46108d1b5b7428f758d55294e549b" "20260912225851.463":
-  entity qclk_pll at 1( 0) + 0 on 11;
+file . "tb_shell_cpu.vhd" "1dfc44467fcda013b0dcab021e16b4ef8fb7ccb8" "20260924191819.098":
+  entity tb_shell_cpu at 23( 1097) + 0 on 81;
+  architecture tb of tb_shell_cpu at 37( 1408) + 0 on 82;
+file . "cpu6502.vhd" "616e8c23c751bbd76395d7eda08fbd3c7130bd37" "20260924191819.097":
+  entity cpu6502 at 6( 251) + 0 on 79;
+  architecture behavioral of cpu6502 at 31( 990) + 0 on 80;
+file . "../Shell.vhd" "7d12143f3e28947eb5f0b4d4628ebdc7a181ca6d" "20260924191819.093":
+  entity shell at 20( 465) + 0 on 77;
+  architecture behavioral of shell at 114( 2541) + 0 on 78;
+file . "../uart_shell.vhd" "9bc912b75e8713e085e1577c45f8eff4d6253fff" "20260924191819.091":
+  entity uart_shell at 20( 470) + 0 on 75;
+  architecture behavioral of uart_shell at 52( 1449) + 0 on 76;
+file . "uart_top_sim.vhd" "51ec19494b641e92a7ea963e0a4d7f5bcc7d35c4" "20260924191819.091":
+  entity uart_top at 1( 0) + 0 on 73;
+  architecture sim of uart_top at 31( 684) + 0 on 74;
+file . "../ieeedir.vhd" "96169ac9eb514e1b7d39f7d8f146b95211e01045" "20260924191819.090":
+  entity ieeedir at 20( 467) + 0 on 71;
+  architecture behavioral of ieeedir at 47( 1285) + 0 on 72;
+file . "../via6522.vhd" "d9997fa3bd2f472ca3a13bbd08caac91990531e4" "20260924191819.090":
+  entity via6522 at 21( 1246) + 0 on 69;
+  architecture viasim of via6522 at 68( 2513) + 0 on 70;
+file . "../pia6520.vhd" "f21e74ccf40442213e78f13a3954e59c53c587f3" "20260924191819.083":
+  entity pia6520 at 20( 467) + 0 on 61;
+  architecture behavioral of pia6520 at 57( 1729) + 0 on 62;
+file . "../select.vhd" "9573f062241488ce5de5ffd41d23a241a2dc9062" "20260924191819.082":
+  entity ioselect at 20( 466) + 0 on 59;
+  architecture behavioral of ioselect at 46( 1209) + 0 on 60;
+file . "qclk_pll_sim.vhd" "44e51b96e6584f7bec6cf106bf2aa3ace2ca2bc9" "20260924191819.081":
+  architecture sim of qclk_pll at 1( 0) + 0 on 58;
+file . "../qclk_pll.vhd" "725545796a620b5707b81ba4ff3259d5866d432a" "20260924191819.081":
+  entity qclk_pll at 1( 0) + 0 on 57;
+file . "../via6522_tmr_a.vhd" "9f87d026b4c7cc288640c76310f657ce0c189981" "20260924191819.085":
+  entity via6522_tmr_a at 5( 194) + 0 on 63;
+  architecture rtl of via6522_tmr_a at 25( 826) + 0 on 64;
+file . "../via6522_tmr_b.vhd" "c922d879d71181f8af067370285d287b119503f7" "20260924191819.087":
+  entity via6522_tmr_b at 5( 194) + 0 on 65;
+  architecture rtl of via6522_tmr_b at 27( 917) + 0 on 66;
+file . "../via6522_ser.vhd" "3e338247db18ad3559f4d17295ca51b87afe9f7e" "20260924191819.088":
+  entity via6522_ser at 5( 199) + 0 on 67;
+  architecture rtl of via6522_ser at 35( 1207) + 0 on 68;

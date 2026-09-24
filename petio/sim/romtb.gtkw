@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
-[*] Mon Sep  7 23:04:31 2026
+[*] Thu Sep 24 19:19:33 2026
 [*]
 [dumpfile] "/home/fachat/Shared/csa_cbmio/petio/sim/shell_cpu.vcd"
-[dumpfile_mtime] "Mon Sep  7 22:06:51 2026"
-[dumpfile_size] 2101387
+[dumpfile_mtime] "Thu Sep 24 19:18:21 2026"
+[dumpfile_size] 6460095
 [savefile] "/home/fachat/Shared/csa_cbmio/petio/sim/romtb.gtkw"
-[timestart] 136410000000
+[timestart] 123980000000
 [size] 1920 993
-[pos] -1 -1
-*-31.734156 157713000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] -27 -1
+*-31.734156 139500000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_shell_cpu.
 [treeopen] tb_shell_cpu.shell_dut.
 [treeopen] tb_shell_cpu.shell_dut.via1_c.
@@ -30,9 +30,6 @@ tb_shell_cpu.cpu_dut.cpu_rwb
 tb_shell_cpu.cpu_dut.cpu_din[7:0]
 tb_shell_cpu.cpu_dut.cpu_dout[7:0]
 tb_shell_cpu.cpu_dut.opcode[7:0]
-@28
-tb_shell_cpu.cpu_dut.cpu_nirq
-tb_shell_cpu.cpu_dut.cpu_nnmi
 @200
 -TB
 @28
@@ -45,8 +42,6 @@ tb_shell_cpu.shell_dut.nres
 @22
 tb_shell_cpu.shell_dut.a[11:0]
 @28
-tb_shell_cpu.shell_dut.niosel
-tb_shell_cpu.shell_dut.via1_sel
 tb_shell_cpu.shell_dut.via1_rden
 tb_shell_cpu.shell_dut.via1_wren
 tb_shell_cpu.shell_dut.via1_cb1_dir
@@ -69,19 +64,13 @@ tb_shell_cpu.shell_dut.via1_c.wen
 tb_shell_cpu.shell_dut.via1_c.addr[3:0]
 tb_shell_cpu.shell_dut.via1_c.acr[7:0]
 tb_shell_cpu.shell_dut.via1_c.pcr[7:0]
+@23
+tb_shell_cpu.shell_dut.via1_c.tmr_b.timer_b_latch[7:0]
 @28
-tb_shell_cpu.shell_dut.via1_c.timer_b_tick
+tb_shell_cpu.shell_dut.via1_c.tmr_b.w_t2c_h
 @22
 tb_shell_cpu.shell_dut.via1_c.timer_b_count[15:0]
 tb_shell_cpu.shell_dut.via1_c.timer_a_count[15:0]
-@28
-tb_shell_cpu.shell_dut.via1_c.tmr_a.timer_a_underflow_next
-tb_shell_cpu.shell_dut.via1_c.tmr_a.timer_a_underflow_next_d
-tb_shell_cpu.shell_dut.via1_c.tmr_a.timer_a_underflow_next_d2
-tb_shell_cpu.shell_dut.via1_c.tmr_a.timer_a_active_underflow
-tb_shell_cpu.shell_dut.via1_c.tmr_a.timer_a_active_ff
-@29
-tb_shell_cpu.shell_dut.via1_c.tmr_a.timer_a_reload
 @28
 tb_shell_cpu.shell_dut.via1_c.irq_events[6:0]
 tb_shell_cpu.shell_dut.via1_c.irq_flags[6:0]

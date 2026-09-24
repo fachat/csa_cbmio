@@ -193,13 +193,13 @@ begin
     end procedure;
 
     -- Absolute, X  (with page-cross penalty cycle for reads)
-    procedure am_absx(ea : out unsigned(15 downto 0); penalty : boolean := true) is
+    procedure am_absx(ea : out unsigned(15 downto 0); penalty : boolean := true; write : boolean := false) is
       variable base : unsigned(15 downto 0);
       variable sum  : unsigned(15 downto 0);
     begin
       fetch_word(base);
       sum := base + v_x;
-      if penalty and (sum(15 downto 8) /= base(15 downto 8)) then
+      if write or (penalty and (sum(15 downto 8) /= base(15 downto 8))) then
         -- page crossed: dummy read from non-carried high byte
         bus_read((base(15 downto 8) & sum(7 downto 0)), v_d);
       end if;
@@ -207,13 +207,13 @@ begin
     end procedure;
 
     -- Absolute, Y  (with page-cross penalty cycle for reads)
-    procedure am_absy(ea : out unsigned(15 downto 0); penalty : boolean := true) is
+    procedure am_absy(ea : out unsigned(15 downto 0); penalty : boolean := true; write : boolean := false) is
       variable base : unsigned(15 downto 0);
       variable sum  : unsigned(15 downto 0);
     begin
       fetch_word(base);
       sum := base + v_y;
-      if penalty and (sum(15 downto 8) /= base(15 downto 8)) then
+      if write or (penalty and (sum(15 downto 8) /= base(15 downto 8))) then
         bus_read((base(15 downto 8) & sum(7 downto 0)), v_d);
       end if;
       ea := sum;
@@ -454,8 +454,8 @@ begin
         when x"85" => am_zp(v_ea);  bus_write(v_ea, v_a);                  -- STA zp
         when x"95" => am_zpx(v_ea); bus_write(v_ea, v_a);                  -- STA zp,X
         when x"8D" => am_abs(v_ea); bus_write(v_ea, v_a);                  -- STA abs
-        when x"9D" => am_absx(v_ea, penalty=>false); bus_write(v_ea, v_a); -- STA abs,X
-        when x"99" => am_absy(v_ea, penalty=>false); bus_write(v_ea, v_a); -- STA abs,Y
+        when x"9D" => am_absx(v_ea, penalty=>false, write=>true); bus_write(v_ea, v_a); -- STA abs,X
+        when x"99" => am_absy(v_ea, penalty=>false, write=>true); bus_write(v_ea, v_a); -- STA abs,Y
         when x"81" => am_indx(v_ea); bus_write(v_ea, v_a);                 -- STA (zp,X)
         when x"91" => am_indy(v_ea, penalty=>false); bus_write(v_ea, v_a); -- STA (zp),Y
 
