@@ -9,9 +9,6 @@ use ieee.numeric_std.all;
 entity via6522_tmr_a is
 port (
     phi2           : in  std_logic;
-    phi2x8         : in  std_logic;
-    phi2falling_en : in  std_logic;
-    phi2rising_en  : in  std_logic;
     reset          : in  std_logic;
     acr            : in  std_logic_vector(7 downto 0);
     data_in        : in  std_logic_vector(7 downto 0);

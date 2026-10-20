@@ -175,9 +175,6 @@ architecture viasim of via6522 is
     component via6522_tmr_a is
     port (
 		  phi2			  : in  std_logic;
-        phi2x8         : in  std_logic;
-        phi2falling_en : in  std_logic;
-        phi2rising_en  : in  std_logic;
         reset          : in  std_logic;
         acr            : in  std_logic_vector(7 downto 0);
         data_in        : in  std_logic_vector(7 downto 0);
@@ -191,9 +188,6 @@ architecture viasim of via6522 is
     component via6522_tmr_b is
     port (
 		  phi2				: in  std_logic;
-        phi2x8          : in  std_logic;
-        phi2falling_en  : in  std_logic;
-        phi2rising_en   : in  std_logic;
         reset           : in  std_logic;
         acr             : in  std_logic_vector(7 downto 0);
         port_b_i        : in  std_logic_vector(7 downto 0);
@@ -208,9 +202,6 @@ architecture viasim of via6522 is
     component via6522_ser is
     port (
 		  phi2				: in  std_logic;
-        phi2x8          : in  std_logic;
-        phi2falling_en  : in  std_logic;
-        phi2rising_en   : in  std_logic;
         reset           : in  std_logic;
         acr             : in  std_logic_vector(7 downto 0);
         irq_flag2       : in  std_logic;
@@ -575,9 +566,6 @@ begin
     tmr_a: via6522_tmr_a
     port map (
 		  phi2 => phi2,
-        phi2x8 => phi2x8,
-        phi2falling_en => phi2falling_en,
-        phi2rising_en => phi2rising_en,
         reset => reset,
         acr => acr,
         data_in => data_in,
@@ -591,9 +579,6 @@ begin
     tmr_b: via6522_tmr_b
     port map (
 		  phi2 => phi2,
-        phi2x8 => phi2x8,
-        phi2falling_en => phi2falling_en,
-        phi2rising_en => phi2rising_en,
         reset => reset,
         acr => acr,
         port_b_i => port_b_i,
@@ -607,9 +592,6 @@ begin
     ser: via6522_ser
     port map (
 		  phi2 => phi2,
-        phi2x8 => phi2x8,
-        phi2falling_en => phi2falling_en,
-        phi2rising_en => phi2rising_en,
         reset => reset,
         acr => acr,
         irq_flag2 => irq_flags(2),

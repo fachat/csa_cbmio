@@ -10,9 +10,6 @@ use ieee.std_logic_unsigned.all;
 entity via6522_tmr_b is
 port (
     phi2           : in  std_logic;
-    phi2x8         : in  std_logic;
-    phi2falling_en : in  std_logic;
-    phi2rising_en  : in  std_logic;
     reset          : in  std_logic;
     acr            : in  std_logic_vector(7 downto 0);
     port_b_i       : in  std_logic_vector(7 downto 0);
@@ -54,7 +51,7 @@ begin
     t2l_load <= '1' when (t2l_ufl_prev = '1' and (shift_mode_control = "100" or shift_mode_control(1 downto 0) = "01")) or w_t2c_h = '1' else '0';
     --t2_count_next <= (t2_count_prev - 1) when t2_cin = '1' else t2_count_prev;
 
-    process(phi2x8)
+    process(phi2)
         variable t2_pb6_sampled : std_logic;
     begin
 
