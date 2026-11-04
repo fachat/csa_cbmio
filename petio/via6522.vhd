@@ -107,7 +107,8 @@ architecture viasim of via6522 is
     signal cb1_o_int     : std_logic;
     signal cb2_t_int     : std_logic;
     signal cb2_o_int     : std_logic;
-
+	 signal ser_dbg		 : std_logic;
+	 
     signal serial_event_sig : std_logic := '0';
     signal timer_b_event_sig : std_logic := '0';
     signal timer_a_event_sig : std_logic := '0';
@@ -154,7 +155,6 @@ architecture viasim of via6522 is
     
     signal ira, irb         : std_logic_vector(7 downto 0) := (others => '0');
 
-    signal write_t1c_l      : std_logic;
     signal write_t1c_h      : std_logic;
     signal write_t2c_h      : std_logic;
 
@@ -209,23 +209,21 @@ architecture viasim of via6522 is
         wen             : in  std_logic;
         ren             : in  std_logic;
         data_in         : in  std_logic_vector(7 downto 0);
-        cb1_pos         : in  std_logic;
-        cb1_neg         : in  std_logic;
-        cb2_d1          : in  std_logic;
+        cb1_in          : in  std_logic;
+        cb2_in          : in  std_logic;
         timer_b_sr_tick : in  std_logic;
         shift_reg       : out std_logic_vector(7 downto 0);
         serial_event    : out std_logic;
         serport_en      : out std_logic;
         ser_cb2_o       : out std_logic;
         cb1_t_int       : out std_logic;
-        cb1_o_int       : out std_logic);
+        cb1_o_int       : out std_logic;
+		  ser_dbg			: out std_logic);
     end component;
 
 begin
     irq <= irq_out;
     
-	 -- TODO verify
-    write_t1c_l <= '1' when (addr = X"4" or addr = x"6") and wen='1' else '0'; --and falling = '1' else '0';
     write_t1c_h <= '1' when addr = X"5" and wen='1' else '0'; --and falling = '1' else '0';
     write_t2c_h <= '1' when addr = X"9" and wen='1' else '0'; --and falling = '1' else '0';
 
@@ -236,12 +234,7 @@ begin
     serial_event <= serial_event_sig;
     timer_b_event <= timer_b_event_sig;
     timer_a_event <= timer_a_event_sig;
-
-	 -- CB1 pos/neg edge detector, used in shift register
-	 cb1_pos <= '1' when (cb1_d1 = '1' and cb1_d2 = '0') else '0';
-	 cb1_neg <= '1' when (cb1_d1 = '0' and cb1_d2 = '1') else '0';
 	 
-    ca2_t <= ca2_is_output;
     cb2_t_int <= cb2_is_output when serport_en='0' else shift_dir;
     cb2_o_int <= hs_cb2_o      when serport_en='0' else ser_cb2_o;
 
@@ -250,11 +243,14 @@ begin
     cb2_t <= cb2_t_int;
     cb2_o <= cb2_o_int;
 
-    with ca2_out_mode select ca2_o <= 
-        ca2_handshake_o when "00",
-        ca2_pulse_o     when "01",
-        '0'             when "10",
-        '1'             when others;
+--    ca2_t <= ca2_is_output;
+--    with ca2_out_mode select ca2_o <= 
+--        ca2_handshake_o when "00",
+--        ca2_pulse_o     when "01",
+--        '0'             when "10",
+--        '1'             when others;
+	 ca2_t <= '1';
+	 ca2_o <= cb1_o_int;
         
     with cb2_out_mode select hs_cb2_o <= 
         cb2_handshake_o when "00",
@@ -272,23 +268,14 @@ begin
     end process;
 
 
-    process(phi2x8)
+    process(phi2, ca1_i, ca2_i, cb1_i, cb2_i)
     begin
-			if (falling_edge(phi2)) then 
             if reset='1' then
                 -- Reset avoids packing into shift register
                 ca1_c  <= '1';
                 ca2_c  <= '1';
                 cb1_c  <= '1';
                 cb2_c  <= '1';
-                ca1_d1 <= '1';
-                ca2_d1 <= '1';
-                cb1_d1 <= '1';
-                cb2_d1 <= '1';
-                ca1_d2 <= '1';
-                ca2_d2 <= '1';
-                cb1_d2 <= '1';
-                cb2_d2 <= '1';
 				else
 					-- CA1/CA2/CB1/CB2 edge detect flipflops
 					ca1_c <= To_X01(ca1_i);
@@ -300,6 +287,20 @@ begin
 						cb1_c <= To_X01(cb1_i);
 					end if;
 					cb2_c <= To_X01(cb2_i);
+				end if;
+				
+			if (falling_edge(phi2)) then 
+            if reset='1' then
+                -- Reset avoids packing into shift register
+                ca1_d1 <= '1';
+                ca2_d1 <= '1';
+                cb1_d1 <= '1';
+                cb2_d1 <= '1';
+                ca1_d2 <= '1';
+                ca2_d2 <= '1';
+                cb1_d2 <= '1';
+                cb2_d2 <= '1';
+				else
 
 					ca1_d1 <= ca1_c;
 					ca2_d1 <= ca2_c;
@@ -554,13 +555,21 @@ begin
 
     -- PIO Out select --
     port_a_o             <= pio_i.pra;
-    port_b_o(6 downto 0) <= pio_i.prb(6 downto 0);    
-    port_b_o(7) <= pio_i.prb(7) when tmr_a_output_en='0' else timer_a_out;
-    
     port_a_t             <= pio_i.ddra;
-    port_b_t(6 downto 0) <= pio_i.ddrb(6 downto 0);
+	 
+    port_b_o(4 downto 0) <= pio_i.prb(4 downto 0);    
+--    port_b_o(5 downto 4) <= pio_i.prb(5 downto 4);    
+    port_b_o(6)			 <= pio_i.prb(6);    
+    port_b_o(7) <= pio_i.prb(7) when tmr_a_output_en='0' else timer_a_out;
+
+    port_b_t(4 downto 0) <= pio_i.ddrb(4 downto 0);
+--    port_b_t(5 downto 4) <= pio_i.ddrb(5 downto 4);
+    port_b_t(6)			 <= pio_i.ddrb(6);
     port_b_t(7)          <= pio_i.ddrb(7) or tmr_a_output_en;
-    
+  
+	-- debug
+	port_b_t(5) 			 <= '1';
+	port_b_o(5)				 <= ser_dbg; --cb2_i; --cb1_i; --cb1_t_int;
 
     -- Timer A
     tmr_a: via6522_tmr_a
@@ -599,15 +608,15 @@ begin
         wen => wen,
         ren => ren,
         data_in => data_in,
-        cb1_pos => cb1_pos,
-        cb1_neg => cb1_neg,
-        cb2_d1 => cb2_d1,
+        cb1_in => cb1_c,
+        cb2_in => cb2_c,
         timer_b_sr_tick => timer_b_sr_tick,
         shift_reg => shift_reg,
         serial_event => serial_event_sig,
         serport_en => serport_en,
         ser_cb2_o => ser_cb2_o,
         cb1_t_int => cb1_t_int,
-        cb1_o_int => cb1_o_int);
+        cb1_o_int => cb1_o_int,
+		  ser_dbg => ser_dbg);
 
 end viasim;
