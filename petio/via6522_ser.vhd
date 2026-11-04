@@ -204,7 +204,7 @@ begin
 				-- => sr_cnt_latch
             if sr_run = '0' then
                 sr_cnt_latch <= (others => '1');
-            elsif not (we = '1' and asel_sr = '1') then
+            elsif not (sr_latch_write = '1') then
                 if sr_shift = '1' then
                     sr_cnt_latch <= (not sr_cnt(0)) & sr_cnt(4 downto 1);
                 else
