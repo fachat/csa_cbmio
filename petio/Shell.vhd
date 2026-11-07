@@ -26,11 +26,6 @@ use ieee.numeric_std.all;
 -- arithmetic functions with Signed or Unsigned values
 --use IEEE.NUMERIC_STD.ALL;
 
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
-library UNISIM;
-use UNISIM.VComponents.all;
-
 entity Shell is
 	Port (
 		phi2: in std_logic;
