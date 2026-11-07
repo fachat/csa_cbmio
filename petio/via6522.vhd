@@ -239,14 +239,14 @@ begin
     cb2_t <= cb2_t_int;
     cb2_o <= cb2_o_int;
 
---    ca2_t <= ca2_is_output;
---    with ca2_out_mode select ca2_o <= 
---        ca2_handshake_o when "00",
---        ca2_pulse_o     when "01",
---        '0'             when "10",
---        '1'             when others;
-	 ca2_t <= '1';
-	 ca2_o <= cb1_o_int;
+    ca2_t <= ca2_is_output;
+    with ca2_out_mode select ca2_o <= 
+        ca2_handshake_o when "00",
+        ca2_pulse_o     when "01",
+        '0'             when "10",
+        '1'             when others;
+--	 ca2_t <= '1';
+--	 ca2_o <= cb1_o_int;
         
     with cb2_out_mode select hs_cb2_o <= 
         cb2_handshake_o when "00",
@@ -554,18 +554,18 @@ begin
     port_a_t             <= pio_i.ddra;
 	 
     port_b_o(4 downto 0) <= pio_i.prb(4 downto 0);    
---    port_b_o(5 downto 4) <= pio_i.prb(5 downto 4);    
+    port_b_o(5) 			 <= pio_i.prb(5);    
     port_b_o(6)			 <= pio_i.prb(6);    
     port_b_o(7) <= pio_i.prb(7) when tmr_a_output_en='0' else timer_a_out;
 
     port_b_t(4 downto 0) <= pio_i.ddrb(4 downto 0);
---    port_b_t(5 downto 4) <= pio_i.ddrb(5 downto 4);
+    port_b_t(5) 			 <= pio_i.ddrb(5);
     port_b_t(6)			 <= pio_i.ddrb(6);
     port_b_t(7)          <= pio_i.ddrb(7) or tmr_a_output_en;
   
 	-- debug
-	port_b_t(5) 			 <= '1';
-	port_b_o(5)				 <= ser_dbg; --cb2_i; --cb1_i; --cb1_t_int;
+--	port_b_t(5) 			 <= '1';
+--	port_b_o(5)				 <= ser_dbg; --cb2_i; --cb1_i; --cb1_t_int;
 
     -- Timer A
     tmr_a: via6522_tmr_a
