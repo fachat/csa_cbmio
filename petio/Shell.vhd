@@ -281,9 +281,6 @@ architecture Behavioral of Shell is
 	component via6522 is
 		port (
 			phi2        : in  std_logic;
-			phi2x8      : in  std_logic;
-			phi2falling_en : in  std_logic;
-			phi2rising_en  : in  std_logic;
 			reset       : in  std_logic;
     
 			addr        : in  std_logic_vector(3 downto 0);
@@ -645,9 +642,6 @@ begin
 	via1_c: via6522
 	   Port map (
          phi2_clk,
-			phi2x8,
-			phi2falling_en,
-			phi2rising_en,
 			res,
 			A(3 downto 0),
 			via1_wren,
@@ -736,9 +730,6 @@ begin
 	via2_c: via6522
 	   Port map (
          phi2_clk,
-			phi2x8,
-			phi2falling_en,
-			phi2rising_en,
 			res,
 			A(3 downto 0),
 			via2_wren,

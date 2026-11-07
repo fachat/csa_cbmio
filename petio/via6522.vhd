@@ -14,8 +14,7 @@
 -- taken from https://github.com/Rhialto/MegaPET/blob/rhialto/CORE/PET2001_MiSTer/rtl/via6522.vhd
 -- on 20260318
 --
--- Note: this variant uses an external phi2x8 clock with phase-qualified
--- clock-enable signals for the original phi2 edge timing.
+-- Note. reworked in major parts
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -26,9 +25,6 @@ use ieee.std_logic_unsigned.all;
 entity via6522 is
 port (
 		phi2			 : in  std_logic;
-		phi2x8      : in  std_logic;
-		phi2falling_en : in  std_logic;
-		phi2rising_en  : in  std_logic;
 		reset       : in  std_logic;
     
     addr        : in  std_logic_vector(3 downto 0);
