@@ -15,9 +15,6 @@ architecture tb of tb_via6522 is
   constant PHI2X8_HALF : time := 62.5 ns;
 
   signal phi2     : std_logic := '0';
-  signal phi2x8   : std_logic := '1';
-  signal phi2falling_en : std_logic := '1';
-  signal phi2rising_en  : std_logic := '0';
   signal phi2_phase     : integer range 0 to 7 := 0;
   signal reset    : std_logic := '1';
   signal addr     : std_logic_vector(3 downto 0) := (others => '0');
@@ -48,9 +45,6 @@ begin
   dut: entity work.via6522
     port map (
       phi2 => phi2,
-      phi2x8 => phi2x8,
-      phi2falling_en => phi2falling_en,
-      phi2rising_en => phi2rising_en,
       reset => reset,
       addr => addr,
       wen => wen,
@@ -84,78 +78,6 @@ begin
       phi2 <= '1';
       wait for 500 ns;
     end loop;
-  end process;
-
-  clk8_p: process
-  begin
-    wait until reset = '0';
-    wait until falling_edge(phi2);
-    loop
-      phi2x8 <= '0';
-      wait for PHI2X8_HALF;
-      phi2x8 <= '1';
-      wait for PHI2X8_HALF;
-    end loop;
-  end process;
-
-  phase_p: process(phi2x8, reset)
-  begin
-    if (reset = '1') then
-      phi2_phase <= 0;
-    elsif (falling_edge(phi2x8)) then
-      if (phi2_phase = 7) then
-        phi2_phase <= 0;
-      else
-        phi2_phase <= phi2_phase + 1;
-      end if;
-    end if;
-  end process;
-
-  phi2falling_en <= '1' when phi2_phase = 7 else '0';
-  phi2rising_en <= '1' when phi2_phase = 3 else '0';
-
-  phase_check_p: process(phi2x8)
-    variable fast_phase : integer range 0 to 7 := 0;
-    variable cb1_prev   : std_logic := '1';
-  begin
-    if (falling_edge(phi2x8)) then
-      if (reset = '1') then
-        fast_phase := 0;
-        cb1_prev := cb1_o;
-      else
-        assert not (phi2falling_en = '1' and phi2rising_en = '1')
-          report "phi2falling_en and phi2rising_en overlap"
-          severity failure;
-
-        if (phi2falling_en = '1') then
-          assert phi2 = '1'
-            report "phi2falling_en is not aligned to phi2 high phase before falling edge"
-            severity failure;
-          assert fast_phase = 7
-            report "phi2falling_en is not on the last phi2x8 step before phi2 falls"
-            severity failure;
-        else
-          fast_phase := (fast_phase + 1) mod 8;
-        end if;
-
-        if (phi2rising_en = '1') then
-          assert phi2 = '0'
-            report "phi2rising_en is not aligned to phi2 low phase before rising edge"
-            severity failure;
-          assert fast_phase = 3
-            report "phi2rising_en is not on the last phi2x8 step before phi2 rises"
-            severity failure;
-        end if;
-
-        if (cb1_o /= cb1_prev) then
-          assert phi2falling_en = '1'
-            report "CB1 changed outside the intended phi2 falling phase"
-            severity failure;
-        end if;
-
-        cb1_prev := cb1_o;
-      end if;
-    end if;
   end process;
 
   rst_p: process
