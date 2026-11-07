@@ -368,20 +368,20 @@ architecture Behavioral of Shell is
 	
 begin
 
-	-- phi2 is a CLK signal
-	-- phi2_int isn't
-	phi2_ibufg: IBUFG
-		port map (
-			I => phi2,
-			O => phi2_ibuf
-		);
-	phi2_bufg: BUFG
-		port map (
-			I => phi2_ibuf,
-			O => phi2_clk
-		);
+--	-- phi2 is a CLK signal
+--	-- phi2_int isn't
+--	phi2_ibufg: IBUFG
+--		port map (
+--			I => phi2,
+--			O => phi2_ibuf
+--		);
+--	phi2_bufg: BUFG
+--		port map (
+--			I => phi2_ibuf,
+--			O => phi2_clk
+--		);
 	
-	phi2_int <= phi2_ibuf;
+	phi2_int <= phi2; --phi2_ibuf;
 	
 --	phi2_int <= phi2;
 --	phi2_clk <= phi2;
@@ -587,7 +587,7 @@ begin
 
 	via1_c: via6522
 	   Port map (
-         phi2_clk,
+         phi2_int,
 			res,
 			A(3 downto 0),
 			via1_wren,
@@ -675,7 +675,7 @@ begin
 
 	via2_c: via6522
 	   Port map (
-         phi2_clk,
+         phi2_int,
 			res,
 			A(3 downto 0),
 			via2_wren,
