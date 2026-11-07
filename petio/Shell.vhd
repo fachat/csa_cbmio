@@ -408,7 +408,7 @@ begin
 		or int_out;
 	
 	res <= not(nres);
-	uart_nres <= nres and qclk_locked;
+	--uart_nres <= nres and qclk_locked;
 	
 	D_in <= D;
 	D <= (others => 'Z') when rwb = '0'
@@ -487,19 +487,6 @@ begin
 	  end process;
 	end block fake_int;
 	
-	----------------------------------------------------
-
-	qclk_c: qclk_pll
-		port map (
-			phi2 => phi2_clk,
-			nres => nres,
-			qclk => qclk,
---			phi2x8 => phi2x8,
---			phi2falling_en => phi2falling_en,
---			phi2rising_en => phi2rising_en,
-			locked => qclk_locked
-		);
-
 	----------------------------------------------------
 
 	pia1_c: pia6520
