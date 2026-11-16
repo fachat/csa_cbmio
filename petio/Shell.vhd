@@ -515,7 +515,7 @@ begin
 	ksel <= pia1_pa_out(3 downto 0);
 	pia1_pb_in <= kin;
 	
-	pia1_pa_in(7) <= up(10) when test_enable = '0' or via1_cb1_dir = '0' else via1_cb1_out;
+	pia1_pa_in(7) <= up(10) when (test_enable = '0' or via1_cb1_dir = '0') else via1_cb1_out;
 	up(10) <= pia1_pa_out(7) when pia1_pa_dir(7) = '1' else 'Z';
 	
 	pia1_pa_in(6) <= eoi;
@@ -627,7 +627,7 @@ begin
 	via1_pa_in(4) <= up(7) when test_enable = '0' or via1_pb_dir(3) = '0' else via1_pb_out(3);
 	via1_pa_in(5) <= up(6) when test_enable = '0' or via1_pa_dir(6) = '0' else via1_pa_out(6);
 	via1_pa_in(6) <= up(5) when test_enable = '0' or via1_pa_dir(5) = '0' else via1_pa_out(5);
-	via1_pa_in(7) <= up(4);
+	via1_pa_in(7) <= up(4) when test_enable = '0' or via1_cb2_dir = '0' else via1_cb2_out;
 	
 	via1_pb_in(0) <= ndac and ndac_out;
 	via1_pb_in(1) <= 'Z'; -- nrfd out
